@@ -1,0 +1,3041 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "GLama documentation API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://192.168.0.88/api/v1",
+            "description": "Laravel Swagger API server"
+        }
+    ],
+    "paths": {
+        "/api/v1/": {},
+        "/email/verification-notification": {
+            "get": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Повторная отправка на подтверждние почты (при регистрации отправляется автоматически один раз)",
+                "operationId": "e91307fc9151fe51f5196b3d8f2c1f6e",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "Verification link sent"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Your account has already verified"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Your account has already verified"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/verify-email/{id}/{hash}": {
+            "get": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Подтверждение почты.",
+                "operationId": "e9f5b66ad98426e329fa94c105b3cedd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID пользователя",
+                        "required": true,
+                        "example": "1"
+                    },
+                    {
+                        "name": "hash",
+                        "in": "path",
+                        "description": "HASH из письма",
+                        "required": true,
+                        "example": "2f4da12153d6b0655475f2fb79e05fe09f88d818"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Your account has already verified"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Some error"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/login": {
+            "post": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Вход в аккаунт",
+                "operationId": "db3a2eaf0bcdca572b12168018d9d41a",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "properties": {
+                                            "email": {
+                                                "type": "email",
+                                                "example": "lebedeb@grampus-studio.ru"
+                                            },
+                                            "password": {
+                                                "type": "string",
+                                                "example": "123456789_"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged in succesfully"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/UserResponse"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|32SuQYzh3jCFDoVYgk8bubmx6V12hTShaSDtRIlKc9518c76"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The credentials do not match."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The credentials do not match."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Выход из аккаунта",
+                "operationId": "51f3dc7683609bb560edd2e7ebf01d7e",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out succesfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "404"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged out failed."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/forgot-password": {
+            "post": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Отправка письма с подтверждением E-mail",
+                "operationId": "665e894a7fc63ba4421c3c6995a82ab5",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "properties": {
+                                            "email": {
+                                                "type": "email",
+                                                "example": "lebedeb@grampus-studio.ru"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "200"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "We have emailed your password reset link."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some Error"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Some Error"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reset-password": {
+            "post": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Сброс пароля",
+                "operationId": "ab7951368a9d6d23244839bfce3444d3",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "properties": {
+                                            "token": {
+                                                "type": "email",
+                                                "example": "ebe5abaaabcb9c3da6859340541d0d674c87bc4386f48902a6149b23dec7a090"
+                                            },
+                                            "email": {
+                                                "type": "email",
+                                                "example": "lebedeb@grampus-studio.ru"
+                                            },
+                                            "password": {
+                                                "type": "string",
+                                                "example": "123456789_"
+                                            },
+                                            "password_confirmation": {
+                                                "type": "string",
+                                                "example": "123456789_"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "200"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Password reset successfully"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "500"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Some error"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Регистрация пользователя",
+                "operationId": "f1f85f8a1439930201e4e14435bca165",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserRegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "201"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Account has been successfully registered, please check your email to verify your account."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "500"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Your account failed to register."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/clients": {
+            "post": {
+                "tags": [
+                    "Клиенты"
+                ],
+                "summary": "Добавление клиента (аккаунт Яндекс)",
+                "operationId": "9160b44b7427ee3f0f20342cbf332a47",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClientStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "201": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "201"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Client was created successfully."
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/ClientResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/clients/{client}": {
+            "get": {
+                "tags": [
+                    "Клиенты"
+                ],
+                "summary": "Получить конкретного клиента текущего авторизованного пользователя",
+                "operationId": "cb0e73cf38a1901d96f8bdc32c63d269",
+                "parameters": [
+                    {
+                        "name": "client",
+                        "in": "path",
+                        "description": "ID клиента",
+                        "required": true,
+                        "example": "15"
+                    }
+                ],
+                "responses": {
+                    "403": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail client"
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/ClientResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Клиенты"
+                ],
+                "summary": "Изменение клиента (аккаунт Яндекс)",
+                "operationId": "834f0cde0db6b1167f4d97ce0eaad875",
+                "parameters": [
+                    {
+                        "name": "client",
+                        "in": "path",
+                        "description": "ID клиента",
+                        "required": true,
+                        "example": "15"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClientUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Client was updated successfully."
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/ClientResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/clients/all": {
+            "post": {
+                "tags": [
+                    "Клиенты"
+                ],
+                "summary": "Получить всех клиентов текущего пользователя",
+                "operationId": "3563f94b82b80d8d6501bc406f4e6798",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClientAllRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All clients"
+                                        },
+                                        "resource": {
+                                            "type": "string",
+                                            "example": "https://yandex.ru/dev/direct/doc/ref-v5/agencyclients/get.html"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/contracts": {
+            "get": {
+                "tags": [
+                    "Договор"
+                ],
+                "summary": "Получение всех договоров пользователя",
+                "operationId": "40d5d3f6c6da75c0f5674457b0fd2015",
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All contracts."
+                                        },
+                                        "resource": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ContractResponse"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Договор"
+                ],
+                "summary": "Создание договора",
+                "operationId": "d0ade359a028555d4b9baaaaebc72bcb",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContractStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "201"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Contract created successfully."
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/ContractResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/contracts/{contract}": {
+            "get": {
+                "tags": [
+                    "Договор"
+                ],
+                "summary": "Получение конкретного договра",
+                "operationId": "255af4f46725f6088b7849b5a92c1d69",
+                "parameters": [
+                    {
+                        "name": "contract",
+                        "in": "path",
+                        "description": "ID договра",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail contract"
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/ContractResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Договор"
+                ],
+                "summary": "Удаление договора",
+                "operationId": "ed76029774dda085b0721c2e542474cf",
+                "parameters": [
+                    {
+                        "name": "contract",
+                        "in": "path",
+                        "description": "ID договора",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Contract deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Договор"
+                ],
+                "summary": "Изменение договора (!!!!ОТКЛЮЧЕНО!!!!)",
+                "operationId": "9c91b97f0cfc12c145b04644ff0fe3eb",
+                "parameters": [
+                    {
+                        "name": "contract",
+                        "in": "path",
+                        "description": "ID договра",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContractUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Contract updated successfully."
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/ContractResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/contracts/{contract}/pdf": {
+            "get": {
+                "tags": [
+                    "Договор"
+                ],
+                "summary": "Получение PDF договора",
+                "operationId": "3567b250cb72771000b1fe1f1e0e89ec",
+                "parameters": [
+                    {
+                        "name": "contract",
+                        "in": "path",
+                        "description": "ID договра",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tickets/{ticket}/messages": {
+            "get": {
+                "tags": [
+                    "Тикеты"
+                ],
+                "summary": "Получение сообщений в тикете",
+                "operationId": "c50e6cdca2ce450afa1dfad29a814534",
+                "parameters": [
+                    {
+                        "name": "ticket",
+                        "in": "path",
+                        "description": "ID тикета",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All messages"
+                                        },
+                                        "resource": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/MessageResponse"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object",
+                                            "oneOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/Pagination"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Тикеты"
+                ],
+                "summary": "Создание сообщение в конкретном тикете",
+                "operationId": "da76487bd10a88dd8e6488ac34a23b5a",
+                "parameters": [
+                    {
+                        "name": "ticket",
+                        "in": "path",
+                        "description": "ID тикета",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "201"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Message created successfully."
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/MessageResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/messages/{message}": {
+            "delete": {
+                "tags": [
+                    "Тикеты"
+                ],
+                "summary": "Удаление сообщения",
+                "operationId": "790446135f31bc7430c0d08426d36256",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "in": "path",
+                        "description": "ID сообщения",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Message deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Тикеты"
+                ],
+                "summary": "Изменение сообщения в конкретном тикете",
+                "operationId": "76f4307eb6a37f65d001d89129068e4e",
+                "parameters": [
+                    {
+                        "name": "message",
+                        "in": "path",
+                        "description": "ID сообщения",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Message updated successfully."
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/MessageResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tickets": {
+            "get": {
+                "tags": [
+                    "Тикеты"
+                ],
+                "summary": "Получение всех тикетов пользователя",
+                "operationId": "5d5274badcfd081f8c27f6164a3d7b02",
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All tickets."
+                                        },
+                                        "resource": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/TicketResponse"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object",
+                                            "oneOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/Pagination"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Тикеты"
+                ],
+                "summary": "Создание тикета",
+                "operationId": "96d22ad55ce60b4be9d3cbd13a58a7a3",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TicketStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to get service, please try again."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Failed to get service, please try again."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "201"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ticket created successfully."
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/TicketResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tickets/{ticket}": {
+            "get": {
+                "tags": [
+                    "Тикеты"
+                ],
+                "summary": "Получение конкретного тикета",
+                "operationId": "073c89649a6d4d587d60795c03022b2d",
+                "parameters": [
+                    {
+                        "name": "ticket",
+                        "in": "path",
+                        "description": "ID тикета",
+                        "required": true,
+                        "example": "2"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail ticket"
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/TicketResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Тикеты"
+                ],
+                "summary": "Удаление тикета",
+                "operationId": "d04d2bb504017941df8843e229860930",
+                "parameters": [
+                    {
+                        "name": "ticket",
+                        "in": "path",
+                        "description": "ID тикета",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to get service, please try again."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Failed to get service, please try again."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The ticket deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/tickets/{ticket}/change-status": {
+            "patch": {
+                "tags": [
+                    "Тикеты"
+                ],
+                "summary": "Изменение статуса тикета",
+                "operationId": "bbea1758913546c888a65811ac068cff",
+                "parameters": [
+                    {
+                        "name": "ticket",
+                        "in": "path",
+                        "description": "ID тикета",
+                        "required": true,
+                        "example": "2"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "close|open"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Error"
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to get service, please try again."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Failed to get service, please try again."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The ticket updated successfully."
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/TicketResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/update-user": {
+            "patch": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Изменение данных пользователя",
+                "operationId": "2e4d40be2976737c783bce9c9c93cff3",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User updated successfully."
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/UserResponse"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|32SuQYzh3jCFDoVYgk8bubmx6V12hTShaSDtRIlKc9518c76"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to get service, please try again."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Failed to get service, please try again."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/change-password": {
+            "patch": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Изменение пароля",
+                "operationId": "7870d027b62bfe66da443ccc1573c3a0",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserChangePasswordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The password updated successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to get service, please try again."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Failed to get service, please try again."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/user/detail": {
+            "get": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Детальная информация о авторизованном пользователе",
+                "operationId": "720ab44815b8ef1a08074e437a9148bb",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Your profile"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/UserResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Media": {
+                "title": "Медиа",
+                "properties": {
+                    "9bf3b899-94f7-4329-8da9-5b69d76265d4": {
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "example": "Безымянный"
+                            },
+                            "file_name": {
+                                "type": "string",
+                                "example": "Безымянный.png"
+                            },
+                            "uuid": {
+                                "type": "string",
+                                "example": "9bf3b899-94f7-4329-8da9-5b69d76265d4"
+                            },
+                            "preview_url": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "original_url": {
+                                "type": "string",
+                                "example": "http://192.168.0.88/storage/5/Безымянный.png"
+                            },
+                            "order": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "custom_properties": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": "[]"
+                            },
+                            "extension": {
+                                "type": "string",
+                                "example": "png"
+                            },
+                            "size": {
+                                "type": "integer",
+                                "example": 7080
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "9bf3b899-94f7-4329-8da9-asfasfasf": {
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "example": "Безымянный"
+                            },
+                            "file_name": {
+                                "type": "string",
+                                "example": "Безымянный.png"
+                            },
+                            "uuid": {
+                                "type": "string",
+                                "example": "9bf3b899-94f7-4329-8da9-asfasfasf"
+                            },
+                            "preview_url": {
+                                "type": "string",
+                                "example": ""
+                            },
+                            "original_url": {
+                                "type": "string",
+                                "example": "http://192.168.0.88/storage/5/Безымянный.png"
+                            },
+                            "order": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "custom_properties": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": "[]"
+                            },
+                            "extension": {
+                                "type": "string",
+                                "example": "png"
+                            },
+                            "size": {
+                                "type": "integer",
+                                "example": 7080
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "Pagination": {
+                "title": "Пагинация",
+                "properties": {
+                    "links": {
+                        "properties": {
+                            "first": {
+                                "type": "string",
+                                "example": "http://192.168.0.88/api/v1/tickets?page=1"
+                            },
+                            "last": {
+                                "type": "string",
+                                "example": "http://192.168.0.88/api/v1/tickets?page=1"
+                            },
+                            "prev": {
+                                "type": "null"
+                            },
+                            "next": {
+                                "type": "null"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "meta": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "from": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "links": {
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "url": {
+                                            "type": "null"
+                                        },
+                                        "label": {
+                                            "type": "string",
+                                            "example": "&laquo; Назад"
+                                        },
+                                        "active": {
+                                            "type": "boolean",
+                                            "example": false
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "path": {
+                                "type": "string",
+                                "example": "http://192.168.0.88/api/v1/tickets"
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 30
+                            },
+                            "to": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 1
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ClientAllRequest": {
+                "title": "Получние клиента",
+                "required": [
+                    "FieldNames"
+                ],
+                "properties": {
+                    "FieldNames": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "example": "AccountQuality"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ClientStoreRequest": {
+                "title": "Создание клиента",
+                "required": [
+                    "contract_id",
+                    "glama_account_name",
+                    "Login",
+                    "FirstName",
+                    "LastName",
+                    "Currency",
+                    "Grants",
+                    "Notification",
+                    "Settings",
+                    "TinInfo"
+                ],
+                "properties": {
+                    "contract_id": {
+                        "title": "ID контракта",
+                        "description": "ID контракта",
+                        "format": "iteger",
+                        "example": "150"
+                    },
+                    "glama_account_name": {
+                        "title": "Glama название аккаунта",
+                        "description": "Glama название аккаунта",
+                        "format": "string",
+                        "example": "Some name"
+                    },
+                    "params": {
+                        "properties": {
+                            "Login": {
+                                "description": "User login",
+                                "type": "string",
+                                "example": "Client-login"
+                            },
+                            "FirstName": {
+                                "description": "User's first name",
+                                "type": "string",
+                                "example": "peter"
+                            },
+                            "LastName": {
+                                "description": "User's last name",
+                                "type": "string",
+                                "example": "son"
+                            },
+                            "Currency": {
+                                "description": "User's currency",
+                                "type": "string",
+                                "example": "RUB"
+                            },
+                            "Grants": {
+                                "description": "Array of user grants",
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": "[]"
+                            },
+                            "Notification": {
+                                "description": "User's notification details",
+                                "properties": {
+                                    "Lang": {
+                                        "description": "Language for notifications",
+                                        "type": "string",
+                                        "example": "RU"
+                                    },
+                                    "Email": {
+                                        "description": "User's email",
+                                        "type": "string",
+                                        "example": "client-1@mail.ru"
+                                    },
+                                    "EmailSubscriptions": {
+                                        "description": "User's email subscriptions",
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "Option": {
+                                                    "description": "Subscription option",
+                                                    "type": "string",
+                                                    "example": "RECEIVE_RECOMMENDATIONS"
+                                                },
+                                                "Value": {
+                                                    "description": "Subscription value",
+                                                    "type": "string",
+                                                    "example": "NO"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "Settings": {
+                                "description": "User's settings",
+                                "type": "array",
+                                "items": {
+                                    "properties": {
+                                        "Option": {
+                                            "description": "Setting option",
+                                            "type": "string",
+                                            "example": "CORRECT_TYPOS_AUTOMATICALLY"
+                                        },
+                                        "Value": {
+                                            "description": "Setting value",
+                                            "type": "string",
+                                            "example": "NO"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "TinInfo": {
+                                "description": "User's Tin information",
+                                "properties": {
+                                    "TinType": {
+                                        "description": "Type of Tin",
+                                        "type": "string",
+                                        "example": "PHYSICAL"
+                                    },
+                                    "Tin": {
+                                        "description": "User's Tin number",
+                                        "type": "integer",
+                                        "example": 505021556592
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object",
+                        "format": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ClientUpdateRequest": {
+                "title": "Изменение клиента",
+                "required": [
+                    "contract_id"
+                ],
+                "properties": {
+                    "contract_id": {
+                        "title": "ID контракта",
+                        "description": "ID контракта",
+                        "format": "iteger",
+                        "example": "150"
+                    }
+                },
+                "type": "object"
+            },
+            "ContractIndividualEntrepreneurRequest": {
+                "title": "Создание договора для ИП",
+                "required": [
+                    "inn",
+                    "ogrnip",
+                    "company_name",
+                    "legal_address",
+                    "actual_address",
+                    "contact_face",
+                    "job_title",
+                    "phone",
+                    "email",
+                    "bik",
+                    "checking_account",
+                    "bank_name",
+                    "correspondent_account",
+                    "pick_up",
+                    "is_same_legal_address"
+                ],
+                "properties": {
+                    "inn": {
+                        "title": "ИНН",
+                        "description": "ИНН",
+                        "format": "number",
+                        "example": "1234567890"
+                    },
+                    "ogrnip": {
+                        "title": "ОГРНИП",
+                        "description": "ОГРНИП",
+                        "format": "number",
+                        "example": "1234567890"
+                    },
+                    "company_name": {
+                        "title": "Название компании",
+                        "description": "Название компании",
+                        "format": "string",
+                        "example": "ООО Ромашка"
+                    },
+                    "legal_address": {
+                        "title": "Юридический адрес",
+                        "description": "Юридический адрес",
+                        "format": "string",
+                        "example": "г. Вологда, ул. Кукушкина"
+                    },
+                    "actual_address": {
+                        "title": "Физический адрес",
+                        "description": "Физический адрес",
+                        "format": "string",
+                        "example": "г. Вологда, ул. Кукушкина"
+                    },
+                    "contact_face": {
+                        "title": "Контактное лицо",
+                        "description": "Контактное лицо",
+                        "format": "string",
+                        "example": "Игорь Лебединое-Озеро"
+                    },
+                    "job_title": {
+                        "title": "Должность",
+                        "description": "Должность",
+                        "format": "string",
+                        "example": "Булкоед"
+                    },
+                    "phone": {
+                        "title": "Телефон",
+                        "description": "Телефон",
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "description": "Email",
+                        "format": "string",
+                        "example": "bulkoedstvo@ne-porok.ru"
+                    },
+                    "bik": {
+                        "title": "Бик",
+                        "description": "Бик",
+                        "format": "number",
+                        "example": "123456789"
+                    },
+                    "checking_account": {
+                        "title": "Расчетный счет",
+                        "description": "Расчетный счет",
+                        "format": "number",
+                        "example": "123456789"
+                    },
+                    "bank_name": {
+                        "title": "Название банка",
+                        "description": "Название банка",
+                        "format": "string",
+                        "example": "Булка-банк"
+                    },
+                    "correspondent_account": {
+                        "title": "Корреспондентский счет",
+                        "description": "Корреспондентский счет",
+                        "format": "number",
+                        "example": "123456789012342351324"
+                    },
+                    "pick_up": {
+                        "title": "Как вы будете забирать документы",
+                        "description": "Как вы будете забирать документы (not_need,need_original,need_email)",
+                        "format": "string",
+                        "example": "need_email"
+                    },
+                    "is_same_legal_address": {
+                        "title": "Совпадает с юридическим адресом",
+                        "description": "Совпадает с юридическим адресом",
+                        "format": "boolean",
+                        "example": "need_email"
+                    }
+                },
+                "type": "object"
+            },
+            "ContractLegalEntityRequest": {
+                "title": "Создание договора для юридического лица",
+                "required": [
+                    "inn",
+                    "kpp",
+                    "ogrn",
+                    "company_name",
+                    "legal_address",
+                    "actual_address",
+                    "contact_face",
+                    "job_title",
+                    "phone",
+                    "email",
+                    "bik",
+                    "checking_account",
+                    "bank_name",
+                    "correspondent_account",
+                    "pick_up",
+                    "is_same_legal_address"
+                ],
+                "properties": {
+                    "inn": {
+                        "title": "ИНН",
+                        "description": "ИНН",
+                        "format": "number",
+                        "example": "1234567890"
+                    },
+                    "kpp": {
+                        "title": "КПП",
+                        "description": "КПП",
+                        "format": "number",
+                        "example": "1234567890"
+                    },
+                    "ogrn": {
+                        "title": "ОГРН",
+                        "description": "ОГРН",
+                        "format": "number",
+                        "example": "1234567890"
+                    },
+                    "company_name": {
+                        "title": "Название компании",
+                        "description": "Название компании",
+                        "format": "string",
+                        "example": "ООО Ромашка"
+                    },
+                    "legal_address": {
+                        "title": "Юридический адрес",
+                        "description": "Юридический адрес",
+                        "format": "string",
+                        "example": "г. Вологда, ул. Кукушкина"
+                    },
+                    "actual_address": {
+                        "title": "Физический адрес",
+                        "description": "Физический адрес",
+                        "format": "string",
+                        "example": "г. Вологда, ул. Кукушкина"
+                    },
+                    "contact_face": {
+                        "title": "Контактное лицо",
+                        "description": "Контактное лицо",
+                        "format": "string",
+                        "example": "Игорь Лебединое-Озеро"
+                    },
+                    "job_title": {
+                        "title": "Должность",
+                        "description": "Должность",
+                        "format": "string",
+                        "example": "Булкоед"
+                    },
+                    "phone": {
+                        "title": "Телефон",
+                        "description": "Телефон",
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "description": "Email",
+                        "format": "string",
+                        "example": "bulkoedstvo@ne-porok.ru"
+                    },
+                    "bik": {
+                        "title": "Бик",
+                        "description": "Бик",
+                        "format": "number",
+                        "example": "123456789"
+                    },
+                    "checking_account": {
+                        "title": "Расчетный счет",
+                        "description": "Расчетный счет",
+                        "format": "string",
+                        "example": "123456789"
+                    },
+                    "bank_name": {
+                        "title": "Название банка",
+                        "description": "Название банка",
+                        "format": "string",
+                        "example": "Булка-банк"
+                    },
+                    "correspondent_account": {
+                        "title": "Корреспондентский счет",
+                        "description": "Корреспондентский счет",
+                        "format": "number",
+                        "example": "123456789012342351324"
+                    },
+                    "pick_up": {
+                        "title": "Как вы будете забирать документы",
+                        "description": "Как вы будете забирать документы (not_need,need_original,need_email)",
+                        "format": "string",
+                        "example": "need_email"
+                    },
+                    "is_same_legal_address": {
+                        "title": "Совпадает с юридическим адресом",
+                        "description": "Совпадает с юридическим адресом",
+                        "format": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "ContractNaturalPersonEntityRequest": {
+                "title": "Создание договора для физического лица",
+                "required": [
+                    "lastname",
+                    "firstname",
+                    "inn",
+                    "address",
+                    "pick_up"
+                ],
+                "properties": {
+                    "lastname": {
+                        "title": "Фамилия",
+                        "description": "Фамилия",
+                        "format": "string",
+                        "example": "Лебедев"
+                    },
+                    "firstname": {
+                        "title": "Имя",
+                        "description": "Имя",
+                        "format": "string",
+                        "example": "Игорь"
+                    },
+                    "surname": {
+                        "title": "Отчество",
+                        "description": "Отчество",
+                        "format": "string",
+                        "example": "Алексеевич"
+                    },
+                    "inn": {
+                        "title": "ИНН",
+                        "description": "ИНН",
+                        "type": "number",
+                        "example": "1234567890"
+                    },
+                    "address": {
+                        "title": "Адрес",
+                        "description": "Адрес",
+                        "type": "string",
+                        "example": "г. Вологда, ул. Герцена, д. 96 кв. 12"
+                    },
+                    "pick_up": {
+                        "title": "Как вы будете забирать документы",
+                        "description": "Как вы будете забирать документы (not_need, need_original, need_email)",
+                        "format": "string",
+                        "example": "not_need"
+                    }
+                },
+                "type": "object"
+            },
+            "ContractStoreRequest": {
+                "title": "Создание договора",
+                "required": [
+                    "contract_type"
+                ],
+                "properties": {
+                    "contract_type": {
+                        "title": "Тип контракта",
+                        "description": "Тип контракта - (legal_entity, individual_entrepreneur, natural_person)",
+                        "format": "string",
+                        "example": "natural_person"
+                    }
+                },
+                "type": "object",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/ContractNaturalPersonEntityRequest"
+                    }
+                ]
+            },
+            "ContractUpdateRequest": {
+                "title": "Изменение договора",
+                "properties": {
+                    "client_id": {
+                        "title": "ID клиента",
+                        "description": "ID клиента",
+                        "format": "iteger",
+                        "example": "null"
+                    }
+                },
+                "type": "object",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/ContractNaturalPersonEntityRequest"
+                    }
+                ]
+            },
+            "MessageStoreRequest": {
+                "title": "Создание сообщения в тикете",
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "message": {
+                        "title": "Сообщение",
+                        "description": "Сообщение",
+                        "format": "string",
+                        "example": "У меня проблема..."
+                    },
+                    "files[]": {
+                        "title": "Прикрепленные файлы",
+                        "description": "Прикрепленные файлы",
+                        "format": "file"
+                    }
+                },
+                "type": "object"
+            },
+            "MessageUpdateRequest": {
+                "title": "Обновление сообщения в тикете",
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "message": {
+                        "title": "Сообщение",
+                        "description": "Сообщение",
+                        "format": "string",
+                        "example": "У меня проблема..."
+                    }
+                },
+                "type": "object"
+            },
+            "TicketStoreRequest": {
+                "title": "Создание тикета",
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "title": {
+                        "title": "Заголовок тикета",
+                        "description": "Заголовок тикета",
+                        "format": "string",
+                        "example": "Не могу пополнить баланс"
+                    },
+                    "message": {
+                        "title": "Сообщение",
+                        "description": "Сообщение",
+                        "format": "string",
+                        "example": "У меня проблема..."
+                    },
+                    "files[]": {
+                        "title": "Прикрепленные файлы",
+                        "description": "Прикрепленные файлы",
+                        "format": "file"
+                    }
+                },
+                "type": "object"
+            },
+            "UserChangePasswordRequest": {
+                "title": "Изменение пароля",
+                "required": [
+                    "current_password",
+                    "new_password",
+                    "new_password_confirmation"
+                ],
+                "properties": {
+                    "current_password": {
+                        "title": "Пароль пользователя",
+                        "description": "Пароль пользователя",
+                        "format": "string",
+                        "example": "123456789_"
+                    },
+                    "new_password": {
+                        "title": "Новый пароль пользователя",
+                        "description": "Новый пароль пользователя",
+                        "format": "string",
+                        "example": "123456789_!"
+                    },
+                    "new_password_confirmation": {
+                        "title": "Новый пароль пользователя (подтверждение)",
+                        "description": "Новый пароль пользователя подтверждение",
+                        "format": "string",
+                        "example": "123456789_!"
+                    }
+                },
+                "type": "object"
+            },
+            "UserRegisterRequest": {
+                "title": "Создание пользователя",
+                "required": [
+                    "email",
+                    "contact_email",
+                    "password",
+                    "password_confirmation"
+                ],
+                "properties": {
+                    "name": {
+                        "title": "Имя пользователя",
+                        "description": "Имя пользователя",
+                        "format": "string",
+                        "example": "Игорь"
+                    },
+                    "lastname": {
+                        "title": "Фамилия пользователя",
+                        "description": "Фамилия пользователя",
+                        "format": "string",
+                        "example": "Лебедев"
+                    },
+                    "phone": {
+                        "title": "Номер телефона пользователя",
+                        "description": "Номер телефона пользователя",
+                        "format": "string",
+                        "example": "+79673506988"
+                    },
+                    "email": {
+                        "title": "Email пользователя",
+                        "description": "Email пользователя",
+                        "format": "string",
+                        "example": "lebedeb@grampus-studio.ru"
+                    },
+                    "contact_email": {
+                        "title": "Контактынй email пользователя",
+                        "description": "Контактный email пользователя",
+                        "format": "string",
+                        "example": "lebedeb@grampus-studio.ru"
+                    },
+                    "password": {
+                        "title": "Пароль пользователя",
+                        "description": "Пароль пользователя",
+                        "format": "string",
+                        "example": "123456789_"
+                    },
+                    "password_confirmation": {
+                        "title": "Подтверждение пароля пользователя",
+                        "description": "Подтверждение пароля пользователя",
+                        "format": "string",
+                        "example": "123456789_"
+                    }
+                },
+                "type": "object"
+            },
+            "UserUpdateRequest": {
+                "title": "Изменение пользователя",
+                "properties": {
+                    "name": {
+                        "title": "Имя пользователя",
+                        "description": "Имя пользователя",
+                        "format": "string",
+                        "example": "Игорь"
+                    },
+                    "lastname": {
+                        "title": "Фамилия пользователя",
+                        "description": "Фамилия пользователя",
+                        "format": "string",
+                        "example": "Лебедев"
+                    },
+                    "phone": {
+                        "title": "Номер телефона пользователя",
+                        "description": "Номер телефона пользователя",
+                        "format": "string",
+                        "example": "+79673506988"
+                    },
+                    "contact_email": {
+                        "title": "Контактынй email пользователя",
+                        "description": "Контактный email пользователя",
+                        "format": "string",
+                        "example": "lebedeb@grampus-studio.ru"
+                    }
+                },
+                "type": "object"
+            },
+            "ClientResponse": {
+                "title": "Возвращаемый клиент",
+                "properties": {
+                    "id": {
+                        "title": "ID клиента (внутри базы)",
+                        "description": "ID клиента (внутри базы)",
+                        "format": "integer",
+                        "example": "15"
+                    },
+                    "user_id": {
+                        "title": "ID пользователя",
+                        "description": "ID пользователя",
+                        "format": "integer",
+                        "example": "10"
+                    },
+                    "contract_id": {
+                        "title": "ID контракта",
+                        "description": "ID контракта",
+                        "format": "integer",
+                        "example": "10"
+                    },
+                    "login": {
+                        "title": "Логин клиента",
+                        "description": "Логин клиента",
+                        "format": "string",
+                        "example": "lebedeb228"
+                    },
+                    "password": {
+                        "title": "Пароль клиента",
+                        "description": "Пароль клиента",
+                        "format": "string",
+                        "example": "WEDAsvasrtr124"
+                    },
+                    "client_id": {
+                        "title": "ID клиента (внутри яндекса)",
+                        "description": "ID клиента (внутри яндекса)",
+                        "format": "integer",
+                        "example": "10500"
+                    },
+                    "created_at": {
+                        "title": "Дата создания",
+                        "description": "Дата создания",
+                        "format": "date",
+                        "example": "2024-04-02 09:53:15"
+                    }
+                },
+                "type": "object"
+            },
+            "ContractResponse": {
+                "title": "Возвращаемый договор",
+                "properties": {
+                    "id": {
+                        "title": "ID документа",
+                        "description": "ID документа",
+                        "format": "integer",
+                        "example": "15"
+                    },
+                    "user_id": {
+                        "title": "ID пользователя",
+                        "description": "ID пользователя",
+                        "format": "integer",
+                        "example": "20"
+                    },
+                    "contract_type": {
+                        "title": "Тип контракта",
+                        "description": "Тип контракта",
+                        "format": "integer",
+                        "example": "natural_person"
+                    },
+                    "contract_details": {
+                        "$ref": "#/components/schemas/NaturalPersonContractResponse"
+                    },
+                    "created_at": {
+                        "title": "Дата создания",
+                        "description": "Дата создания",
+                        "format": "date",
+                        "example": "2024-04-02 09:53:15"
+                    }
+                },
+                "type": "object"
+            },
+            "NaturalPersonContractResponse": {
+                "title": "Договор - физическое лицо (ответ)",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "format": "integer",
+                        "example": "15"
+                    },
+                    "lastname": {
+                        "title": "Фамилия",
+                        "description": "Фамилия",
+                        "format": "string",
+                        "example": "Лебедев"
+                    },
+                    "firstname": {
+                        "title": "Имя",
+                        "description": "Имя",
+                        "format": "string",
+                        "example": "Игорь"
+                    },
+                    "surname": {
+                        "title": "Отчество",
+                        "description": "Отчество",
+                        "format": "string",
+                        "example": "Алексеевич"
+                    },
+                    "inn": {
+                        "title": "ИНН",
+                        "description": "ИНН",
+                        "format": "string",
+                        "example": "1234567890"
+                    },
+                    "address": {
+                        "title": "Адрес",
+                        "description": "Адрес",
+                        "format": "string",
+                        "example": "г. Вологда, ул. Герцена, д. 96 кв. 12"
+                    },
+                    "pick_up": {
+                        "title": "Как вы будете забирать документы",
+                        "description": "Как вы будете забирать документы (not_need, need_original, need_email)",
+                        "format": "string",
+                        "example": "not_need"
+                    }
+                },
+                "type": "object"
+            },
+            "MessageResponse": {
+                "title": "Возвращаемое сообщение",
+                "properties": {
+                    "id": {
+                        "title": "ID сообщения",
+                        "description": "ID сообщения",
+                        "format": "integer",
+                        "example": "15"
+                    },
+                    "user_id": {
+                        "title": "ID пользователя",
+                        "description": "ID пользователя",
+                        "format": "integer",
+                        "example": "10"
+                    },
+                    "ticket_id": {
+                        "title": "ID тикета",
+                        "description": "ID тикета",
+                        "format": "integer",
+                        "example": "101"
+                    },
+                    "media": {
+                        "$ref": "#/components/schemas/Media"
+                    },
+                    "created_at": {
+                        "title": "Дата создания",
+                        "description": "Дата создания",
+                        "format": "date",
+                        "example": "2024-04-02 09:53:15"
+                    }
+                },
+                "type": "object"
+            },
+            "TicketResponse": {
+                "title": "Возвращаемый тикет",
+                "properties": {
+                    "id": {
+                        "title": "ID тикета",
+                        "description": "ID тикета",
+                        "format": "integer",
+                        "example": "15"
+                    },
+                    "user_id": {
+                        "title": "ID пользователя",
+                        "description": "ID пользователя",
+                        "format": "integer",
+                        "example": "10"
+                    },
+                    "title": {
+                        "title": "Заголовок",
+                        "description": "Заголовок",
+                        "format": "string",
+                        "example": "Ничего не работает"
+                    },
+                    "status": {
+                        "title": "Статус тикета",
+                        "description": "Статус тикета. Имеет два статуса: close|open",
+                        "format": "string",
+                        "example": "close|open"
+                    },
+                    "assigned_to": {
+                        "title": "ID ответсветнного админа на тикет",
+                        "description": "ID ответсветнного админа на тикет",
+                        "format": "integer",
+                        "example": "101"
+                    },
+                    "created_at": {
+                        "title": "Дата создания",
+                        "description": "Дата создания",
+                        "format": "date",
+                        "example": "2024-04-02 09:53:15"
+                    }
+                },
+                "type": "object"
+            },
+            "UserResponse": {
+                "title": "Возвращаемый пользователь",
+                "properties": {
+                    "id": {
+                        "title": "ID пользователя",
+                        "description": "ID пользователя",
+                        "format": "integer",
+                        "example": "10"
+                    },
+                    "name": {
+                        "title": "Имя пользователя",
+                        "description": "Имя пользователя",
+                        "format": "string",
+                        "example": "Игорь"
+                    },
+                    "lastname": {
+                        "title": "Фамилия пользователя",
+                        "description": "Фамилия пользователя",
+                        "format": "string",
+                        "example": "Лебедев"
+                    },
+                    "phone": {
+                        "title": "Номер телефона пользователя",
+                        "description": "Номер телефона пользователя",
+                        "format": "string",
+                        "example": "+79673506988"
+                    },
+                    "email": {
+                        "title": "Email пользователя",
+                        "description": "Email пользователя",
+                        "format": "string",
+                        "example": "lebedeb@grampus-studio.ru"
+                    },
+                    "contact_email": {
+                        "title": "Контактынй email пользователя",
+                        "description": "Контактный email пользователя",
+                        "format": "string",
+                        "example": "lebedeb@grampus-studio.ru"
+                    },
+                    "email_verified_at": {
+                        "title": "Дата подтверждения email",
+                        "description": "Дата подтверждения email",
+                        "format": "date",
+                        "example": "2024-04-02 09:53:15"
+                    },
+                    "role": {
+                        "title": "Роль пользователя",
+                        "description": "Роль пользователя",
+                        "format": "integer",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "title": "Дата регистрации",
+                        "description": "Дата регистрации",
+                        "format": "date",
+                        "example": "2024-04-02 09:53:15"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Пользователь"
+        },
+        {
+            "name": "Клиенты"
+        },
+        {
+            "name": "Тикеты"
+        },
+        {
+            "name": "Договор"
+        }
+    ]
+}
