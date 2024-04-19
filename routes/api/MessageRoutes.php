@@ -9,6 +9,3 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::patch('/messages/{message}', [MessageController::class, 'update']);
     Route::delete('/messages/{message}', [MessageController::class, 'delete']);
 });
-
-
-// REQUEST длля TICKETA!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

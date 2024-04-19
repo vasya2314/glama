@@ -5,7 +5,6 @@ namespace App\Http\Controllers\v1\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\ClientRequest;
 use App\Http\Resources\v1\ClientResource;
-use App\Http\Resources\v1\ContractResource;
 use App\Models\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
