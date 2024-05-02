@@ -12,3 +12,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/user/deposit', [PaymentController::class, 'deposit']);
 
 });
+
+Route::post('/uv', function () {
+    \Illuminate\Support\Facades\Log::debug(print_r($_REQUEST, true));
+});

@@ -55,7 +55,6 @@ class Tinkoff {
         }
 
         $item_name_max_lenght = 64;
-        $amount_multiplicator = 100;
 
         /**
          * Generate items array for Receipt
@@ -68,16 +67,16 @@ class Tinkoff {
 
             $payment['Items'][] = [
                 'Name'      => mb_strimwidth($item['Name'], 0, $item_name_max_lenght - 1, ''),
-                'Price'     => round($item['Price'] * $amount_multiplicator),
+                'Price'     => $item['Price'],
                 'Quantity'  => $item['Quantity'],
-                'Amount'    => round($item['Price'] * $item['Quantity'] * $amount_multiplicator),
+                'Amount'    => $item['Price'] * $item['Quantity'],
                 'Tax'       => $item['NDS'],
             ];
         }
 
         $params = array(
             'OrderId'       => $payment['OrderId'],
-            'Amount'        => round($payment['Amount'] * $amount_multiplicator),
+            'Amount'        => $payment['Amount'],
             'Language'      => $payment['Language'],
             'Description'   => $payment['Description'],
             'DATA' => [

@@ -8,18 +8,19 @@ use App\Http\Requests\v1\PaymentRequest;
 use App\Models\Contract;
 use App\Models\NaturalPerson;
 use App\Models\Operation;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-    public function deposit(PaymentRequest $request): false|Tinkoff
+    public function deposit(PaymentRequest $request)
     {
         $user = $request->user();
         $contract = Contract::findOrFail($request->get('contract_id'));
 
         if($operation = $user->operations()->create($request->storeOperation('deposit')))
         {
-            if($contract->contractable_type == NaturalPerson::class)
+            if($contract->contractable_type == Contract::NATURAL_PERSON)
             {
                 return $this->depositForNaturalPerson($operation, $request);
             }
@@ -29,11 +30,14 @@ class PaymentController extends Controller
 
     }
 
-    private function depositForNaturalPerson(Operation $operation, PaymentRequest $request): false|Tinkoff
+    private function depositForNaturalPerson(Operation $operation, PaymentRequest $request): false|string
     {
         $user = $request->user();
+        $apiUrl = config('tinkoff')['api_url'];
+        $terminal = config('tinkoff')['terminal'];
+        $secretKey = config('tinkoff')['secret_key'];
 
-        $tinkoff = new Tinkoff(config('tinkoff')['api_url'], config('tinkoff')['terminal'], config('tinkoff')['secret_key']);
+        $tinkoff = new Tinkoff($apiUrl, $terminal, $secretKey);
 
         $payment = [
             'OrderId' => $operation->id,
@@ -55,14 +59,8 @@ class PaymentController extends Controller
 
         $paymentURL = $tinkoff->paymentURL($payment, $items);
 
-        if(!$paymentURL){
-            return $tinkoff;
-        }
-
-        if($operation->transaction()->create($request->storeTransaction($tinkoff)))
-        {
-            return $tinkoff;
-        }
+        if(!$paymentURL) return $tinkoff->error;
+        if($operation->transaction()->create($request->storeTransaction($tinkoff))) return $tinkoff->response;
 
         return false;
 
