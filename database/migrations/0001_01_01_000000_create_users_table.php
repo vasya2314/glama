@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->integer('balance');
             $table->string('name', 30)->nullable();
             $table->string('lastname', 50)->nullable();
             $table->string('phone', 30)->nullable();

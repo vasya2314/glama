@@ -78,6 +78,7 @@ class AuthRequest extends FormRequest
         return array_merge(
             $this->validated(),
             [
+                'balance' => 0,
                 'role' => User::ROLE_USER,
                 'password' => Hash::make($this->validated()['password'])
             ]

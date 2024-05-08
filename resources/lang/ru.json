@@ -52,5 +52,10 @@
     "Your account has been successfully verified": "Ваш аккаунт успешно верифицирован",
     "The password updated successfully.": "Пароль успешно обновлен.",
     "The selected :attribute already belongs to the client.": "Выбранный :attribute уже принадлежит клиенту.",
-    "The selected :attribute already has an attached contract.": "Выбранный :attribute уже имеет прикрепленный контракт."
+    "The selected :attribute already has an attached contract.": "Выбранный :attribute уже имеет прикрепленный контракт.",
+    "Payment Invoice": "Счет на оплату",
+    "The invoice has been successfully generated. We have also sent a letter to your email.": "Счет на оплату успешно сгенерирован. Мы так же продублировали письмо на Вашу почту.",
+    "An invoice for payment": "Счет на оплату",
+    "You can view your invoice by clicking on the link below.": "Ваш счет на оплату вы можете просмотреть нажав по ссылке ниже",
+    "View invoice": "Посмотреть счет"
 }

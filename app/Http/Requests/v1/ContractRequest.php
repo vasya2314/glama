@@ -106,17 +106,29 @@ class ContractRequest extends FormRequest
 
     private function includeRules(): array
     {
-        if($this->contract_type == Contract::LEGAL_ENTITY || isset($this->contract->contractable_type) && $this->contract->contractable_type == Contract::LEGAL_ENTITY)
+        if(
+            $this->contract_type == Contract::LEGAL_ENTITY ||
+            isset($this->contract->contractable_type) &&
+            $this->contract->contractable_type == Contract::LEGAL_ENTITY
+        )
         {
             return $this->rulesLegalEntityRequest();
         }
 
-        if($this->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR || isset($this->contract->contractable_type) && $this->contract->contractable_type == Contract::INDIVIDUAL_ENTREPRENEUR)
+        if(
+            $this->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR ||
+            isset($this->contract->contractable_type) &&
+            $this->contract->contractable_type == Contract::INDIVIDUAL_ENTREPRENEUR
+        )
         {
             return $this->rulesIndividualEntrepreneurRequest();
         }
 
-        if($this->contract_type == Contract::NATURAL_PERSON || isset($this->contract->contractable_type) && $this->contract->contractable_type == Contract::NATURAL_PERSON)
+        if(
+            $this->contract_type == Contract::NATURAL_PERSON ||
+            isset($this->contract->contractable_type) &&
+            $this->contract->contractable_type == Contract::NATURAL_PERSON
+        )
         {
             return $this->rulesNaturalPersonRequest();
         }
@@ -128,20 +140,40 @@ class ContractRequest extends FormRequest
     private function rulesLegalEntityRequest(): array
     {
         return [
-            'inn' => 'required|numeric',
-            'kpp' => 'required|numeric',
-            'ogrn' => 'required|numeric',
-            'company_name' => 'required|string',
+            'inn' => [
+                'required',
+                'numeric',
+                'regex:/^(\\d{12}|\\d{10})$/',
+            ],
+            'kpp' => [
+                'required',
+                'numeric',
+                'regex:/^(\\d{9})$/',
+            ],
+            'ogrn' => [
+                'required',
+                'numeric',
+                'regex:/^\\d{13}$/',
+            ],
+            'company_name' => 'required|string|max:512',
             'legal_address' => 'required|string',
             'actual_address' => 'required|string',
             'contact_face' => 'required|string',
             'job_title' => 'required|string',
-            'phone' => 'required|string',
+            'phone' => [
+                'required',
+                'string',
+                'regex:/^((\\+7)([0-9]){10})$/',
+            ],
             'email' => 'required|string|email',
             'bik' => 'required|numeric',
             'checking_account' => 'required|numeric',
             'bank_name' => 'required|string',
-            'correspondent_account' => 'required|numeric',
+            'correspondent_account' => [
+                'required',
+                'string',
+                'regex:/^(\\d{20}|\\d{22})$/',
+            ],
             'pick_up' => 'required|string|in:not_need,need_original,need_email',
             'is_same_legal_address' => 'required|boolean',
         ];
@@ -150,19 +182,35 @@ class ContractRequest extends FormRequest
     private function rulesIndividualEntrepreneurRequest(): array
     {
         return [
-            'inn' => 'required|numeric',
-            'ogrnip' => 'required|numeric',
-            'company_name' => 'required|string',
+            'inn' => [
+                'required',
+                'numeric',
+                'regex:/^(\\d{12}|\\d{10})$/',
+            ],
+            'ogrnip' => [
+                'required',
+                'numeric',
+                'regex:/^\\d{15}$/',
+            ],
+            'company_name' => 'required|string|max:512',
             'legal_address' => 'required|string',
             'actual_address' => 'required|string',
             'contact_face' => 'required|string',
             'job_title' => 'required|string',
-            'phone' => 'required|string',
+            'phone' => [
+                'required',
+                'string',
+                'regex:/^((\\+7)([0-9]){10})$/',
+            ],
             'email' => 'required|string|email',
             'bik' => 'required|numeric',
             'checking_account' => 'required|numeric',
             'bank_name' => 'required|string',
-            'correspondent_account' => 'required|numeric',
+            'correspondent_account' => [
+                'required',
+                'string',
+                'regex:/^(\\d{20}|\\d{22})$/',
+            ],
             'pick_up' => 'required|string|in:not_need,need_original,need_email',
             'is_same_legal_address' => 'required|boolean',
         ];
@@ -174,7 +222,11 @@ class ContractRequest extends FormRequest
             'lastname' => 'required|string',
             'firstname' => 'required|string',
             'surname' => 'nullable|string',
-            'inn' => 'required|numeric',
+            'inn' => [
+                'required',
+                'numeric',
+                'regex:/^(\\d{12}|\\d{10})$/',
+            ],
             'address' => 'required|string',
             'pick_up' => 'required|string|in:not_need,need_original,need_email',
         ];

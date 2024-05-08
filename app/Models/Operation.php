@@ -18,4 +18,9 @@ class Operation extends Model
         return $this->hasOne(Transaction::class);
     }
 
+    public function paymentInvoice(): HasOne
+    {
+        return $this->hasOne(PaymentInvoice::class);
+    }
+
 }

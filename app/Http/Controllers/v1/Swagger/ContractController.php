@@ -92,7 +92,7 @@ use App\Http\Controllers\Controller;
  * ),
  * @OA\Patch (
  *     path="/contracts/{contract}",
- *     summary="Изменение договора (!!!!ОТКЛЮЧЕНО!!!!)",
+ *     summary="Изменение договора",
  *     tags={"Договор"},
  *     security={{ "bearerAuth": {} }},
  *
@@ -128,7 +128,7 @@ use App\Http\Controllers\Controller;
  * ),
  * @OA\Delete(
  *     path="/contracts/{contract}",
- *     summary="Удаление договора",
+ *     summary="Удаление договора (!!!!ОТКЛЮЧЕНО!!!!)",
  *     tags={"Договор"},
  *     security={{ "bearerAuth": {} }},
  *

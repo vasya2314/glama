@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at,
             'role' => $this->role,
+            'balance' => $this->balance / 100, // Переводим в рубли
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }

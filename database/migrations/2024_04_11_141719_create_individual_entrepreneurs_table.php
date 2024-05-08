@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('inn')->nullable();
             $table->string('ogrnip')->nullable();
-            $table->string('company_name')->nullable();
+            $table->string('company_name', 512)->nullable();
             $table->string('legal_address')->nullable();
             $table->string('actual_address')->nullable();
             $table->string('contact_face')->nullable();

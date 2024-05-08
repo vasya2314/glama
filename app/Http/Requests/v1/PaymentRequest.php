@@ -3,7 +3,10 @@
 namespace App\Http\Requests\v1;
 
 use App\Classes\Tinkoff;
+use App\Models\Operation;
+use App\Models\PaymentInvoice;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Client\Response;
 use Illuminate\Validation\Rule;
 
 class PaymentRequest extends FormRequest
@@ -52,7 +55,18 @@ class PaymentRequest extends FormRequest
         );
     }
 
-    public function storeTransaction(Tinkoff $tinkoff): array
+    public function storePaymentInvoice(Response $response): array
+    {
+        $responseObject = $response->object();
+
+        return [
+            'status' => PaymentInvoice::STATUS_SUBMITTED,
+            'pdf_url' => $responseObject->pdfUrl,
+            'invoice_id' => $responseObject->invoiceId,
+        ];
+    }
+
+    public function storeNaturalPersonTransaction(Tinkoff $tinkoff): array
     {
         $data = json_decode($tinkoff->response);
 
@@ -63,5 +77,17 @@ class PaymentRequest extends FormRequest
             'amount' => $data->Amount,
         ];
     }
+
+//    public function storeLegalEntityTransaction(Operation $operation, Response $response): array
+//    {
+//        $responseObject = $response->object();
+//
+//        return [
+//            'status' => 'NEW',
+//            'payment_id' => $responseObject->invoiceId,
+//            'order_id' => $operation->id,
+//            'amount' => $this->get('amount'),
+//        ];
+//    }
 
 }

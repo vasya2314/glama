@@ -6,6 +6,7 @@ namespace App\Models;
  use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
  use Illuminate\Database\Eloquent\Relations\HasMany;
+ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -33,6 +34,20 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(): bool
     {
         return $this->role == self::ROLE_ADMIN;
+    }
+
+    public function isEnoughBalance(int $amount): bool
+    {
+        return $amount <= (int)$this->balance;
+    }
+
+    public function changeBalance(int $amount): bool
+    {
+        $balance = $this->balance + $amount;
+        $this->balance = $balance;
+
+        if($this->save()) return true;
+        return false;
     }
 
     public function sendPasswordResetNotification($token): void
@@ -70,6 +85,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function operations(): HasMany
     {
         return $this->hasMany(Operation::class);
+    }
+
+    public function transactions(): HasManyThrough
+    {
+        return $this->hasManyThrough(Transaction::class, Operation::class);
     }
 
 }

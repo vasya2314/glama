@@ -950,7 +950,7 @@
                 "tags": [
                     "Договор"
                 ],
-                "summary": "Удаление договора",
+                "summary": "Удаление договора (!!!!ОТКЛЮЧЕНО!!!!)",
                 "operationId": "ed76029774dda085b0721c2e542474cf",
                 "parameters": [
                     {
@@ -999,7 +999,7 @@
                 "tags": [
                     "Договор"
                 ],
-                "summary": "Изменение договора (!!!!ОТКЛЮЧЕНО!!!!)",
+                "summary": "Изменение договора",
                 "operationId": "9c91b97f0cfc12c145b04644ff0fe3eb",
                 "parameters": [
                     {
@@ -1093,12 +1093,7 @@
                     "200": {
                         "description": "Ok"
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/tickets/{ticket}/messages": {
@@ -3006,6 +3001,11 @@
                         "description": "Роль пользователя",
                         "format": "integer",
                         "example": "1"
+                    },
+                    "balance": {
+                        "title": "Баланс пользователя",
+                        "description": "Баланс пользователя",
+                        "example": "3.22"
                     },
                     "created_at": {
                         "title": "Дата регистрации",
