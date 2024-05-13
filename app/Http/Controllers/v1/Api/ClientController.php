@@ -31,12 +31,13 @@ class ClientController extends Controller
 
             $data['SelectionCriteria'] = (object)$selectionCriteria;
 
-            $response = Http::withToken(env('YANDEX_TOKEN'))->post(env('YANDEX_API') . 'agencyclients', [
+            $response = Http::withToken(config('yandex')['token'])->post(env('YANDEX_API') . 'agencyclients', [
                 'method' => 'get',
                 'params' => $data,
             ]);
 
             $object = $response->object();
+            if(isset($object->error)) return $this->wrapResponse(Response::HTTP_OK, __('All clients'), (array)$object);
 
             return $this->wrapResponse(Response::HTTP_OK, __('All clients'), (array)$object->result);
         }
@@ -49,7 +50,7 @@ class ClientController extends Controller
         $data = $request->validated();
         $user = $request->user();
 
-        $response = Http::withToken(env('YANDEX_TOKEN'))->post(env('YANDEX_API') . 'agencyclients', [
+        $response = Http::withToken(config('yandex')['token'])->post(env('YANDEX_API') . 'agencyclients', [
             'method' => 'add',
             'params' => $data['params'],
         ]);
@@ -60,7 +61,7 @@ class ClientController extends Controller
 
         $client = $user->clients()->create([
             'contract_id' => $data['contract_id'],
-            'glama_account_name' => $data['glama_account_name'],
+            'account_name' => $data['account_name'],
             'login' => $object->result->Login,
             'password' => $object->result->Password,
             'client_id' => $object->result->ClientId,
@@ -106,7 +107,7 @@ class ClientController extends Controller
             'message' => $message
         ];
 
-        if (count($resource)) $result = array_merge($result, ['resource' => $resource]);
+        $result = array_merge($result, ['resource' => $resource]);
 
         return response()->json($result);
     }

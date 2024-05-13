@@ -6,7 +6,7 @@ namespace App\Virtual\Requests\Client;
  * @OA\Schema(
  *     title="Создание клиента",
  *     type="object",
- *     required={"contract_id", "glama_account_name", "Login", "FirstName", "LastName", "Currency", "Grants", "Notification", "Settings", "TinInfo"},
+ *     required={"contract_id", "account_name", "Login", "FirstName", "LastName", "Currency", "Grants", "Notification", "Settings", "TinInfo"},
  *     @OA\Property(
  *         property="contract_id",
  *         format="iteger",
@@ -15,7 +15,7 @@ namespace App\Virtual\Requests\Client;
  *         example="150",
  *     ),
  *     @OA\Property(
- *         property="glama_account_name",
+ *         property="account_name",
  *         format="string",
  *         title="Glama название аккаунта",
  *         description="Glama название аккаунта",

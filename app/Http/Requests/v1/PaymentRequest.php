@@ -45,7 +45,6 @@ class PaymentRequest extends FormRequest
     public function storeOperation(string $type): array
     {
         $data = $this->all();
-        unset($data['contract_id']);
 
         return array_merge(
             $data,

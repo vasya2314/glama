@@ -26,7 +26,7 @@ class ClientRequest extends FormRequest
         $rules = [
             'contract_id' => [
                 'required',
-                'unique:clients,id',
+                'unique:clients,contract_id',
                 Rule::exists('contracts', 'id')->where(function ($query) {
                     $query->where('user_id', $this->user()->id);
                 }),
@@ -36,7 +36,7 @@ class ClientRequest extends FormRequest
         if ($this->is('api/v1/clients') && $this->isMethod('post'))
         {
             return array_merge($rules, [
-                'glama_account_name' => 'required|string|unique:clients,id',
+                'account_name' => 'required|string|unique:clients,id',
                 'params' => 'required',
             ]);
         }
@@ -51,16 +51,27 @@ class ClientRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if($this->has('glama_account_name') && $this->has('contract_id') && $this->has('params'))
+        $email = isset($this->get('params')['Notification']['Email']) ? $this->get('params')['Notification']['Email'] : '';
+
+        if($email && $this->has('contract_id') && $this->has('params'))
         {
             $contract = Contract::findOrFail($this->contract_id);
 
             $merge = $this->all();
-            $merge['glama_account_name'] = $this->glama_account_name . '-glama' . mt_rand(100000, 999999);
+            $merge['params']['Login'] = 'gl-' . $this->modifyEmail($email);
             $merge['params']['TinInfo']['Tin'] = $contract->contractable->inn;
 
             $this->merge($merge);
         }
+    }
+
+    protected function modifyEmail(string $email): string
+    {
+        $str = strpos($email, "@");
+        $email = substr($email, 0, $str);
+        $result = preg_replace('/\./', '-', $email);
+
+        return strtolower($result);
     }
 
     public function updateClient(): array
@@ -76,5 +87,4 @@ class ClientRequest extends FormRequest
             'contract_id.unique' => __('The selected :attribute already belongs to the client.'),
         ];
     }
-
 }

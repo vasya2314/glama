@@ -25,50 +25,51 @@ class CheckPaymentInvoices extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $token = config('tinkoff')['token'];
         $paymentInvoices = PaymentInvoice::where('status', PaymentInvoice::STATUS_SUBMITTED)->get();
 
         if($paymentInvoices->isNotEmpty())
         {
-//            $paymentInvoices = $paymentInvoices->chunk(20);
+            $paymentInvoices = $paymentInvoices->chunk(20);
 
-            $paymentInvoices->each(function ($item, $key) use ($token) {
-                $response = Http::withToken($token)->withUrlParameters(
-                    [
-                        'endpoint' => env('TINKOFF_API'),
-                        'openapi' => 'openapi',
-                        'invoice' => 'invoice',
-                        'invoice_id' => $item->invoice_id,
-                        'info' => 'info'
-                    ]
-                )->get('{+endpoint}/{openapi}/{invoice}/{invoice_id}/{info}');
+            $paymentInvoices->each(function ($paymentItems, $key) use ($token) {
+                $paymentItems->each(function ($item, $key) use ($token) {
+                    $response = Http::withToken($token)->withUrlParameters(
+                        [
+                            'endpoint' => env('TINKOFF_API'),
+                            'openapi' => 'openapi',
+                            'invoice' => 'invoice',
+                            'invoice_id' => $item->invoice_id,
+                            'info' => 'info'
+                        ]
+                    )->get('{+endpoint}/{openapi}/{invoice}/{invoice_id}/{info}');
 
-                if($response->status() == 200)
-                {
-                    $body = json_decode($response->body());
-                    if($body->status == PaymentInvoice::STATUS_EXECUTED)
+                    if($response->status() == 200)
                     {
-                        $item->status = $body->status;
-                        $item->save();
+                        $body = json_decode($response->body());
+                        if($body->status == PaymentInvoice::STATUS_EXECUTED)
+                        {
+                            $item->status = $body->status;
+                            $item->save();
 
-                        $user = $item->user;
-                        $operation = $item->operation;
+                            $user = $item->user;
+                            $operation = $item->operation;
 
-                        $user->changeBalance((int)$operation->amount);
+                            $user->changeBalance((int)$operation->amount);
+                        }
+
+                        if($body->status == PaymentInvoice::STATUS_DRAFT)
+                        {
+                            $item->status = $body->status;
+                            $item->save();
+                        }
                     }
-
-                    if($body->status == PaymentInvoice::STATUS_DRAFT)
-                    {
-                        $item->status = $body->status;
-                        $item->save();
-                    }
-                }
-                dd(1);
+                });
+                dump($paymentItems);
                 sleep(1);
             });
         }
     }
-
 }

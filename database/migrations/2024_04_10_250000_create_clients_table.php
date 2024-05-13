@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('contract_id')->unique()->nullable()->constrained('contracts')->onDelete('set null');
-            $table->string('glama_account_name', 50)->unique();
+            $table->string('account_name', 50);
             $table->string('login', 50)->unique();
             $table->string('password');
             $table->unsignedBigInteger('client_id')->unique();

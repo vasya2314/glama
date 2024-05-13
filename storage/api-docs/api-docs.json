@@ -2109,7 +2109,7 @@
                 "title": "Создание клиента",
                 "required": [
                     "contract_id",
-                    "glama_account_name",
+                    "account_name",
                     "Login",
                     "FirstName",
                     "LastName",
@@ -2126,7 +2126,7 @@
                         "format": "iteger",
                         "example": "150"
                     },
-                    "glama_account_name": {
+                    "account_name": {
                         "title": "Glama название аккаунта",
                         "description": "Glama название аккаунта",
                         "format": "string",
