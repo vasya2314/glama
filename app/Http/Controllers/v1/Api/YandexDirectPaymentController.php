@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\v1\Api;
 
+use App\Classes\YandexDirect;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\YandexDirectPaymentRequest;
 use App\Models\Client;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Http;
 
 class YandexDirectPaymentController extends Controller
 {
@@ -20,35 +20,15 @@ class YandexDirectPaymentController extends Controller
             'Payments' => [
                 [
                     "AccountID" => $client->client_id,
-                    "Amount" => (float)kopToRub((int)$data['amount']),
+                    "Amount" => (float)((int)$data['amount'] / 100),
                     "Currency" => 'RUB'
                 ]
             ]
         ];
 
-        $response = Http::withToken(config('yandex')['token'])->post('https://api-sandbox.direct.yandex.ru/live/v4/json/', [
-            'method' => 'AccountManagement',
-            'finance_token' => $this->generateFinanceToken($client),
-            'operation_num' => 1,
-            'param' => $param,
-        ]);
+        $yandexDirect = new YandexDirect();
+        $yandexDirect->createInvoice($param, $client);
 
-        return $response->body();
-    }
-
-    private function generateFinanceToken(Client $client): string
-    {
-        $masterToken = config('yandex')['master_token'];
-        $operationId = 1;
-        $methodName = 'AccountManagement';
-        $operationName = 'Invoice';
-        $login = $client->login;
-
-        $values = $masterToken . $operationId . $methodName . $operationName . $login;
-
-        dd($values);
-
-        return hash('sha256', $values);
     }
 
     private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse

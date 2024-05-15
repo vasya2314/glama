@@ -25,7 +25,7 @@ class YandexDirectPaymentRequest extends FormRequest
         if ($this->is('api/v1/user/yandex-direct/deposit') && $this->isMethod('post'))
         {
             return [
-                'amount' => 'required',
+                'amount' => 'required|numeric',
                 'client_id' => [
                     'required',
                     Rule::exists('clients', 'id')->where(function ($query) {
