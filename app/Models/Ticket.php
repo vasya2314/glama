@@ -11,11 +11,11 @@ class Ticket extends Model
 {
     use HasFactory;
 
-    const STATUS_OPEN = 'open';
-    const STATUS_CLOSE = 'close';
-
     protected $table = 'tickets';
     protected $guarded = false;
+
+    const STATUS_OPEN = 'open';
+    const STATUS_CLOSE = 'close';
 
     public static function getAllStatuses(): array
     {

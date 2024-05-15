@@ -4,14 +4,14 @@ namespace App\Models;
 
  use App\Notifications\ResetPasswordNotification;
  use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+ use Illuminate\Database\Eloquent\Factories\HasFactory;
  use Illuminate\Database\Eloquent\Relations\HasMany;
- use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+ use Illuminate\Database\Eloquent\Relations\HasOne;
  use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+ use Illuminate\Notifications\Notifiable;
+ use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements MustVerifyEmail
+ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -31,23 +31,24 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
     ];
 
+    public static function boot(): void
+    {
+         parent::boot();
+
+         static::created(function($user)
+         {
+             $user->balanceAccount()->create(
+                 [
+                     'balance' => 0,
+                     'type' => 'main',
+                 ]
+             );
+         });
+    }
+
     public function isAdmin(): bool
     {
         return $this->role == self::ROLE_ADMIN;
-    }
-
-    public function isEnoughBalance(int $amount): bool
-    {
-        return $amount <= (int)$this->balance;
-    }
-
-    public function changeBalance(int $amount): bool
-    {
-        $balance = $this->balance + $amount;
-        $this->balance = $balance;
-
-        if($this->save()) return true;
-        return false;
     }
 
     public function sendPasswordResetNotification($token): void
@@ -82,14 +83,14 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Contract::class);
     }
 
-    public function operations(): HasMany
+    public function transactions(): HasMany
     {
-        return $this->hasMany(Operation::class);
+        return $this->hasMany(Transaction::class);
     }
 
-    public function transactions(): HasManyThrough
+    public function balanceAccount(): HasOne
     {
-        return $this->hasManyThrough(Transaction::class, Operation::class);
+        return $this->hasOne(BalanceAccount::class);
     }
 
 }

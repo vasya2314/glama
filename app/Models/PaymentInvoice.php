@@ -16,29 +16,14 @@ class PaymentInvoice extends Model
 
     protected $table = 'payment_invoices';
     protected $guarded = false;
-
+    const STATUS_NEW = 'NEW';
     const STATUS_SUBMITTED = 'SUBMITTED';
     const STATUS_DRAFT = 'DRAFT';
     const STATUS_EXECUTED = 'EXECUTED';
 
-    public static function boot(): void
-    {
-        parent::boot();
-
-        static::created(function($paymentInvoice)
-        {
-            dispatch(new SendPaymentInvoiceToEmail($paymentInvoice, request()->user()));
-        });
-    }
-
-    public function operation(): BelongsTo
-    {
-        return $this->belongsTo(Operation::class);
-    }
-
-    public function user(): \Znck\Eloquent\Relations\BelongsToThrough
-    {
-        return $this->belongsToThrough(User::class, Operation::class);
-    }
+//    public function user(): \Znck\Eloquent\Relations\BelongsToThrough
+//    {
+//        return $this->belongsToThrough(User::class, Operation::class);
+//    }
 
 }

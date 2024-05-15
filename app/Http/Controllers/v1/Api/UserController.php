@@ -64,6 +64,6 @@ class UserController extends Controller
 
         if (count($resource)) $result = array_merge($result, ['resource' => $resource]);
 
-        return response()->json($result);
+        return response()->json($result, $code);
     }
 }

@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('operations', function (Blueprint $table) {
+        Schema::create('balance_accounts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('contract_id')->constrained('contracts');
-            $table->foreignId('user_id')->constrained('users');
+            $table->bigInteger('balance')->default(0);
             $table->string('type');
-            $table->integer('amount');
-            $table->timestamps();
+            $table->foreignId('user_id')->unique()->constrained('users');
         });
     }
 
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('operations');
+        Schema::dropIfExists('balance_accounts');
     }
 };

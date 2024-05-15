@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\v1\api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\v1\MessageRequest;
 use App\Http\Requests\v1\TicketRequest;
 use App\Http\Resources\v1\TicketResource;
-use App\Models\Message;
 use App\Models\Ticket;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

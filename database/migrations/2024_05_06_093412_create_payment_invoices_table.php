@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('payment_invoices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('operation_id')->constrained('operations')->onDelete('cascade');
-            $table->string('status', 50);
-            $table->string('pdf_url');
-            $table->string('invoice_id', 512);
+            $table->string('status');
+            $table->string('pdf_url')->nullable();
+            $table->string('invoice_id')->nullable();
             $table->timestamps();
         });
     }

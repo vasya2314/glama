@@ -1779,22 +1779,25 @@
         },
         {
             "name": "laravel-lang/lang",
-            "version": "15.2.2",
+            "version": "15.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Laravel-Lang/lang.git",
-                "reference": "3773f176de3e1f157d95fecb32556c65fd02294b"
+                "reference": "84b14c6c70daee9c5f18c3f5058a8e4e71c836ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Laravel-Lang/lang/zipball/3773f176de3e1f157d95fecb32556c65fd02294b",
-                "reference": "3773f176de3e1f157d95fecb32556c65fd02294b",
+                "url": "https://api.github.com/repos/Laravel-Lang/lang/zipball/84b14c6c70daee9c5f18c3f5058a8e4e71c836ba",
+                "reference": "84b14c6c70daee9c5f18c3f5058a8e4e71c836ba",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "laravel-lang/publisher": "^16.0",
                 "php": "^8.2"
+            },
+            "conflict": {
+                "laravel/framework": "<11.0.7"
             },
             "require-dev": {
                 "laravel-lang/status-generator": "^2.11",
@@ -1835,7 +1838,7 @@
                 "issues": "https://github.com/Laravel-Lang/lang/issues",
                 "source": "https://github.com/Laravel-Lang/lang"
             },
-            "time": "2024-05-06T09:53:28+00:00"
+            "time": "2024-05-11T11:14:57+00:00"
         },
         {
             "name": "laravel-lang/locale-list",
@@ -4477,20 +4480,20 @@
         },
         {
             "name": "psr/http-factory",
-            "version": "1.0.2",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-factory.git",
-                "reference": "e616d01114759c4c489f93b099585439f795fe35"
+                "reference": "2b4765fddfe3b508ac62f829e852b1501d3f6e8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-factory/zipball/e616d01114759c4c489f93b099585439f795fe35",
-                "reference": "e616d01114759c4c489f93b099585439f795fe35",
+                "url": "https://api.github.com/repos/php-fig/http-factory/zipball/2b4765fddfe3b508ac62f829e852b1501d3f6e8a",
+                "reference": "2b4765fddfe3b508ac62f829e852b1501d3f6e8a",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.0.0",
+                "php": ">=7.1",
                 "psr/http-message": "^1.0 || ^2.0"
             },
             "type": "library",
@@ -4514,7 +4517,7 @@
                     "homepage": "https://www.php-fig.org/"
                 }
             ],
-            "description": "Common interfaces for PSR-7 HTTP message factories",
+            "description": "PSR-17: Common interfaces for PSR-7 HTTP message factories",
             "keywords": [
                 "factory",
                 "http",
@@ -4526,9 +4529,9 @@
                 "response"
             ],
             "support": {
-                "source": "https://github.com/php-fig/http-factory/tree/1.0.2"
+                "source": "https://github.com/php-fig/http-factory"
             },
-            "time": "2023-04-10T20:10:41+00:00"
+            "time": "2024-04-15T12:06:14+00:00"
         },
         {
             "name": "psr/http-message",
@@ -5476,16 +5479,16 @@
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v5.17.6",
+            "version": "v5.17.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "d7a42b29d1b1a64aae36d094bd4873d8e0762e13"
+                "reference": "721b5d94a2e86d83780db9d490c4e1cca3fe574d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/d7a42b29d1b1a64aae36d094bd4873d8e0762e13",
-                "reference": "d7a42b29d1b1a64aae36d094bd4873d8e0762e13",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/721b5d94a2e86d83780db9d490c4e1cca3fe574d",
+                "reference": "721b5d94a2e86d83780db9d490c4e1cca3fe574d",
                 "shasum": ""
             },
             "type": "library",
@@ -5531,9 +5534,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.17.6"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.17.9"
             },
-            "time": "2024-05-07T10:47:45+00:00"
+            "time": "2024-05-13T11:18:47+00:00"
         },
         {
             "name": "symfony/clock",

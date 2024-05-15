@@ -3,8 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Models\PaymentInvoice;
+use App\Models\Transaction;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class CheckPaymentInvoices extends Command
 {
@@ -34,8 +37,8 @@ class CheckPaymentInvoices extends Command
         {
             $paymentInvoices = $paymentInvoices->chunk(20);
 
-            $paymentInvoices->each(function ($paymentItems, $key) use ($token) {
-                $paymentItems->each(function ($item, $key) use ($token) {
+            $paymentInvoices->each(function ($paymentItems) use ($token) {
+                $paymentItems->each(function ($item) use ($token) {
                     $response = Http::withToken($token)->withUrlParameters(
                         [
                             'endpoint' => env('TINKOFF_API'),
@@ -46,28 +49,46 @@ class CheckPaymentInvoices extends Command
                         ]
                     )->get('{+endpoint}/{openapi}/{invoice}/{invoice_id}/{info}');
 
-                    if($response->status() == 200)
-                    {
-                        $body = json_decode($response->body());
-                        if($body->status == PaymentInvoice::STATUS_EXECUTED)
+                    try {
+                        DB::beginTransaction();
+
+                        if($response->status() == 200)
                         {
-                            $item->status = $body->status;
-                            $item->save();
+                            $body = json_decode($response->body());
 
-                            $user = $item->user;
-                            $operation = $item->operation;
+                            if($body->status !== $item->status)
+                            {
+                                $item->status = $body->status;
+                                $item->save();
 
-                            $user->changeBalance((int)$operation->amount);
+                                return;
+                            }
+
+                            if($body->status == PaymentInvoice::STATUS_EXECUTED)
+                            {
+                                // ОБНОВИТЬ ЕЩЕ PAYMENT_INVOICE
+                                $item->status = $body->status;
+                                $item->save();
+
+                                $transaction = Transaction::where('order_id', $item->invoice_id)->first();
+
+                                $transaction->update(
+                                    [
+                                        'status' => 'CONFIRMED'
+                                    ]
+                                );
+
+                                $balanceAccount = $transaction->user->balanceAccount;
+                                $balanceAccount->increaseBalance((int)$transaction->amount_base);
+                            }
                         }
 
-                        if($body->status == PaymentInvoice::STATUS_DRAFT)
-                        {
-                            $item->status = $body->status;
-                            $item->save();
-                        }
+                        DB::commit();
+                    } catch (\Exception $exception) {
+                        DB::rollBack();
+                        Log::error($exception);
                     }
                 });
-                dump($paymentItems);
                 sleep(1);
             });
         }

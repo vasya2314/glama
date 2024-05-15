@@ -2,6 +2,9 @@
 
 namespace App\Classes;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+
 class Tinkoff {
     private $acquiring_url;
     private $terminal_id;
@@ -11,6 +14,7 @@ class Tinkoff {
     private $url_cancel;
     private $url_confirm;
     private $url_get_state;
+    private $url_qr;
 
     protected $error;
     protected $response;
@@ -18,6 +22,7 @@ class Tinkoff {
     protected $payment_id;
     protected $payment_url;
     protected $payment_status;
+    protected $payment_qr;
 
     /**
      * Inicialize Tinkoff class
@@ -171,6 +176,7 @@ class Tinkoff {
             ));
 
             $response = curl_exec($curl);
+
             curl_close($curl);
 
             $this->response = $response;
@@ -184,6 +190,7 @@ class Tinkoff {
                     $this->payment_id       = @$json->PaymentId;
                     $this->payment_url      = @$json->PaymentURL;
                     $this->payment_status   = @$json->Status;
+                    $this->payment_qr       = @$json->Data;
 
                     return TRUE;
                 }
@@ -264,6 +271,7 @@ class Tinkoff {
         $this->url_cancel = $this->acquiring_url . 'Cancel/';
         $this->url_confirm = $this->acquiring_url . 'Confirm/';
         $this->url_get_state = $this->acquiring_url . 'GetState/';
+        $this->url_qr = $this->acquiring_url . 'GetQr/';
     }
 
     /**
@@ -321,6 +329,21 @@ class Tinkoff {
     public function __get($property){
         if (property_exists($this, $property)) {
             return $this->$property;
+        }
+    }
+
+    public function generateOrderId(): string
+    {
+        return Str::uuid()->toString();
+    }
+
+    public function generateQr($response)
+    {
+        $params = [ 'PaymentId' => $response->PaymentId ];
+
+        if($this->sendRequest($this->url_qr, $params))
+        {
+            return $this->payment_qr;
         }
     }
 

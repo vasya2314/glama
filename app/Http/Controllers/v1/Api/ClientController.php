@@ -109,7 +109,7 @@ class ClientController extends Controller
 
         $result = array_merge($result, ['resource' => $resource]);
 
-        return response()->json($result);
+        return response()->json($result, $code);
     }
 
 }
