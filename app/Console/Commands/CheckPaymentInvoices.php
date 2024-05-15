@@ -66,7 +66,6 @@ class CheckPaymentInvoices extends Command
 
                             if($body->status == PaymentInvoice::STATUS_EXECUTED)
                             {
-                                // ОБНОВИТЬ ЕЩЕ PAYMENT_INVOICE
                                 $item->status = $body->status;
                                 $item->save();
 

@@ -57,9 +57,18 @@ class ClientRequest extends FormRequest
         {
             $contract = Contract::findOrFail($this->contract_id);
 
+            $grants = [
+                [
+                    'Privilege' => 'EDIT_CAMPAIGNS',
+                    'Value' => 'YES',
+                ]
+            ];
+
             $merge = $this->all();
             $merge['params']['Login'] = 'gl-' . $this->modifyEmail($email);
             $merge['params']['TinInfo']['Tin'] = $contract->contractable->inn;
+            $merge['params']['Currency'] = 'RUB';
+            $merge['params']['Grants'] = $grants;
 
             $this->merge($merge);
         }
