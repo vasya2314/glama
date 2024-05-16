@@ -36,7 +36,7 @@ class ClientRequest extends FormRequest
         if ($this->is('api/v1/clients') && $this->isMethod('post'))
         {
             return array_merge($rules, [
-                'account_name' => 'required|string|unique:clients,id',
+                'account_name' => 'required|string',
                 'params' => 'required',
             ]);
         }

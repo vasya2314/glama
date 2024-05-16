@@ -9,6 +9,7 @@ class YandexDirect
 {
     protected string $token;
     protected string $urlV4;
+    protected string $urlV5;
     protected string $masterToken;
 
 
@@ -35,15 +36,13 @@ class YandexDirect
     {
         $masterToken = $this->masterToken;
         $operationNum = 1;
-        $usedMethod = 'CreateInvoice';
+        $action = 'AccountManagement';
+        $usedMethod = 'Invoice';
         $login = $client->login;
 
-        dd($masterToken,
-$operationNum,
-$usedMethod,
-$login);
+//        dd($masterToken, $operationNum, $action, $usedMethod, $login);
 
-        $values = $masterToken . $operationNum . $usedMethod . $login;
+        $values = $masterToken . $operationNum . $action . $usedMethod . $login;
 
         return hash('sha256', $values);
     }
@@ -52,6 +51,7 @@ $login);
     {
         $this->token = config('yandex')['token'];
         $this->urlV4 = env('YANDEX_API_LIVE_V4');
+        $this->urlV5 = env('YANDEX_API');
         $this->masterToken = config('yandex')['master_token'];
     }
 

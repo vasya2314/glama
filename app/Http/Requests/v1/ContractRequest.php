@@ -239,6 +239,33 @@ class ContractRequest extends FormRequest
         ];
     }
 
+    public function attributes(): array
+    {
+        return [
+            'inn' => __('inn'),
+            'kpp' => __('kpp'),
+            'ogrnip' => __('ogrnip'),
+            'ogrn' => __('ogrn'),
+            'company_name' => __('company name'),
+            'legal_address' => __('legal address'),
+            'actual_address' => __('actual address'),
+            'contact_face' => __('contact face'),
+            'job_title' => __('job title'),
+            'phone' => __('phone'),
+            'email' => __('email'),
+            'bik' => __('bik'),
+            'checking_account' => __('checking account'),
+            'bank_name' => __('bank name'),
+            'correspondent_account' => __('correspondent account'),
+            'pick_up' => __('pick up'),
+            'is_same_legal_address' => __('is same legal address'),
+            'address' => __('address'),
+            'lastname' => __('lastname'),
+            'firstname' => __('firstname'),
+            'surname' => __('surname'),
+        ];
+    }
+
 }
 
 

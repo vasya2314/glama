@@ -79,4 +79,14 @@ class TicketRequest extends FormRequest
         ];
     }
 
+    public function attributes(): array
+    {
+        return [
+            'title' => __('title'),
+            'message' => __('message'),
+            'status' => __('status'),
+            'assigned_to' => __('assigned to'),
+        ];
+    }
+
 }

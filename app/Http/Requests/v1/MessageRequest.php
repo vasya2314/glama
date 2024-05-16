@@ -52,4 +52,11 @@ class MessageRequest extends FormRequest
         );
     }
 
+    public function attributes(): array
+    {
+        return [
+            'message' => __('message'),
+        ];
+    }
+
 }

@@ -106,4 +106,13 @@ class DepositRequest extends FormRequest
         ];
     }
 
+    public function attributes(): array
+    {
+        return [
+            'amount' => __('amount'),
+            'amount_base' => __('amount base'),
+            'method_type' => __('method type'),
+        ];
+    }
+
 }

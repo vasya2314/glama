@@ -51,4 +51,16 @@ class UserRequest extends FormRequest
         return $this->validated();
     }
 
+    public function attributes(): array
+    {
+        return [
+            'name' => __('firstname'),
+            'lastname' => __('lastname'),
+            'phone' => __('phone'),
+            'contact_email' => __('contact email'),
+            'current_password' => __('current password'),
+            'new_password' => __('new password'),
+        ];
+    }
+
 }
