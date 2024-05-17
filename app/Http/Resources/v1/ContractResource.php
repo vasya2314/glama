@@ -14,12 +14,25 @@ class ContractResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
+        $response = [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'contract_type' => $this->contractable_type,
-            'contract_details' => ContractPolymorphicResource::make($this->contractable),
-            'created_at' => $this->created_at->toDateTimeString(),
+            'display_name' => $this->display_name,
         ];
+
+        if($request->has('short_query'))
+        {
+            return $response;
+        }
+
+        return array_merge(
+            $response,
+            [
+                'contract_type' => $this->contractable_type,
+                'contract_details' => ContractPolymorphicResource::make($this->contractable),
+                'created_at' => $this->created_at->toDateTimeString(),
+            ]
+        );
+
     }
 }

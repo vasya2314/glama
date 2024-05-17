@@ -92,6 +92,7 @@ class ContractRequest extends FormRequest
     {
         $result = ['user_id' => $this->user()->id];
         if($this->request->has('client_id')) $result['client_id'] = $this->client_id;
+        $result['display_name'] = $this->generateDisplayName();
 
         return $result;
     }
@@ -100,6 +101,7 @@ class ContractRequest extends FormRequest
     {
         $result = [];
         if($this->request->has('client_id')) $result['client_id'] = $this->client_id;
+        $result['display_name'] = $this->generateDisplayName();
 
         return $result;
     }
@@ -237,6 +239,19 @@ class ContractRequest extends FormRequest
         return [
             'client_id.unique' => __('The selected :attribute already has an attached contract'),
         ];
+    }
+
+    private function generateDisplayName(): string
+    {
+        if($this->request->get('contract_type') == Contract::NATURAL_PERSON)
+        {
+            $displayName = $this->request->get('lastname')  . ' ' . $this->request->get('firstname');
+            if($this->request->get('surname')) $displayName .= ' ' . $this->request->get('surname');
+        } else {
+            $displayName = $this->request->get('company_name');
+        }
+
+        return $displayName;
     }
 
     public function attributes(): array

@@ -2810,6 +2810,12 @@
                         "format": "integer",
                         "example": "20"
                     },
+                    "display_name": {
+                        "title": "Отображаемое имя договора",
+                        "description": "Отображаемое имя договора",
+                        "format": "string",
+                        "example": "ООО iHor хостинг"
+                    },
                     "contract_type": {
                         "title": "Тип контракта",
                         "description": "Тип контракта",

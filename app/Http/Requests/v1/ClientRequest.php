@@ -61,6 +61,14 @@ class ClientRequest extends FormRequest
                 [
                     'Privilege' => 'EDIT_CAMPAIGNS',
                     'Value' => 'YES',
+                ],
+                [
+                    'Privilege' => 'IMPORT_XLS',
+                    'Value' => 'YES',
+                ],
+                [
+                    'Privilege' => 'TRANSFER_MONEY',
+                    'Value' => 'YES',
                 ]
             ];
 

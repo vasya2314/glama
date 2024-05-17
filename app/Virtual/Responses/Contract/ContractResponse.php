@@ -35,6 +35,17 @@ class ContractResponse
 
     /**
      * @OA\Property(
+     *     property="display_name",
+     *     format="string",
+     *     title="Отображаемое имя договора",
+     *     description="Отображаемое имя договора",
+     *     example="ООО iHor хостинг",
+     * )
+     */
+    public $displayName;
+
+    /**
+     * @OA\Property(
      *     property="contract_type",
      *     format="integer",
      *     title="Тип контракта",

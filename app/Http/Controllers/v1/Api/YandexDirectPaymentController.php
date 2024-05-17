@@ -13,21 +13,22 @@ class YandexDirectPaymentController extends Controller
     public function deposit(YandexDirectPaymentRequest $request)
     {
         $data = $request->validated();
-        $client = Client::findOrFail($data['client_id']);
+//        $client = Client::findOrFail($data['client_id']);
 
         $param = [
             'Action' => 'Invoice',
             'Payments' => [
                 [
-                    "AccountID" => $client->client_id,
-                    "Amount" => (float)((int)$data['amount'] / 100),
+                    "AccountID" => 469264,
+                    "Amount" => 10000.00,
                     "Currency" => 'RUB'
                 ]
             ]
         ];
 
         $yandexDirect = new YandexDirect();
-        $yandexDirect->createInvoice($param, $client);
+//        $yandexDirect->createInvoice($param, $client);
+        $yandexDirect->createInvoice($param);
 
     }
 

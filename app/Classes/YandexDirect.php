@@ -11,48 +11,100 @@ class YandexDirect
     protected string $urlV4;
     protected string $urlV5;
     protected string $masterToken;
-
+    protected string $login;
 
     public function __construct()
     {
         $this->setProperties();
     }
 
-    public function createInvoice(array $param, Client $client)
+    public function getAllClients(array $params): ?object
     {
-        $response = Http::withToken($this->token)->post($this->urlV4, [
-            'method' => 'AccountManagement',
-            'finance_token' => $this->generateFinanceToken($client),
-            'operation_num' => 1,
-            'param' => $param,
+        $response = Http::withToken($this->token)->post($this->urlV5 . 'agencyclients', [
+            'method' => 'get',
+            'params' => $params,
         ]);
 
-        dd(json_decode($response->body()));
-
-//        return $response->body();
+        return $response->object();
     }
 
-    private function generateFinanceToken(Client $client): string
+    public function storeClient(array $params): ?object
     {
-        $masterToken = $this->masterToken;
-        $operationNum = 1;
-        $action = 'AccountManagement';
-        $usedMethod = 'Invoice';
-        $login = $client->login;
+        $response = Http::withToken($this->token)->post($this->urlV5 . 'agencyclients', [
+            'method' => 'add',
+            'params' => $params,
+        ]);
 
-//        dd($masterToken, $operationNum, $action, $usedMethod, $login);
+//        if(!$this->hasErrors($response->object()))
+//        {
+//            $this->enableSharedAccount($response->object()->result->Login);
+//        }
 
-        $values = $masterToken . $operationNum . $action . $usedMethod . $login;
+        return $response->object();
+    }
 
-        return hash('sha256', $values);
+    public function enableSharedAccount(string $login)
+    {
+        $response = Http::post($this->urlV4, [
+            'method' => 'EnableSharedAccount',
+            'token' => $this->token,
+            'param' => [
+                'Login' => $login
+            ],
+        ]);
+
+        dd($response->object());
+    }
+
+    public function clientHasActiveCampaigns()
+    {
+
+    }
+
+    public function updateCampaignsCount()
+    {
+
+    }
+
+//    public function createInvoice(array $param)
+//    {
+//        $response = Http::post($this->urlV4, [
+//            'method' => 'AccountManagement',
+////            'finance_token' => $this->generateFinanceToken($client),
+//            'finance_token' => $this->generateFinanceToken(),
+//            'operation_num' => 1,
+//            'token' => $this->token,
+//            'param' => $param,
+//        ]);
+//
+//        dd(json_decode($response->body()));
+//
+////        return $response->body();
+//    }
+//
+//    private function generateFinanceToken(): string
+//    {
+//        $master_token = $this->masterToken;
+//        $operation_num = 1;
+//        $action = 'AccountManagement';
+//        $used_method = 'Invoice';
+//        $login = $this->login;
+//
+//        return hash("sha256", $master_token . $operation_num . $action . $used_method . $login);
+//    }
+
+    private function hasErrors(object $object): bool
+    {
+        return isset($object->error);
     }
 
     private function setProperties(): void
     {
+        $this->masterToken = config('yandex')['master_token'];
+        $this->login = config('yandex')['login'];
         $this->token = config('yandex')['token'];
         $this->urlV4 = env('YANDEX_API_LIVE_V4');
         $this->urlV5 = env('YANDEX_API');
-        $this->masterToken = config('yandex')['master_token'];
     }
 
 }

@@ -18,6 +18,15 @@ class ContractController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
+
+        if($request->has('short_query'))
+        {
+            $contracts = $user->contracts()->select('id', 'display_name', 'user_id')->get();
+
+            $contracts = ContractResource::collection($contracts)->response()->getData(true);
+            return $this->wrapResponse(Response::HTTP_OK, __('All contracts.'), (array)$contracts);
+        }
+
         $contracts = $user->contracts;
         $contracts = ContractResource::collection($contracts)->response()->getData(true);
 

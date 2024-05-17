@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\v1\Api;
 
+use App\Classes\YandexDirect;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\ClientRequest;
 use App\Http\Resources\v1\ClientResource;
@@ -10,7 +11,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\Response;
 
 class ClientController extends Controller
@@ -31,12 +31,9 @@ class ClientController extends Controller
 
             $data['SelectionCriteria'] = (object)$selectionCriteria;
 
-            $response = Http::withToken(config('yandex')['token'])->post(env('YANDEX_API') . 'agencyclients', [
-                'method' => 'get',
-                'params' => $data,
-            ]);
+            $yandexDirect = new YandexDirect();
+            $object = $yandexDirect->getAllClients($data);
 
-            $object = $response->object();
             if(isset($object->error)) return $this->wrapResponse(Response::HTTP_OK, __('All clients'), (array)$object);
 
             return $this->wrapResponse(Response::HTTP_OK, __('All clients'), (array)$object->result);
@@ -50,12 +47,8 @@ class ClientController extends Controller
         $data = $request->validated();
         $user = $request->user();
 
-        $response = Http::withToken(config('yandex')['token'])->post(env('YANDEX_API') . 'agencyclients', [
-            'method' => 'add',
-            'params' => $data['params'],
-        ]);
-
-        $object = $response->object();
+        $yandexDirect = new YandexDirect();
+        $object = $yandexDirect->storeClient($data['params']);
 
         if (isset($object->error)) return $this->wrapResponse(Response::HTTP_INTERNAL_SERVER_ERROR, __('Error'), (array)$object->error);
 
