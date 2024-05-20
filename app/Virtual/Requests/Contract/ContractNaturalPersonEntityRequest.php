@@ -77,4 +77,26 @@ class ContractNaturalPersonEntityRequest
      */
     public $pickUp;
 
+    /**
+     * @OA\Property(
+     *     property="phone",
+     *     type="string",
+     *     title="Телефон",
+     *     description="Телефон",
+     *     example="1234567890",
+     * )
+     */
+    public $phone;
+
+    /**
+     * @OA\Property(
+     *     property="email",
+     *     format="string",
+     *     title="Email",
+     *     description="Email",
+     *     example="bulkoedstvo@ne-porok.ru",
+     * )
+     */
+    public $email;
+
 }

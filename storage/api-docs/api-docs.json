@@ -2132,109 +2132,11 @@
                         "format": "string",
                         "example": "Some name"
                     },
-                    "params": {
-                        "properties": {
-                            "Login": {
-                                "description": "User login",
-                                "type": "string",
-                                "example": "Client-login"
-                            },
-                            "FirstName": {
-                                "description": "User's first name",
-                                "type": "string",
-                                "example": "peter"
-                            },
-                            "LastName": {
-                                "description": "User's last name",
-                                "type": "string",
-                                "example": "son"
-                            },
-                            "Currency": {
-                                "description": "User's currency",
-                                "type": "string",
-                                "example": "RUB"
-                            },
-                            "Grants": {
-                                "description": "Array of user grants",
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
-                                },
-                                "example": "[]"
-                            },
-                            "Notification": {
-                                "description": "User's notification details",
-                                "properties": {
-                                    "Lang": {
-                                        "description": "Language for notifications",
-                                        "type": "string",
-                                        "example": "RU"
-                                    },
-                                    "Email": {
-                                        "description": "User's email",
-                                        "type": "string",
-                                        "example": "client-1@mail.ru"
-                                    },
-                                    "EmailSubscriptions": {
-                                        "description": "User's email subscriptions",
-                                        "type": "array",
-                                        "items": {
-                                            "properties": {
-                                                "Option": {
-                                                    "description": "Subscription option",
-                                                    "type": "string",
-                                                    "example": "RECEIVE_RECOMMENDATIONS"
-                                                },
-                                                "Value": {
-                                                    "description": "Subscription value",
-                                                    "type": "string",
-                                                    "example": "NO"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    }
-                                },
-                                "type": "object"
-                            },
-                            "Settings": {
-                                "description": "User's settings",
-                                "type": "array",
-                                "items": {
-                                    "properties": {
-                                        "Option": {
-                                            "description": "Setting option",
-                                            "type": "string",
-                                            "example": "CORRECT_TYPOS_AUTOMATICALLY"
-                                        },
-                                        "Value": {
-                                            "description": "Setting value",
-                                            "type": "string",
-                                            "example": "NO"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            },
-                            "TinInfo": {
-                                "description": "User's Tin information",
-                                "properties": {
-                                    "TinType": {
-                                        "description": "Type of Tin",
-                                        "type": "string",
-                                        "example": "PHYSICAL"
-                                    },
-                                    "Tin": {
-                                        "description": "User's Tin number",
-                                        "type": "integer",
-                                        "example": 505021556592
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        },
-                        "type": "object",
-                        "format": "object"
+                    "login": {
+                        "title": "Login",
+                        "description": "Login",
+                        "format": "string",
+                        "example": "iHorLogin"
                     }
                 },
                 "type": "object"
@@ -2532,6 +2434,18 @@
                         "description": "Как вы будете забирать документы (not_need, need_original, need_email)",
                         "format": "string",
                         "example": "not_need"
+                    },
+                    "phone": {
+                        "title": "Телефон",
+                        "description": "Телефон",
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "description": "Email",
+                        "format": "string",
+                        "example": "bulkoedstvo@ne-porok.ru"
                     }
                 },
                 "type": "object"

@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('natural_persons', function (Blueprint $table) {
             $table->id();
-            $table->string('lastname')->nullable();
-            $table->string('firstname')->nullable();
+            $table->string('lastname');
+            $table->string('firstname');
             $table->string('surname')->nullable();
-            $table->string('inn')->nullable();
-            $table->string('address')->nullable();
-            $table->string('pick_up')->nullable();
+            $table->string('inn');
+            $table->string('address');
+            $table->string('phone');
+            $table->string('email');
+            $table->string('pick_up');
             $table->timestamps();
         });
     }

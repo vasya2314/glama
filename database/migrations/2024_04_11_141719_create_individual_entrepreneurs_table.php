@@ -13,21 +13,21 @@ return new class extends Migration
     {
         Schema::create('individual_entrepreneurs', function (Blueprint $table) {
             $table->id();
-            $table->string('inn')->nullable();
-            $table->string('ogrnip')->nullable();
-            $table->string('company_name', 512)->nullable();
-            $table->string('legal_address')->nullable();
-            $table->string('actual_address')->nullable();
-            $table->string('contact_face')->nullable();
-            $table->string('job_title')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('email')->nullable();
-            $table->string('bik')->nullable();
-            $table->string('checking_account')->nullable();
-            $table->string('bank_name')->nullable();
-            $table->string('correspondent_account')->nullable();
-            $table->string('pick_up')->nullable();
-            $table->boolean('is_same_legal_address')->nullable();
+            $table->string('inn');
+            $table->string('ogrnip');
+            $table->string('company_name', 512);
+            $table->string('legal_address');
+            $table->string('actual_address');
+            $table->string('contact_face');
+            $table->string('job_title');
+            $table->string('phone');
+            $table->string('email');
+            $table->string('bik');
+            $table->string('checking_account');
+            $table->string('bank_name');
+            $table->string('correspondent_account');
+            $table->string('pick_up');
+            $table->boolean('is_same_legal_address');
             $table->timestamps();
         });
     }

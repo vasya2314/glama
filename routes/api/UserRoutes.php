@@ -11,8 +11,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::patch('/user/change-password', [UserController::class, 'changePassword']);
     Route::get('/user/detail', [UserController::class, 'detail']);
 
-    Route::post('/user/deposit/payment', [PaymentDepositController::class, 'deposit']);
-    Route::middleware('throttle:4,0.16')->post('/user/deposit/invoice', [InvoiceDepositController::class, 'deposit']);
+    Route::post('/user/deposit/payment', [PaymentDepositController::class, 'deposit']); // NEW
+    Route::middleware('throttle:4,0.16')->post('/user/deposit/invoice', [InvoiceDepositController::class, 'deposit']); // NEW
 
-    Route::post('/user/yandex-direct/deposit', [YandexDirectPaymentController::class, 'deposit']);
+    Route::post('/user/yandex-direct/deposit', [YandexDirectPaymentController::class, 'deposit']); // NEW
 });

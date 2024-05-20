@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\v1\Api;
 
-use App\Classes\YandexDirect;
+use App\Facades\YandexDirect;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\ClientRequest;
 use App\Http\Resources\v1\ClientResource;
@@ -31,8 +31,7 @@ class ClientController extends Controller
 
             $data['SelectionCriteria'] = (object)$selectionCriteria;
 
-            $yandexDirect = new YandexDirect();
-            $object = $yandexDirect->getAllClients($data);
+            $object = YandexDirect::getAllClients($data);
 
             if(isset($object->error)) return $this->wrapResponse(Response::HTTP_OK, __('All clients'), (array)$object);
 
@@ -47,18 +46,19 @@ class ClientController extends Controller
         $data = $request->validated();
         $user = $request->user();
 
-        $yandexDirect = new YandexDirect();
-        $object = $yandexDirect->storeClient($data['params']);
+        $object = YandexDirect::storeClient($data['params']);
 
         if (isset($object->error)) return $this->wrapResponse(Response::HTTP_INTERNAL_SERVER_ERROR, __('Error'), (array)$object->error);
 
-        $client = $user->clients()->create([
-            'contract_id' => $data['contract_id'],
-            'account_name' => $data['account_name'],
-            'login' => $object->result->Login,
-            'password' => $object->result->Password,
-            'client_id' => $object->result->ClientId,
-        ]);
+        $client = $user->clients()->create($request->storeClient(
+            [
+                'contract_id' => $data['contract_id'],
+                'account_name' => $data['account_name'],
+                'login' => $object->result->Login,
+                'password' => $object->result->Password,
+                'client_id' => $object->result->ClientId,
+            ]
+        ));
 
         $clientResource = (new ClientResource($client))
             ->response()
@@ -91,6 +91,22 @@ class ClientController extends Controller
             ->getData(true);
 
         return $this->wrapResponse(Response::HTTP_OK, __('Client updated successfully.'), $client);
+    }
+
+    public function updateCampaignsQty(ClientRequest $request, Client $client): JsonResponse
+    {
+        $result = YandexDirect::getClientCampaignsQty($client->login);
+
+        if(!is_numeric($result))
+        {
+            return $this->wrapResponse(Response::HTTP_INTERNAL_SERVER_ERROR, __('Error'), (array)$result);
+        }
+
+        $client->qty_campaigns = $result;
+        $client->save();
+
+        return $this->wrapResponse(Response::HTTP_OK, __('The company counter has been successfully updated'), ['count' => $result]);
+
     }
 
     private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse

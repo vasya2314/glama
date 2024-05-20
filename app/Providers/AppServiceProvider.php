@@ -19,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton('Core', function ($app) {
+        $this->app->singleton('core', function ($app) {
             return Core::getInstance();
         });
     }
@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        app('Core');
+        app('core');
 
         VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
             $verifyUrl = env('VIEW_APP_URL') . '/verify-email-url/?url=' . $url;

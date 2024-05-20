@@ -88,5 +88,7 @@
     "assigned to": "назначен на",
     "amount": "сумма",
     "amount base": "базовая сумма",
-    "method type": "тип метода"
+    "method type": "тип метода",
+    "Contract updated successfully.": "Договор успешно обновлен.",
+    "The company counter has been successfully updated": "Счетчик компании успешно обновлен"
 }

@@ -92,7 +92,7 @@ class ContractRequest extends FormRequest
     {
         $result = ['user_id' => $this->user()->id];
         if($this->request->has('client_id')) $result['client_id'] = $this->client_id;
-        $result['display_name'] = $this->generateDisplayName();
+        $result['display_name'] = $this->generateDisplayName($this->request->get('contract_type'));
 
         return $result;
     }
@@ -101,7 +101,7 @@ class ContractRequest extends FormRequest
     {
         $result = [];
         if($this->request->has('client_id')) $result['client_id'] = $this->client_id;
-        $result['display_name'] = $this->generateDisplayName();
+        $result['display_name'] = $this->generateDisplayName($this->contract->contractable_type);
 
         return $result;
     }
@@ -230,6 +230,12 @@ class ContractRequest extends FormRequest
                 'regex:/^(\\d{12}|\\d{10})$/',
             ],
             'address' => 'required|string',
+            'phone' => [
+                'required',
+                'string',
+                'regex:/^((\\+7)([0-9]){10})$/',
+            ],
+            'email' => 'required|string|email',
             'pick_up' => 'required|string|in:not_need,need_original,need_email',
         ];
     }
@@ -241,9 +247,9 @@ class ContractRequest extends FormRequest
         ];
     }
 
-    private function generateDisplayName(): string
+    private function generateDisplayName(string $contractType): string
     {
-        if($this->request->get('contract_type') == Contract::NATURAL_PERSON)
+        if($contractType == Contract::NATURAL_PERSON)
         {
             $displayName = $this->request->get('lastname')  . ' ' . $this->request->get('firstname');
             if($this->request->get('surname')) $displayName .= ' ' . $this->request->get('surname');

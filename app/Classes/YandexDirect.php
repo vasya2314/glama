@@ -5,25 +5,35 @@ namespace App\Classes;
 use App\Models\Client;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
 
 class YandexDirect
 {
-    protected string $token;
-    protected string $urlV4;
-    protected string $urlV5;
-    protected string $masterToken;
-    protected string $login;
+    protected static string $token;
+    protected static string $urlV4;
+    protected static string $urlV5;
+    protected static string $masterToken;
+    protected static string $login;
 
     public function __construct()
     {
         $this->setProperties();
     }
 
+    private function setProperties(): void
+    {
+        self::$masterToken = config('yandex')['master_token'];
+        self::$login = config('yandex')['login'];
+        self::$token = config('yandex')['token'];
+        self::$urlV4 = env('YANDEX_API_LIVE_V4');
+        self::$urlV5 = env('YANDEX_API');
+    }
+
     public function getAllClients(array $params): ?object
     {
-        $response = $this->storeRequest(
-            $this->urlV5 . 'agencyclients',
+        $response = self::storeRequest(
+            self::$urlV5 . 'agencyclients',
             [
                 'method' => 'get',
                 'params' => $params,
@@ -35,29 +45,24 @@ class YandexDirect
 
     public function storeClient(array $params): ?object
     {
-        $response = $this->storeRequest(
-            $this->urlV5 . 'agencyclients',
+        $response = self::storeRequest(
+            self::$urlV5 . 'agencyclients',
             [
                 'method' => 'add',
                 'params' => $params,
             ]
         );
 
-//        if(!$this->hasErrors($response->object()))
-//        {
-//            $this->enableSharedAccount($response->object()->result->Login);
-//        }
-
         return $response->object();
     }
 
     public function enableSharedAccount(string $login)
     {
-        $response = $this->storeRequest(
-            $this->urlV4,
+        $response = self::storeRequest(
+            self::$urlV4,
             [
                 'method' => 'EnableSharedAccount',
-                'token' => $this->token,
+                'token' => self::$token,
                 'param' => [
                     'Login' => $login
                 ],
@@ -72,25 +77,56 @@ class YandexDirect
 
     }
 
-    public function updateCampaignsQty()
+    public function getClientCampaignsQty(string $clientLogin): JsonResponse|int
     {
+        $data = [
+            "method" => "get",
+            "params" => [
+                "SelectionCriteria" => [
+                    "States" => [
+                        "SUSPENDED",
+                        "ON",
+                        "OFF",
+                    ],
+                    "Statuses" => [
+                        "MODERATION",
+                        "ACCEPTED",
+                    ],
+                    "StatusesPayment" => [
+                        "DISALLOWED",
+                        "ALLOWED"
+                    ]
+                ],
+                "FieldNames" => [
+                    "Id",
+                ],
+            ]
+        ];
+
+        $response = self::storeRequest(self::$urlV5 . 'campaigns', $data, ['Client-Login' => $clientLogin]);
+
+        if(self::hasErrors(json_decode($response->body())))
+        {
+            return \response()->json(
+                [
+                    json_decode($response->body())
+                ],
+                500
+            );
+        }
+
+        return count(json_decode($response->body())->result->Campaigns);
 
     }
 
-    private function storeRequest(string $url, array $data): PromiseInterface|Response
-    {
-        return Http::withHeaders(['Accept-Language' => 'ru'])->withToken($this->token)->post($url, $data);
-    }
-
-//    public function createInvoice(array $param)
+//    public function deposit(array $params)
 //    {
-//        $response = Http::post($this->urlV4, [
+//        $response = Http::post(self::$urlV4, [
 //            'method' => 'AccountManagement',
-////            'finance_token' => $this->generateFinanceToken($client),
-//            'finance_token' => $this->generateFinanceToken(),
+//            'finance_token' => $this->generateFinanceToken('AccountManagement', $params['Action']),
 //            'operation_num' => 1,
-//            'token' => $this->token,
-//            'param' => $param,
+//            'token' => self::$token,
+//            'param' => $params,
 //        ]);
 //
 //        dd(json_decode($response->body()));
@@ -98,29 +134,26 @@ class YandexDirect
 ////        return $response->body();
 //    }
 //
-//    private function generateFinanceToken(): string
+//    private function generateFinanceToken(string $action, string $method): string
 //    {
-//        $master_token = $this->masterToken;
 //        $operation_num = 1;
-//        $action = 'AccountManagement';
-//        $used_method = 'Invoice';
-//        $login = $this->login;
 //
-//        return hash("sha256", $master_token . $operation_num . $action . $used_method . $login);
+//        return hash("sha256", self::$masterToken . $operation_num . $action . $method . self::$login);
 //    }
 
-    private function hasErrors(object $object): bool
+    private static function storeRequest(string $url, array $data, array $headers = []): PromiseInterface|Response
     {
-        return isset($object->error);
+        $baseHeaders = [
+            'Accept-Language' => 'ru'
+        ];
+
+        $headers = array_merge($baseHeaders, $headers);
+        return Http::withHeaders($headers)->withToken(self::$token)->post($url, $data);
     }
 
-    private function setProperties(): void
+    private static function hasErrors(object $object): bool
     {
-        $this->masterToken = config('yandex')['master_token'];
-        $this->login = config('yandex')['login'];
-        $this->token = config('yandex')['token'];
-        $this->urlV4 = env('YANDEX_API_LIVE_V4');
-        $this->urlV5 = env('YANDEX_API');
+        return isset($object->error);
     }
 
 }

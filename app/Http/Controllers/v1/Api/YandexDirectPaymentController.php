@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\v1\Api;
 
-use App\Classes\YandexDirect;
+use App\Facades\YandexDirect;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\YandexDirectPaymentRequest;
 use App\Models\Client;
@@ -13,23 +13,22 @@ class YandexDirectPaymentController extends Controller
     public function deposit(YandexDirectPaymentRequest $request)
     {
         $data = $request->validated();
-//        $client = Client::findOrFail($data['client_id']);
+        $client = Client::findOrFail($data['client_id']);
 
-        $param = [
+        $params = [
             'Action' => 'Invoice',
             'Payments' => [
                 [
-                    "AccountID" => 469264,
-                    "Amount" => 10000.00,
+                    "AccountID" => $client->client_id,
+                    "Amount" => kopToRub($data['amount']),
                     "Currency" => 'RUB'
                 ]
             ]
         ];
 
-        $yandexDirect = new YandexDirect();
-//        $yandexDirect->createInvoice($param, $client);
-        $yandexDirect->createInvoice($param);
-
+//        $object = YandexDirect::deposit();
+//
+//        dd($object);
     }
 
     private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse

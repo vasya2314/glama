@@ -86,6 +86,8 @@ class ContractPolymorphicResource extends JsonResource
             'surname' => $this->surname,
             'inn' => $this->inn,
             'address' => $this->address,
+            'phone' => $this->phone,
+            'email' => $this->email,
             'pick_up' => $this->pick_up,
         ];
     }

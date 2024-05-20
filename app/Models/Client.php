@@ -15,6 +15,13 @@ class Client extends Model
     protected $table = 'clients';
     protected $guarded = false;
 
+    protected function casts(): array
+    {
+        return [
+            'is_enable_shared_account' => 'boolean',
+        ];
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

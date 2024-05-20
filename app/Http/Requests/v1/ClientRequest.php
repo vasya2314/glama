@@ -37,7 +37,8 @@ class ClientRequest extends FormRequest
         {
             return array_merge($rules, [
                 'account_name' => 'required|string',
-                'params' => 'required',
+                'login' => 'required|unique:clients,login',
+                'params' => 'required|array',
             ]);
         }
 
@@ -51,44 +52,80 @@ class ClientRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $email = isset($this->get('params')['Notification']['Email']) ? $this->get('params')['Notification']['Email'] : '';
-
-        if($email && $this->has('contract_id') && $this->has('params'))
+        if($this->has('contract_id') && $this->has('login'))
         {
             $contract = Contract::findOrFail($this->contract_id);
 
-            $grants = [
-                [
-                    'Privilege' => 'EDIT_CAMPAIGNS',
-                    'Value' => 'YES',
+            $params = [
+                'Login' => 'gl-' . $this->get('login'),
+                'FirstName' => 'Имя',
+                'LastName' => 'Фамилия',
+                'Currency' => 'RUB',
+                'Grants' => [
+                    [
+                        'Privilege' => 'EDIT_CAMPAIGNS',
+                        'Value' => 'YES',
+                    ],
+                    [
+                        'Privilege' => 'IMPORT_XLS',
+                        'Value' => 'YES',
+                    ],
+                    [
+                        'Privilege' => 'TRANSFER_MONEY',
+                        'Value' => 'YES',
+                    ]
                 ],
-                [
-                    'Privilege' => 'IMPORT_XLS',
-                    'Value' => 'YES',
+                'Notification' => [
+                    'Lang' => 'RU',
+                    'Email' => request()->user()->email,
+                    'EmailSubscriptions' => [
+                        [
+                            'Option' => 'RECEIVE_RECOMMENDATIONS',
+                            'Value' => 'YES',
+                        ],
+                        [
+                            'Option' => 'TRACK_MANAGED_CAMPAIGNS',
+                            'Value' => 'YES',
+                        ],
+                        [
+                            'Option' => 'TRACK_POSITION_CHANGES',
+                            'Value' => 'YES',
+                        ],
+                    ]
                 ],
-                [
-                    'Privilege' => 'TRANSFER_MONEY',
-                    'Value' => 'YES',
+                'Settings' => [
+                    [
+                        'Option' => 'CORRECT_TYPOS_AUTOMATICALLY',
+                        'Value' => 'NO',
+                    ],
+                    [
+                        'Option' => 'DISPLAY_STORE_RATING',
+                        'Value' => 'NO',
+                    ]
+                ],
+                'TinInfo' => [
+                    'TinType' => $this->getContractType($contract),
+                    'Tin' => $contract->contractable->inn,
                 ]
             ];
 
-            $merge = $this->all();
-            $merge['params']['Login'] = 'gl-' . $this->modifyEmail($email);
-            $merge['params']['TinInfo']['Tin'] = $contract->contractable->inn;
-            $merge['params']['Currency'] = 'RUB';
-            $merge['params']['Grants'] = $grants;
-
-            $this->merge($merge);
+            $this->merge([
+                'params' => $params,
+            ]);
         }
     }
 
-    protected function modifyEmail(string $email): string
+    protected function getContractType(Contract $contract): string
     {
-        $str = strpos($email, "@");
-        $email = substr($email, 0, $str);
-        $result = preg_replace('/\./', '-', $email);
+        $contractType = $contract->contractable_type;
 
-        return strtolower($result);
+        return match ($contractType) {
+            $contract::LEGAL_ENTITY => 'LEGAL',
+            $contract::NATURAL_PERSON => 'PHYSICAL',
+            $contract::INDIVIDUAL_ENTREPRENEUR => 'INDIVIDUAL',
+            default => "NONE",
+        };
+
     }
 
     public function updateClient(): array
@@ -96,6 +133,17 @@ class ClientRequest extends FormRequest
         return [
             'contract_id' => $this->get('contract_id'),
         ];
+    }
+
+    public function storeClient(array $params): array
+    {
+        return array_merge(
+            $params,
+            [
+                'qty_campaigns' => 0,
+                'balance' => 0,
+            ]
+        );
     }
 
     public function messages(): array
