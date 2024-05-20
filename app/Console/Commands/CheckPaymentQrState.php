@@ -58,8 +58,11 @@ class CheckPaymentQrState extends Command
 
                     if($state == Transaction::STATUS_CONFIRMED)
                     {
-                        $balanceAccount = BalanceAccount::where('user_id', $transaction->user_id)->firstOrFail();
-                        $balanceAccount->increaseBalance((int)$transaction->amount_base);
+                        $balanceAccount = BalanceAccount::lockForUpdate()->where('user_id', $transaction->user_id)->first();
+                        if($balanceAccount)
+                        {
+                            $balanceAccount->increaseBalance((int)$transaction->amount_base);
+                        }
                     }
 
                     DB::commit();

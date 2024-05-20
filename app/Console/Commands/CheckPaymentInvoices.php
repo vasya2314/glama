@@ -60,15 +60,10 @@ class CheckPaymentInvoices extends Command
                             {
                                 $item->status = $body->status;
                                 $item->save();
-
-                                return;
                             }
 
                             if($body->status == PaymentInvoice::STATUS_EXECUTED)
                             {
-                                $item->status = $body->status;
-                                $item->save();
-
                                 $transaction = Transaction::where('order_id', $item->invoice_id)->first();
 
                                 $transaction->update(
@@ -77,8 +72,11 @@ class CheckPaymentInvoices extends Command
                                     ]
                                 );
 
-                                $balanceAccount = $transaction->user->balanceAccount;
-                                $balanceAccount->increaseBalance((int)$transaction->amount_base);
+                                $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->first();
+                                if($balanceAccount)
+                                {
+                                    $balanceAccount->increaseBalance((int)$transaction->amount_base);
+                                }
                             }
                         }
 

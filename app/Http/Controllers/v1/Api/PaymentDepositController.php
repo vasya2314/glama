@@ -68,8 +68,11 @@ class PaymentDepositController extends Controller
 
                     if($request['Status'] === Transaction::STATUS_CONFIRMED)
                     {
-                        $balanceAccount = $transaction->user->balanceAccount;
-                        $balanceAccount->increaseBalance((int)$transaction->amount_base);
+                        $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->first();
+                        if($balanceAccount)
+                        {
+                            $balanceAccount->increaseBalance((int)$transaction->amount_base);
+                        }
                     }
                 }
                 die('OK');
@@ -90,7 +93,6 @@ class PaymentDepositController extends Controller
         {
             return $this->wrapResponse(Response::HTTP_BAD_REQUEST, __('Invalid amount'));
         }
-
 
         $user = $request->user();
         $apiUrl = config('tinkoff')['api_url'];
@@ -149,18 +151,12 @@ class PaymentDepositController extends Controller
     {
         if(request()->get('method_type') == 'card')
         {
-            if($baseAmount + ($baseAmount * 0.0259) == $amount)
-            {
-                return true;
-            }
+            return $baseAmount + ($baseAmount * 0.0259) == $amount;
         }
 
         if(request()->get('method_type') == 'qr')
         {
-            if($baseAmount + ($baseAmount * 0.017) == $amount)
-            {
-                return true;
-            }
+            return $baseAmount + ($baseAmount * 0.017) == $amount;
         }
 
         return false;

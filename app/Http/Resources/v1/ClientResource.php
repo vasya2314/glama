@@ -20,6 +20,7 @@ class ClientResource extends JsonResource
             'login' => $this->login,
             'password' => $this->password,
             'client_id' => $this->client_id,
+            'qty_campaigns' => $this->qty_campaigns,
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }

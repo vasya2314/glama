@@ -3,6 +3,8 @@
 namespace App\Classes;
 
 use App\Models\Client;
+use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 class YandexDirect
@@ -20,20 +22,26 @@ class YandexDirect
 
     public function getAllClients(array $params): ?object
     {
-        $response = Http::withToken($this->token)->post($this->urlV5 . 'agencyclients', [
-            'method' => 'get',
-            'params' => $params,
-        ]);
+        $response = $this->storeRequest(
+            $this->urlV5 . 'agencyclients',
+            [
+                'method' => 'get',
+                'params' => $params,
+            ]
+        );
 
         return $response->object();
     }
 
     public function storeClient(array $params): ?object
     {
-        $response = Http::withToken($this->token)->post($this->urlV5 . 'agencyclients', [
-            'method' => 'add',
-            'params' => $params,
-        ]);
+        $response = $this->storeRequest(
+            $this->urlV5 . 'agencyclients',
+            [
+                'method' => 'add',
+                'params' => $params,
+            ]
+        );
 
 //        if(!$this->hasErrors($response->object()))
 //        {
@@ -45,13 +53,16 @@ class YandexDirect
 
     public function enableSharedAccount(string $login)
     {
-        $response = Http::post($this->urlV4, [
-            'method' => 'EnableSharedAccount',
-            'token' => $this->token,
-            'param' => [
-                'Login' => $login
-            ],
-        ]);
+        $response = $this->storeRequest(
+            $this->urlV4,
+            [
+                'method' => 'EnableSharedAccount',
+                'token' => $this->token,
+                'param' => [
+                    'Login' => $login
+                ],
+            ]
+        );
 
         dd($response->object());
     }
@@ -61,9 +72,14 @@ class YandexDirect
 
     }
 
-    public function updateCampaignsCount()
+    public function updateCampaignsQty()
     {
 
+    }
+
+    private function storeRequest(string $url, array $data): PromiseInterface|Response
+    {
+        return Http::withHeaders(['Accept-Language' => 'ru'])->withToken($this->token)->post($url, $data);
     }
 
 //    public function createInvoice(array $param)

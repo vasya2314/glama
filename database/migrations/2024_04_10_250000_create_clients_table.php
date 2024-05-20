@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('login', 50)->unique();
             $table->string('password');
             $table->unsignedBigInteger('client_id')->unique();
+            $table->integer('qty_campaigns')->default(0);
             $table->timestamps();
         });
     }
