@@ -17,28 +17,13 @@ class ClientController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $data = $request->all();
         $user = $request->user();
 
-        if ($user->clients->isNotEmpty())
-        {
-            $selectionCriteria = [];
+        $clients = ClientResource::collection($user->clients()->paginate(9))
+            ->response()
+            ->getData(true);
 
-            foreach ($user->clients as $client)
-            {
-                $selectionCriteria['Logins'][] = $client->login;
-            }
-
-            $data['SelectionCriteria'] = (object)$selectionCriteria;
-
-            $object = YandexDirect::getAllClients($data);
-
-            if(isset($object->error)) return $this->wrapResponse(Response::HTTP_OK, __('All clients'), (array)$object);
-
-            return $this->wrapResponse(Response::HTTP_OK, __('All clients'), (array)$object->result);
-        }
-
-        return $this->wrapResponse(Response::HTTP_OK, __('All clients'), []);
+        return $this->wrapResponse(Response::HTTP_OK, __('All clients'), (array)$clients);
     }
 
     public function store(ClientRequest $request): JsonResponse
@@ -95,6 +80,8 @@ class ClientController extends Controller
 
     public function updateCampaignsQty(ClientRequest $request, Client $client): JsonResponse
     {
+        Gate::authorize('updateCampaignsQty', $client);
+
         $result = YandexDirect::getClientCampaignsQty($client->login);
 
         if(!is_numeric($result))
@@ -102,10 +89,17 @@ class ClientController extends Controller
             return $this->wrapResponse(Response::HTTP_INTERNAL_SERVER_ERROR, __('Error'), (array)$result);
         }
 
-        $client->qty_campaigns = $result;
-        $client->save();
+        $client->update(
+            [
+                'qty_campaigns' => $result,
+            ]
+        );
 
-        return $this->wrapResponse(Response::HTTP_OK, __('The company counter has been successfully updated'), ['count' => $result]);
+        $client = (new ClientResource($client))
+            ->response()
+            ->getData(true);
+
+        return $this->wrapResponse(Response::HTTP_OK, __('The company counter has been successfully updated'), $client);
 
     }
 

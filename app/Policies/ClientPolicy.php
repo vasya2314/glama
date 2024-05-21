@@ -24,4 +24,9 @@ class ClientPolicy
         return $client->user_id == $user->id;
     }
 
+    public function updateCampaignsQty(User $user, Client $client): bool
+    {
+        return $client->user_id == $user->id;
+    }
+
 }

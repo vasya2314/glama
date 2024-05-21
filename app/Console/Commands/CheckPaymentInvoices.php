@@ -31,20 +31,20 @@ class CheckPaymentInvoices extends Command
     public function handle(): void
     {
         $token = config('tinkoff')['token'];
-        $paymentInvoices = PaymentInvoice::where('status', PaymentInvoice::STATUS_SUBMITTED)->get();
+        $transactions = Transaction::where('status', Transaction::STATUS_SUBMITTED)->get();
 
-        if($paymentInvoices->isNotEmpty())
+        if($transactions->isNotEmpty())
         {
-            $paymentInvoices = $paymentInvoices->chunk(20);
+            $transactions = $transactions->chunk(20);
 
-            $paymentInvoices->each(function ($paymentItems) use ($token) {
-                $paymentItems->each(function ($item) use ($token) {
+            $transactions->each(function ($transactionItems) use ($token) {
+                $transactionItems->each(function ($transaction) use ($token) {
                     $response = Http::withToken($token)->withUrlParameters(
                         [
                             'endpoint' => env('TINKOFF_API'),
                             'openapi' => 'openapi',
                             'invoice' => 'invoice',
-                            'invoice_id' => $item->invoice_id,
+                            'invoice_id' => $transaction->order_id,
                             'info' => 'info'
                         ]
                     )->get('{+endpoint}/{openapi}/{invoice}/{invoice_id}/{info}');
@@ -56,26 +56,24 @@ class CheckPaymentInvoices extends Command
                         {
                             $body = json_decode($response->body());
 
-                            if($body->status !== $item->status)
+                            if($body->status !== $transaction->status)
                             {
-                                $item->status = $body->status;
-                                $item->save();
+                                $transaction->status = $body->status;
+                                $transaction->save();
                             }
 
-                            if($body->status == PaymentInvoice::STATUS_EXECUTED)
+                            if($body->status == Transaction::STATUS_EXECUTED)
                             {
-                                $transaction = Transaction::where('order_id', $item->invoice_id)->first();
-
                                 $transaction->update(
                                     [
-                                        'status' => 'CONFIRMED'
+                                        'status' => Transaction::STATUS_CONFIRMED
                                     ]
                                 );
 
                                 $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->first();
                                 if($balanceAccount)
                                 {
-                                    $balanceAccount->increaseBalance((int)$transaction->amount_base);
+                                    $balanceAccount->increaseBalance((int)$transaction->amount_deposit);
                                 }
                             }
                         }

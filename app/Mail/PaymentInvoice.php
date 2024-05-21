@@ -7,19 +7,21 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\ErrorHandler\Debug;
 
 class PaymentInvoice extends Mailable
 {
     use Queueable, SerializesModels;
 
-    protected $paymentInvoice;
+    protected $transaction;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($paymentInvoice)
+    public function __construct($transaction)
     {
-        $this->paymentInvoice = $paymentInvoice;
+        $this->transaction = $transaction;
     }
 
     /**
@@ -37,12 +39,12 @@ class PaymentInvoice extends Mailable
      */
     public function content(): Content
     {
-        $paymentInvoice = $this->paymentInvoice;
+        $pdfUrl = json_decode($this->transaction->data)->pdfUrl;
 
         return new Content(
             markdown: 'payment.invoice-text',
             with: [
-                'paymentInvoice' => $paymentInvoice,
+                'pdfUrl' => $pdfUrl,
             ]
         );
     }

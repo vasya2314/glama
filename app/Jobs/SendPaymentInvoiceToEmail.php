@@ -8,21 +8,22 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class SendPaymentInvoiceToEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $paymentInvoice;
+    protected $transaction;
     protected $user;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($paymentInvoice, $user)
+    public function __construct($transaction, $user)
     {
-        $this->paymentInvoice = $paymentInvoice;
+        $this->transaction = $transaction;
         $this->user = $user;
     }
 
@@ -31,6 +32,6 @@ class SendPaymentInvoiceToEmail implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to($this->user->email)->send(new PaymentInvoice($this->paymentInvoice));
+        Mail::to($this->user->email)->send(new PaymentInvoice($this->transaction));
     }
 }

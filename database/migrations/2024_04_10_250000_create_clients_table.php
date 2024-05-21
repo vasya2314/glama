@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('password');
             $table->unsignedBigInteger('client_id')->unique();
             $table->integer('qty_campaigns')->default(0);
-            $table->bigInteger('balance')->default(0);
             $table->boolean('is_enable_shared_account')->default(false);
+            $table->bigInteger('balance')->default(0);
             $table->timestamps();
         });
     }

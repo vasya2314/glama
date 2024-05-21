@@ -46,7 +46,7 @@ class DepositRequest extends FormRequest
                 $rules,
                 [
                     'method_type' => 'in:qr,card',
-                    'amount_base' => 'required|numeric'
+                    'amount_deposit' => 'required|numeric'
                 ]
             );
         }
@@ -66,18 +66,6 @@ class DepositRequest extends FormRequest
         ];
     }
 
-    public function updatePaymentInvoice($data, string $status = null): array
-    {
-        $resource = [
-            'pdf_url' => $data->pdfUrl,
-            'invoice_id' => $data->invoiceId,
-        ];
-
-        if($status) $resource['status'] = $status;
-
-        return $resource;
-    }
-
     public function storeNaturalPersonTransaction(string $transactionType, Request $request, Tinkoff $tinkoff): array
     {
         $data = json_decode($tinkoff->response);
@@ -87,22 +75,33 @@ class DepositRequest extends FormRequest
             'status' => $data->Status,
             'payment_id' => $data->PaymentId,
             'order_id' => $data->OrderId,
-            'amount_base' => (int)$request->get('amount_base'),
+            'amount_deposit' => (int)$request->get('amount_deposit'),
             'amount' => (int)$data->Amount,
             'method_type' => $request->get('method_type'),
         ];
     }
 
-    public function storeInvoiceTransaction($data, Request $request): array
+    public function storeInvoiceTransaction(): array
     {
         return [
             'type' => Transaction::TYPE_DEPOSIT_INVOICE,
             'status' => Transaction::STATUS_NEW,
             'payment_id' => null,
-            'order_id' => $data->invoiceId,
-            'amount_base' => (int)$request->get('amount'),
-            'amount' => (int)$request->get('amount'),
+            'order_id' => null,
+            'amount_deposit' => (int)request()->get('amount'),
+            'amount' => (int)request()->get('amount'),
             'method_type' => 'invoice',
+        ];
+    }
+
+    public function updateInvoiceTransaction($data, string $status): array
+    {
+        return [
+            'status' => $status,
+            'payment_id' => null,
+            'order_id' => $data->invoiceId,
+            'method_type' => 'invoice',
+            'data' => json_encode($data),
         ];
     }
 
@@ -110,7 +109,7 @@ class DepositRequest extends FormRequest
     {
         return [
             'amount' => __('amount'),
-            'amount_base' => __('amount base'),
+            'amount_deposit' => __('amount base'),
             'method_type' => __('method type'),
         ];
     }

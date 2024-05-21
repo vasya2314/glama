@@ -59,7 +59,6 @@ class TicketRequest extends FormRequest
     {
         $data = $this->validated();
         if(isset($data['message'])) unset($data['message']);
-        if(isset($data['image'])) unset($data['image']);
 
         return array_merge(
             $data,

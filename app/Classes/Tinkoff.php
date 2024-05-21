@@ -332,11 +332,6 @@ class Tinkoff {
         }
     }
 
-    public function generateOrderId(): string
-    {
-        return Str::uuid()->toString();
-    }
-
     public function generateQr($response)
     {
         $params = [ 'PaymentId' => $response->PaymentId ];

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Transaction extends Model
 {
@@ -26,8 +27,20 @@ class Transaction extends Model
     const STATUS_PARTIAL_REVERSED = 'PARTIAL_REVERSED';
     const STATUS_CONFIRMED = 'CONFIRMED';
 
+
+    const STATUS_SUBMITTED = 'SUBMITTED';
+    const STATUS_DRAFT = 'DRAFT';
+    const STATUS_EXECUTED = 'EXECUTED';
+
+
     const TYPE_DEPOSIT = 'deposit';
     const TYPE_DEPOSIT_INVOICE = 'deposit_invoice';
+    const TYPE_DEPOSIT_YANDEX_ACCOUNT = 'deposit_yandex_account';
+
+    public static function generateUUID(): string
+    {
+        return Str::uuid()->toString();
+    }
 
     public function user(): BelongsTo
     {

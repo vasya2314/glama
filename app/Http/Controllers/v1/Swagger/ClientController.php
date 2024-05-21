@@ -65,15 +65,11 @@ use App\Http\Controllers\Controller;
  *     ),
  * ),
  *
- * @OA\Post(
- *      path="/clients/all",
+ * @OA\Get(
+ *      path="/clients",
  *      summary="Получить всех клиентов текущего пользователя",
  *      tags={"Клиенты"},
  *      security={{ "bearerAuth": {} }},
- *
- *      @OA\RequestBody(
- *          @OA\JsonContent(ref="#/components/schemas/ClientAllRequest"),
- *      ),
  *
  *      @OA\Response(
  *          response=200,
@@ -81,7 +77,14 @@ use App\Http\Controllers\Controller;
  *          @OA\JsonContent(
  *              @OA\Property(property="code", type="string", example="200"),
  *              @OA\Property(property="message", type="string", example="All clients"),
- *              @OA\Property(property="resource", type="string", example="https://yandex.ru/dev/direct/doc/ref-v5/agencyclients/get.html"),
+ *              @OA\Property(property="resource", type="object",
+ *                  @OA\Property(property="data", type="array",
+ *                      @OA\Items(ref="#/components/schemas/ClientResponse"),
+ *                  ),
+ *                  oneOf={
+ *                      @OA\Schema(ref="#/components/schemas/Pagination"),
+ *                  },
+ *              )
  *          ),
  *      ),
  *

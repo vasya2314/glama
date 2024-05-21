@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\DepositRequest;
 use App\Jobs\SendPaymentInvoiceToEmail;
 use App\Models\Contract;
-use App\Models\PaymentInvoice;
 use App\Models\Transaction;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class InvoiceDepositController extends Controller
 {
     protected ?Contract $contract;
-    protected ?PaymentInvoice $paymentInvoice;
+    protected ?Transaction $transaction;
 
     /**
      * @throws ConnectionException
@@ -52,13 +51,10 @@ class InvoiceDepositController extends Controller
             return $this->wrapResponse($response->status(), __('Error'), (array)json_decode($response->body()));
         }
 
-        if($this->paymentInvoice->update($request->updatePaymentInvoice($response->object(), PaymentInvoice::STATUS_SUBMITTED)))
+        if($this->transaction->update($request->updateInvoiceTransaction($response->object(), Transaction::STATUS_SUBMITTED)))
         {
-            if($user->transactions()->create($request->storeInvoiceTransaction($response->object(), $request)))
-            {
-                dispatch(new SendPaymentInvoiceToEmail($this->paymentInvoice, $user));
-                return $this->wrapResponse(Response::HTTP_OK, __('The invoice has been successfully generated. We have also sent a letter to your email.'), (array)json_decode($response->body()));
-            }
+            dispatch(new SendPaymentInvoiceToEmail($this->transaction, $user));
+            return $this->wrapResponse(Response::HTTP_OK, __('The invoice has been successfully generated. We have also sent a letter to your email.'), (array)json_decode($response->body()));
         }
 
         return $this->wrapResponse(Response::HTTP_INTERNAL_SERVER_ERROR, __('Error'));
@@ -67,14 +63,14 @@ class InvoiceDepositController extends Controller
 
     private function generateBody(DepositRequest $request): false|array
     {
-        $this->paymentInvoice = PaymentInvoice::create($request->storePaymentInvoice());
+        $this->transaction = $request->user()->transactions()->create($request->storeInvoiceTransaction());
 
-        if($this->paymentInvoice)
+        if($this->transaction)
         {
             $contractVariation = $this->contract->contractable;
 
             $body = [
-                "invoiceNumber" => (string)$this->paymentInvoice->id,
+                "invoiceNumber" => (string)$this->transaction->id,
                 "dueDate" => date('Y-m-d'),
                 "invoiceDate" => date('Y-m-d', strtotime('+1 day')),
                 "accountNumber" => $contractVariation->correspondent_account,

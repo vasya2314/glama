@@ -44,6 +44,17 @@ class ClientResponse
      */
     public $contractId;
 
+    /**
+     * @OA\Property(
+     *     property="account_name",
+     *     format="string",
+     *     title="Название аккаунта",
+     *     description="Название аккаунта",
+     *     example="ООО iHorHosting",
+     * )
+     */
+    public $accountName;
+
 
     /**
      * @OA\Property(
@@ -77,6 +88,39 @@ class ClientResponse
      * )
      */
     public $clientId;
+
+    /**
+     * @OA\Property(
+     *     property="qty_campaigns",
+     *     format="integer",
+     *     title="Количество активных РК",
+     *     description="Количество активных РК",
+     *     example="10",
+     * )
+     */
+    public $qtyCampaigns;
+
+    /**
+     * @OA\Property(
+     *     property="balance",
+     *     format="integer",
+     *     title="Баланс в рублях",
+     *     description="Баланс в рублях",
+     *     example="1000.00",
+     * )
+     */
+    public $balance;
+
+    /**
+     * @OA\Property(
+     *     property="is_enable_shared_account",
+     *     format="boolean",
+     *     title="Подключен ли общий счет",
+     *     description="Подключен ли общий счет",
+     *     example="true",
+     * )
+     */
+    public $isEnableSharedAccount;
 
     /**
      * @OA\Property(

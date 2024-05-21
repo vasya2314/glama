@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('type');
             $table->string('status');
             $table->string('payment_id')->nullable();
-            $table->string('order_id');
-            $table->integer('amount_base');
+            $table->string('order_id')->nullable();
+            $table->integer('amount_deposit');
             $table->integer('amount');
             $table->string('method_type')->index();
             $table->json('data')->nullable();

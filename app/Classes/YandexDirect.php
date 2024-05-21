@@ -3,9 +3,11 @@
 namespace App\Classes;
 
 use App\Models\Client;
+use App\Models\Transaction;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
 class YandexDirect
@@ -56,21 +58,21 @@ class YandexDirect
         return $response->object();
     }
 
-    public function enableSharedAccount(string $login)
-    {
-        $response = self::storeRequest(
-            self::$urlV4,
-            [
-                'method' => 'EnableSharedAccount',
-                'token' => self::$token,
-                'param' => [
-                    'Login' => $login
-                ],
-            ]
-        );
-
-        dd($response->object());
-    }
+//    public function enableSharedAccount(string $login)
+//    {
+//        $response = self::storeRequest(
+//            self::$urlV4,
+//            [
+//                'method' => 'EnableSharedAccount',
+//                'token' => self::$token,
+//                'param' => [
+//                    'Login' => $login
+//                ],
+//            ]
+//        );
+//
+//        dd($response->object());
+//    }
 
     public function clientHasActiveCampaigns()
     {
@@ -105,7 +107,7 @@ class YandexDirect
 
         $response = self::storeRequest(self::$urlV5 . 'campaigns', $data, ['Client-Login' => $clientLogin]);
 
-        if(self::hasErrors(json_decode($response->body())))
+        if($this->hasErrors(json_decode($response->body())))
         {
             return \response()->json(
                 [
@@ -119,8 +121,28 @@ class YandexDirect
 
     }
 
-//    public function deposit(array $params)
-//    {
+    public function deposit(array $params, Client $client, Request $request)
+    {
+        if(!$this->canDoDeposit($client))
+        {
+            return false;
+        }
+
+        $user = request()->user();
+
+        $transaction = $user->transactions()->create(
+            [
+                'type' => Transaction::TYPE_DEPOSIT_YANDEX_ACCOUNT,
+                'status' => Transaction::STATUS_NEW,
+                'order_id' => Transaction::generateUUID(),
+                'amount_deposit' => $request->get('amount'),
+                'amount' => $request->get('amount'),
+                'method_type' => 'yandex_invoice'
+            ]
+        );
+
+
+
 //        $response = Http::post(self::$urlV4, [
 //            'method' => 'AccountManagement',
 //            'finance_token' => $this->generateFinanceToken('AccountManagement', $params['Action']),
@@ -130,9 +152,9 @@ class YandexDirect
 //        ]);
 //
 //        dd(json_decode($response->body()));
-//
-////        return $response->body();
-//    }
+
+//        return $response->body();
+    }
 //
 //    private function generateFinanceToken(string $action, string $method): string
 //    {
@@ -141,7 +163,7 @@ class YandexDirect
 //        return hash("sha256", self::$masterToken . $operation_num . $action . $method . self::$login);
 //    }
 
-    private static function storeRequest(string $url, array $data, array $headers = []): PromiseInterface|Response
+    protected static function storeRequest(string $url, array $data, array $headers = []): PromiseInterface|Response
     {
         $baseHeaders = [
             'Accept-Language' => 'ru'
@@ -151,9 +173,20 @@ class YandexDirect
         return Http::withHeaders($headers)->withToken(self::$token)->post($url, $data);
     }
 
-    private static function hasErrors(object $object): bool
+    protected function hasErrors(object $object): bool
     {
         return isset($object->error);
+    }
+
+    protected function canDoDeposit(Client $client): bool
+    {
+        if($client->qty_campaigns > 0 && $client->is_enable_shared_account == true)
+        {
+            return true;
+        }
+
+        return false;
+
     }
 
 }

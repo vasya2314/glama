@@ -66,6 +66,18 @@ class TicketResponse
      */
     public $assignedTo;
 
+
+    /**
+     * @OA\Property(
+     *     property="message",
+     *     format="string",
+     *     title="Первое сообщение в тикете",
+     *     description="Первое сообщение в тикете",
+     *     example="Саня гей",
+     * )
+     */
+    public $message;
+
     /**
      * @OA\Property(
      *     property="created_at",

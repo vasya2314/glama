@@ -71,7 +71,7 @@ class PaymentDepositController extends Controller
                         $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->first();
                         if($balanceAccount)
                         {
-                            $balanceAccount->increaseBalance((int)$transaction->amount_base);
+                            $balanceAccount->increaseBalance((int)$transaction->amount_deposit);
                         }
                     }
                 }
@@ -86,8 +86,9 @@ class PaymentDepositController extends Controller
 
     private function depositForNaturalPerson(DepositRequest $request): bool|JsonResponse
     {
-        $amountBase = $request->get('amount_base');
+        $amountBase = $request->get('amount_deposit');
         $amount = $request->get('amount');
+
 
         if(!$this->checkCommission((int)$amountBase, (int)$amount))
         {
@@ -102,7 +103,7 @@ class PaymentDepositController extends Controller
         $tinkoff = new Tinkoff($apiUrl, $terminal, $secretKey);
 
         $payment = [
-            'OrderId' => $tinkoff->generateOrderId(),
+            'OrderId' => Transaction::generateUUID(),
             'Amount' => $amount,
             'Language' => 'ru',
             'Description' => 'Покупка GCoins',

@@ -16,7 +16,7 @@ class YandexDirectPaymentController extends Controller
         $client = Client::findOrFail($data['client_id']);
 
         $params = [
-            'Action' => 'Invoice',
+            'Action' => 'Deposit',
             'Payments' => [
                 [
                     "AccountID" => $client->client_id,
@@ -26,8 +26,8 @@ class YandexDirectPaymentController extends Controller
             ]
         ];
 
-//        $object = YandexDirect::deposit();
-//
+        $object = YandexDirect::deposit($params, $client, $request);
+
 //        dd($object);
     }
 

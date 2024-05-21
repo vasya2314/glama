@@ -20,6 +20,7 @@ class TicketResource extends JsonResource
             'title' => $this->title,
             'status' => $this->status,
             'assigned_to' => $this->assigned_to,
+            'message' => $this->messages()->oldest()->pluck('message')->first(),
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }

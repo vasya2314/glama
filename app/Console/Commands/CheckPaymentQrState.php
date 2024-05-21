@@ -61,7 +61,7 @@ class CheckPaymentQrState extends Command
                         $balanceAccount = BalanceAccount::lockForUpdate()->where('user_id', $transaction->user_id)->first();
                         if($balanceAccount)
                         {
-                            $balanceAccount->increaseBalance((int)$transaction->amount_base);
+                            $balanceAccount->increaseBalance((int)$transaction->amount_deposit);
                         }
                     }
 
