@@ -25,7 +25,7 @@ class ClientRequest extends FormRequest
     {
         $rules = [
             'contract_id' => [
-                'required',
+                'nullable',
                 'unique:clients,contract_id',
                 Rule::exists('contracts', 'id')->where(function ($query) {
                     $query->where('user_id', $this->user()->id);
@@ -52,9 +52,10 @@ class ClientRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if($this->has('contract_id') && $this->has('login'))
+        if($this->has('login'))
         {
-            $contract = Contract::findOrFail($this->contract_id);
+            $tinType = 'LEGAL';
+            $tin = config('yandex')['inn_company'];
 
             $params = [
                 'Login' => 'gl-' . $this->get('login'),
@@ -104,8 +105,8 @@ class ClientRequest extends FormRequest
                     ]
                 ],
                 'TinInfo' => [
-                    'TinType' => $this->getContractType($contract),
-                    'Tin' => $contract->contractable->inn,
+                    'TinType' => $tinType,
+                    'Tin' => $tin,
                 ]
             ];
 

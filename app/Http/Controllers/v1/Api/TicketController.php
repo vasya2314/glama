@@ -17,7 +17,7 @@ class TicketController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $tickets = $user->tickets()->paginate(30);
+        $tickets = $user->tickets()->paginate(1);
         $tickets = TicketResource::collection($tickets)->response()->getData(true);
 
         return $this->wrapResponse(Response::HTTP_OK, __('All tickets.'), (array)$tickets);

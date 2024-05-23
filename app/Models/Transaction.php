@@ -27,7 +27,6 @@ class Transaction extends Model
     const STATUS_PARTIAL_REVERSED = 'PARTIAL_REVERSED';
     const STATUS_CONFIRMED = 'CONFIRMED';
 
-
     const STATUS_SUBMITTED = 'SUBMITTED';
     const STATUS_DRAFT = 'DRAFT';
     const STATUS_EXECUTED = 'EXECUTED';

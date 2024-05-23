@@ -16,18 +16,17 @@ class YandexDirectPaymentController extends Controller
         $client = Client::findOrFail($data['client_id']);
 
         $params = [
-            'Action' => 'Deposit',
-            'Payments' => [
-                [
-                    "AccountID" => $client->client_id,
-                    "Amount" => kopToRub($data['amount']),
-                    "Currency" => 'RUB'
-                ]
+            [
+                'AccountID' => $client->account_id,
+                'Amount' => kopToRub($data['amount']),
+                'Currency' => 'RUB',
+                'Contract' => config('yandex')['contract_id'],
             ]
         ];
 
         $object = YandexDirect::deposit($params, $client, $request);
 
+        // ВОПРОС
 //        dd($object);
     }
 

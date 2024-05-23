@@ -90,5 +90,7 @@
     "amount base": "базовая сумма",
     "method type": "тип метода",
     "Contract updated successfully.": "Договор успешно обновлен.",
-    "The company counter has been successfully updated": "Счетчик компании успешно обновлен"
+    "The company counter has been successfully updated": "Счетчик компании успешно обновлен",
+    "At the moment you cannot top up your balance. Either you do not have a single active advertising company, or the joint account has not yet been connected (connected automatically). Please try again later.\n": "На данный момент вы не можете пополнить свой баланс. Либо у вас нет ни одной активной рекламной компании, либо общий счет еще не подключен (подключается автоматически). Пожалуйста, попробуйте позже.",
+    "Invalid amount": "Неверная сумма"
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\EnableSharedAccount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,11 @@ class Client extends Model
 
     protected $table = 'clients';
     protected $guarded = false;
+
+    public static function getTableName()
+    {
+        return with(new static)->getTable();
+    }
 
     protected function casts(): array
     {

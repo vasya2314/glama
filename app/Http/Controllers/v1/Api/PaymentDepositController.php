@@ -86,11 +86,10 @@ class PaymentDepositController extends Controller
 
     private function depositForNaturalPerson(DepositRequest $request): bool|JsonResponse
     {
-        $amountBase = $request->get('amount_deposit');
+        $amountDeposit = $request->get('amount_deposit');
         $amount = $request->get('amount');
 
-
-        if(!$this->checkCommission((int)$amountBase, (int)$amount))
+        if(!$this->checkCommission((int)$amountDeposit, (int)$amount))
         {
             return $this->wrapResponse(Response::HTTP_BAD_REQUEST, __('Invalid amount'));
         }
@@ -148,16 +147,16 @@ class PaymentDepositController extends Controller
         return $this->wrapResponse(Response::HTTP_INTERNAL_SERVER_ERROR, __('Error'));
     }
 
-    private function checkCommission(int $baseAmount, int $amount): bool
+    private function checkCommission(int $amountDeposit, int $amount): bool
     {
         if(request()->get('method_type') == 'card')
         {
-            return $baseAmount + ($baseAmount * 0.0259) == $amount;
+            return $amountDeposit + ($amountDeposit * 0.0259) == $amount;
         }
 
         if(request()->get('method_type') == 'qr')
         {
-            return $baseAmount + ($baseAmount * 0.017) == $amount;
+            return $amountDeposit + ($amountDeposit * 0.017) == $amount;
         }
 
         return false;

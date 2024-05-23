@@ -42,6 +42,10 @@ class ClientController extends Controller
                 'login' => $object->result->Login,
                 'password' => $object->result->Password,
                 'client_id' => $object->result->ClientId,
+                'account_id' => null,
+                'qty_campaigns' => 0,
+                'balance' => 0,
+                'is_enable_shared_account' => false,
             ]
         ));
 

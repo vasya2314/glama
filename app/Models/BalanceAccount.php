@@ -15,6 +15,13 @@ class BalanceAccount extends Model
 
     public $timestamps = false;
 
+    public static function isEnoughBalance(int $amount, User $user): bool
+    {
+        $balanceAccount = $user->balanceAccount;
+
+        return (int)$balanceAccount->balance >= $amount;
+    }
+
     public function increaseBalance(int $amount): bool
     {
         $balance = $this->balance + $amount;
@@ -37,7 +44,5 @@ class BalanceAccount extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-
 
 }
