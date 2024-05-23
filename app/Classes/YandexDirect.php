@@ -175,8 +175,6 @@ class YandexDirect
             ]
         );
 
-        // ВОПРОС
-
 //        $response = Http::post(
 //            self::$urlV4,
 //            [
