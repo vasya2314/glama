@@ -2,14 +2,15 @@
 
 namespace App\Classes;
 
-use App\Jobs\EnableSharedAccount;
 use App\Models\Client;
 use App\Models\Transaction;
 use GuzzleHttp\Promise\PromiseInterface;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class YandexDirect
@@ -19,6 +20,7 @@ class YandexDirect
     protected static string $urlV5;
     protected static string $masterToken;
     protected static string $login;
+    protected static string $contractId;
 
     public function __construct()
     {
@@ -32,6 +34,7 @@ class YandexDirect
         self::$token = config('yandex')['token'];
         self::$urlV4 = env('YANDEX_API_LIVE_V4');
         self::$urlV5 = env('YANDEX_API');
+        self::$contractId = config('yandex')['contract_id'];
     }
 
     public function getAllClients(array $params): ?object
@@ -90,10 +93,13 @@ class YandexDirect
 
         if($this->hasErrors($response))
         {
-            return $this->wrapResponse(ResponseAlias::HTTP_SERVICE_UNAVAILABLE, __('Error'), (array)$response->object());
+            return $this->wrapResponse(
+                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                __('Error'),
+                (array)$response->object());
         }
 
-        return count(json_decode($response->body())->result->Campaigns);
+        return count($response->object()->result->Campaigns);
 
     }
 
@@ -148,7 +154,7 @@ class YandexDirect
 
     }
 
-    public function deposit(array $params, Client $client, Request $request)
+    public function deposit(Client $client, Request $request)
     {
         $user = request()->user();
         $amountDeposit = (int)$request->get('amount_deposit');
@@ -156,43 +162,93 @@ class YandexDirect
 
         if(!$this->canDoDeposit($client))
         {
-            return $this->wrapResponse(ResponseAlias::HTTP_SERVICE_UNAVAILABLE, __('At the moment you cannot top up your balance. Either you do not have a single active advertising company, or the joint account has not yet been connected (connected automatically). Please try again later.'));
+            return $this->wrapResponse(
+                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                __('At the moment you cannot top up your balance. Either you do not have a single active advertising company, or the joint account has not yet been connected (connected automatically). Please try again later.')
+            );
         }
 
         if(!$this->checkCommission($amountDeposit, $amount))
         {
-            return $this->wrapResponse(ResponseAlias::HTTP_SERVICE_UNAVAILABLE, __('Invalid amount'));
+            return $this->wrapResponse(
+                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                __('Invalid amount')
+            );
         }
 
-        $transaction = $user->transactions()->create(
-            [
-                'type' => Transaction::TYPE_DEPOSIT_YANDEX_ACCOUNT,
-                'status' => Transaction::STATUS_NEW,
-                'order_id' => Transaction::generateUUID(),
-                'amount_deposit' => $amountDeposit,
-                'amount' => $amount,
-                'method_type' => 'yandex_invoice'
-            ]
+        try {
+            DB::beginTransaction();
+
+            $transaction = $user->transactions()->create(
+                [
+                    'type' => Transaction::TYPE_DEPOSIT_YANDEX_ACCOUNT,
+                    'status' => Transaction::STATUS_NEW,
+                    'order_id' => Transaction::generateUUID(),
+                    'amount_deposit' => $amountDeposit,
+                    'amount' => $amount,
+                    'method_type' => 'yandex_invoice'
+                ]
+            );
+
+            $response = Http::post(
+                self::$urlV4,
+                [
+                    'method' => 'AccountManagement',
+                    'finance_token' => $this->generateFinanceToken('AccountManagement', 'Deposit', $transaction->id),
+                    'operation_num' => $transaction->id,
+                    'token' => self::$token,
+                    'locale' => 'ru',
+                    'param' => [
+                        'Action' => 'Deposit',
+                        'Payments' => [
+                            [
+                                'AccountID' => $client->account_id,
+                                'Amount' => kopToRub($amount),
+                                'Currency' => 'RUB',
+                                'Contract' => self::$contractId,
+                            ]
+                        ],
+                    ],
+                ]
+            );
+
+            if($this->hasErrors($response))
+            {
+                return $this->wrapResponse(
+                    ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
+                    __('Error'),
+                    (array)$response->object(),
+                );
+            }
+
+            $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->first();
+            if($balanceAccount)
+            {
+                $balanceAccount->decreaseBalance($amount);
+            }
+
+            $transaction->update(
+                [
+                    'status' => Transaction::STATUS_CONFIRMED,
+                ]
+            );
+
+            DB::commit();
+
+            return $this->wrapResponse(
+                ResponseAlias::HTTP_OK,
+                __('The balance has been successfully replenished')
+            );
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+        }
+
+        return $this->wrapResponse(
+            ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
+            __('Error')
         );
-
-//        $response = Http::post(
-//            self::$urlV4,
-//            [
-//                'method' => 'AccountManagement',
-//                'finance_token' => $this->generateFinanceToken('AccountManagement', 'Deposit', $transaction->id),
-//                'operation_num' => $transaction->id,
-//                'token' => self::$token,
-//                'locale' => 'ru',
-//                'param' => [
-//                    'Action' => 'Deposit',
-//                    'Payments' => $params,
-//                ],
-//            ]
-//        );
-
-//        dd($response->object());
-
-        return false;
 
     }
 
@@ -219,7 +275,13 @@ class YandexDirect
         {
             return true;
         }
+
         if(isset($object->error))
+        {
+            return true;
+        }
+
+        if(isset($object->error_code))
         {
             return true;
         }

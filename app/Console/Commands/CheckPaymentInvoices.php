@@ -79,9 +79,9 @@ class CheckPaymentInvoices extends Command
                         }
 
                         DB::commit();
-                    } catch (\Exception $exception) {
+                    } catch (\Exception $e) {
                         DB::rollBack();
-                        Log::error($exception);
+                        Log::error($e->getMessage());
                     }
                 });
                 sleep(1);

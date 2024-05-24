@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\YandexDirectPaymentRequest;
 use App\Models\Client;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class YandexDirectPaymentController extends Controller
 {
@@ -15,19 +16,8 @@ class YandexDirectPaymentController extends Controller
         $data = $request->validated();
         $client = Client::findOrFail($data['client_id']);
 
-        $params = [
-            [
-                'AccountID' => $client->account_id,
-                'Amount' => kopToRub($data['amount']),
-                'Currency' => 'RUB',
-                'Contract' => config('yandex')['contract_id'],
-            ]
-        ];
+        return YandexDirect::deposit($client, $request);
 
-        $object = YandexDirect::deposit($params, $client, $request);
-
-        // ВОПРОС
-//        dd($object);
     }
 
     private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse

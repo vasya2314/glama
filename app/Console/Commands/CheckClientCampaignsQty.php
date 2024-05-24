@@ -47,9 +47,9 @@ class CheckClientCampaignsQty extends Command
                     }
 
                     DB::commit();
-                } catch (\Exception $exception) {
+                } catch (\Exception $e) {
                     DB::rollBack();
-                    Log::error($exception);
+                    Log::error($e->getMessage());
                 }
             });
         }

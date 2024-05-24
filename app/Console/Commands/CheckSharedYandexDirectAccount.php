@@ -53,9 +53,9 @@ class CheckSharedYandexDirectAccount extends Command
                             ->update(['is_enable_shared_account' => true]);
 
                         DB::commit();
-                    } catch (\Exception $exception) {
+                    } catch (\Exception $e) {
                         DB::rollBack();
-                        Log::error($exception);
+                        Log::error($e->getMessage());
                     }
                 }
             }
