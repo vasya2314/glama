@@ -787,6 +787,70 @@
                 ]
             }
         },
+        "/clients/{client}/update/campaigns-qty": {
+            "get": {
+                "tags": [
+                    "Клиенты"
+                ],
+                "summary": "Обновление счетсчика количества компании на аккаунте Яндекс",
+                "operationId": "5bdfc76ec158faa7936faa956bc77a34",
+                "parameters": [
+                    {
+                        "name": "client",
+                        "in": "path",
+                        "description": "ID клиента",
+                        "required": true,
+                        "example": "15"
+                    }
+                ],
+                "responses": {
+                    "403": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The company counter has been successfully updated"
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/ClientResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/contracts": {
             "get": {
                 "tags": [
@@ -1097,6 +1161,68 @@
                 }
             }
         },
+        "/user/deposit/invoice": {
+            "post": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Пополнение баланса аккаунта для юридических лиц",
+                "description": "Указывать стоимость в копейках",
+                "operationId": "35260aa799352cc9fa720c3533387a53",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "amount": {
+                                        "type": "integer",
+                                        "example": "30510"
+                                    },
+                                    "contract_id": {
+                                        "type": "integer",
+                                        "example": "322"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some message"
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/DepositInvoiceResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/tickets/{ticket}/messages": {
             "get": {
                 "tags": [
@@ -1345,6 +1471,76 @@
                                 }
                             }
                         }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/deposit/payment": {
+            "post": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Пополнение баланса аккаунта для физических лиц",
+                "description": "Указывать стоимость в копейках. QR код комиссия - 1.7%. По карте - 2.59%",
+                "operationId": "1864c026810435440f652d5858dd8cb5",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "amount_deposit": {
+                                        "type": "integer",
+                                        "example": "30000"
+                                    },
+                                    "amount": {
+                                        "type": "integer",
+                                        "example": "30510"
+                                    },
+                                    "contract_id": {
+                                        "type": "integer",
+                                        "example": "322"
+                                    },
+                                    "method_type": {
+                                        "type": "string",
+                                        "example": "qr|card"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ok"
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/DepositPaymentResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error"
                     }
                 },
                 "security": [
@@ -1907,6 +2103,72 @@
                                 }
                             }
                         }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/yandex-direct/deposit": {
+            "post": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Пополнение Яндекс аккаунта",
+                "description": "Указывать стоимость в копейках",
+                "operationId": "b6b2718f0478440a27da1f124f7645d9",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "amount_deposit": {
+                                        "type": "integer",
+                                        "example": "30000"
+                                    },
+                                    "amount": {
+                                        "type": "integer",
+                                        "example": "30510"
+                                    },
+                                    "client_id": {
+                                        "type": "integer",
+                                        "example": "322"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Balance has been updated succesfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error"
+                    },
+                    "503": {
+                        "description": "Error"
                     }
                 },
                 "security": [
@@ -2725,6 +2987,12 @@
                         "format": "boolean",
                         "example": "true"
                     },
+                    "account_id": {
+                        "title": "ID общего счета",
+                        "description": "ID общего счета",
+                        "format": "integer",
+                        "example": "15060"
+                    },
                     "created_at": {
                         "title": "Дата создания",
                         "description": "Дата создания",
@@ -2850,6 +3118,54 @@
                         "description": "Дата создания",
                         "format": "date",
                         "example": "2024-04-02 09:53:15"
+                    }
+                },
+                "type": "object"
+            },
+            "DepositInvoiceResponse": {
+                "title": "Возвращаемый ответ от Тинькоф при оплате для юридических лиц",
+                "properties": {
+                    "pdfUrl": {
+                        "type": "string",
+                        "example": "https://example.com/qwetq"
+                    },
+                    "invoiceId": {
+                        "type": "string",
+                        "example": "d8327c28-4a8e-4084-93ea-a94b7bd144c5"
+                    }
+                },
+                "type": "object"
+            },
+            "DepositPaymentResponse": {
+                "title": "Возвращаемый ответ от Тинькоф при оплате для физических лиц",
+                "properties": {
+                    "Success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "ErrorCode": {
+                        "type": "string",
+                        "example": "0"
+                    },
+                    "Message": {
+                        "type": "string",
+                        "example": "OK"
+                    },
+                    "TerminalKey": {
+                        "type": "string",
+                        "example": "1708325547610DEMO"
+                    },
+                    "Data": {
+                        "type": "string",
+                        "example": "https://qr.nspk.ru/AD10004MV5CJ3D638358RO81129CE63P?type=02&bank=100000000004&sum=30510&cur=RUB&crc=B754"
+                    },
+                    "OrderId": {
+                        "type": "string",
+                        "example": "12764079-6e5b-4d22-817c-6420aa3804ab"
+                    },
+                    "PaymentId": {
+                        "type": "integer",
+                        "example": 4471678787
                     }
                 },
                 "type": "object"

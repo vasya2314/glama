@@ -129,6 +129,38 @@ use App\Http\Controllers\Controller;
  *         ),
  *     ),
  * ),
+ * @OA\Get(
+ *      path="/clients/{client}/update/campaigns-qty",
+ *      summary="Обновление счетсчика количества компании на аккаунте Яндекс",
+ *      tags={"Клиенты"},
+ *      security={{ "bearerAuth": {} }},
+ *
+ *      @OA\Parameter(
+ *          description="ID клиента",
+ *          in="path",
+ *          name="client",
+ *          required=true,
+ *          example="15",
+ *      ),
+ *
+ *      @OA\Response(
+ *          response=403,
+ *          description="Error",
+ *          @OA\JsonContent(
+ *              @OA\Property(property="message", type="string", example="Forbidden"),
+ *          ),
+ *      ),
+ *
+ *      @OA\Response(
+ *          response=200,
+ *          description="Error",
+ *          @OA\JsonContent(
+ *              @OA\Property(property="code", type="string", example="200"),
+ *              @OA\Property(property="message", type="string", example="The company counter has been successfully updated"),
+ *              @OA\Property(property="resource", type="string", ref="#/components/schemas/ClientResponse"),
+ *          ),
+ *      ),
+ *  ),
  */
 class ClientController extends Controller
 {

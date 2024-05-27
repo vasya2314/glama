@@ -11,13 +11,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
-
+//info@nikamaritime.ru
 class TicketController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        $tickets = $user->tickets()->paginate(1);
+        $tickets = $user->tickets()->latest()->paginate(2);
         $tickets = TicketResource::collection($tickets)->response()->getData(true);
 
         return $this->wrapResponse(Response::HTTP_OK, __('All tickets.'), (array)$tickets);

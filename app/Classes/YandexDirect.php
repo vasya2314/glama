@@ -271,17 +271,11 @@ class YandexDirect
     {
         $object = $response->object();
 
-        if(isset($object->data->Errors))
-        {
-            return true;
-        }
-
-        if(isset($object->error))
-        {
-            return true;
-        }
-
-        if(isset($object->error_code))
+        if(
+            isset($object->data->Errors) ||
+            isset($object->error) ||
+            isset($object->error_code)
+        )
         {
             return true;
         }

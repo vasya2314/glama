@@ -124,6 +124,17 @@ class ClientResponse
 
     /**
      * @OA\Property(
+     *     property="account_id",
+     *     format="integer",
+     *     title="ID общего счета",
+     *     description="ID общего счета",
+     *     example="15060",
+     * )
+     */
+    public $accountId;
+
+    /**
+     * @OA\Property(
      *     property="created_at",
      *     format="date",
      *     title="Дата создания",
