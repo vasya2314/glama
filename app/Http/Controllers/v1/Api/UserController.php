@@ -55,6 +55,14 @@ class UserController extends Controller
         return $this->wrapResponse(Response::HTTP_OK, __('Your profile'), $user);
     }
 
+    public function getBalance(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $balanceAccount = $user->balanceAccount;
+
+        return $this->wrapResponse(Response::HTTP_OK, __('Ok'), ['balance' => kopToRub((int)$balanceAccount->balance)]);
+    }
+
     private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse
     {
         $result = [

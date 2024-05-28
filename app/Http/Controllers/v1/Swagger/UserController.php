@@ -102,6 +102,38 @@ use App\Http\Controllers\Controller;
  *         )
  *     ),
  * ),
+ *
+ * @OA\Get(
+ *     path="/user/balance",
+ *     summary="Получение баланса пользователя",
+ *     tags={"Пользователь"},
+ *     security={{ "bearerAuth": {} }},
+ *
+ *     @OA\Response(
+ *         response=200,
+ *         description="Ok",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="code", type="string", example="200"),
+ *             @OA\Property(property="message", type="string", example="Ok"),
+ *             @OA\Property(property="reource", type="object",
+ *                 @OA\Property(property="balance", type="float", example="2000.00"),
+ *             ),
+ *         ),
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthenticated",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Unauthenticated"),
+ *         )
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=500,
+ *         description="Error",
+ *     ),
+ * ),
  */
 class UserController extends Controller
 {

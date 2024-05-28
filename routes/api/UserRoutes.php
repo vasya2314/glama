@@ -14,4 +14,5 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/user/deposit/payment', [PaymentDepositController::class, 'deposit']);
     Route::middleware('throttle:4,0.16')->post('/user/deposit/invoice', [InvoiceDepositController::class, 'deposit']);
     Route::post('/user/yandex-direct/deposit', [YandexDirectPaymentController::class, 'deposit']);
+    Route::get('/user/balance', [UserController::class, 'getBalance']);
 });
