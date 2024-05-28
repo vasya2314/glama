@@ -67,6 +67,7 @@ use App\Http\Controllers\Controller;
  *
  * @OA\Get(
  *      path="/clients",
+ *      description="Возможна фильтрация по полям account_name, date_start, date_end. Формат даты: 2024-05-18",
  *      summary="Получить всех клиентов текущего пользователя",
  *      tags={"Клиенты"},
  *      security={{ "bearerAuth": {} }},

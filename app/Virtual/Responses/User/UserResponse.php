@@ -96,16 +96,6 @@ class UserResponse
      *     example="1",
      * )
      */
-    public $balance;
-
-    /**
-     * @OA\Property(
-     *     property="balance",
-     *     title="Баланс пользователя",
-     *     description="Баланс пользователя",
-     *     example="3.22",
-     * )
-     */
     public $role;
 
     /**

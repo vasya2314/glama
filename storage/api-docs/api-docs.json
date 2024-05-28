@@ -554,6 +554,7 @@
                     "Клиенты"
                 ],
                 "summary": "Получить всех клиентов текущего пользователя",
+                "description": "Возможна фильтрация по полям account_name, date_start, date_end. Формат даты: 2024-05-18",
                 "operationId": "819c304a62453055392716abf763547d",
                 "responses": {
                     "200": {
@@ -1910,6 +1911,75 @@
                 ]
             }
         },
+        "/transactions": {
+            "get": {
+                "tags": [
+                    "Транзакции"
+                ],
+                "summary": "Получить все транзакции пользователя",
+                "description": "Возможна фильтрация по полям type:deposit, deposit_invoice, deposit_yandex_account, removal, cashback. Дате date_start, date_end. Формат даты: 2024-05-18",
+                "operationId": "378efe211748bf3cb7b82e9d83e71931",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All transactions"
+                                        },
+                                        "resource": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/TransactionResponse"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object",
+                                            "oneOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/Pagination"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/user/update-user": {
             "patch": {
                 "tags": [
@@ -3218,6 +3288,60 @@
                 },
                 "type": "object"
             },
+            "TransactionResponse": {
+                "title": "Возвращаемая транзакция",
+                "properties": {
+                    "id": {
+                        "title": "ID клиента (внутри базы)",
+                        "description": "ID клиента (внутри базы)",
+                        "format": "integer",
+                        "example": "15"
+                    },
+                    "user_id": {
+                        "title": "ID пользователя",
+                        "description": "ID пользователя",
+                        "format": "integer",
+                        "example": "10"
+                    },
+                    "type": {
+                        "title": "Тип транзакции",
+                        "description": "Тип транзакции",
+                        "format": "string",
+                        "example": "deposit"
+                    },
+                    "status": {
+                        "title": "Статус",
+                        "description": "Статус",
+                        "format": "string",
+                        "example": "CONFIRMED"
+                    },
+                    "amount_deposit": {
+                        "title": "Сумма без комиссии",
+                        "description": "Сумма с комиссией",
+                        "format": "integer",
+                        "example": "30000"
+                    },
+                    "amount": {
+                        "title": "Сумма с комиссией",
+                        "description": "Сумма Сумма с комиссией",
+                        "format": "integer",
+                        "example": "30510"
+                    },
+                    "method_type": {
+                        "title": "Тип пополнения",
+                        "description": "Тип пополнения",
+                        "format": "integer",
+                        "example": "qr"
+                    },
+                    "created_at": {
+                        "title": "Дата создания",
+                        "description": "Дата создания",
+                        "format": "date",
+                        "example": "2024-04-02 09:53:15"
+                    }
+                },
+                "type": "object"
+            },
             "UserResponse": {
                 "title": "Возвращаемый пользователь",
                 "properties": {
@@ -3269,11 +3393,6 @@
                         "format": "integer",
                         "example": "1"
                     },
-                    "balance": {
-                        "title": "Баланс пользователя",
-                        "description": "Баланс пользователя",
-                        "example": "3.22"
-                    },
                     "created_at": {
                         "title": "Дата регистрации",
                         "description": "Дата регистрации",
@@ -3303,6 +3422,9 @@
         },
         {
             "name": "Договор"
+        },
+        {
+            "name": "Транзакции"
         }
     ]
 }

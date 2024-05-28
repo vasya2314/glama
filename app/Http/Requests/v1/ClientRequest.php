@@ -33,13 +33,25 @@ class ClientRequest extends FormRequest
             ],
         ];
 
+        if ($this->is('api/v1/clients') && $this->isMethod('get'))
+        {
+            return [
+                'account_name' => 'string',
+                'date_start' => 'date',
+                'date_end' => 'date',
+            ];
+        }
+
         if ($this->is('api/v1/clients') && $this->isMethod('post'))
         {
-            return array_merge($rules, [
-                'account_name' => 'required|string',
-                'login' => 'required|unique:clients,login',
-                'params' => 'required|array',
-            ]);
+            return array_merge(
+                $rules,
+                [
+                    'account_name' => 'required|string',
+                    'login' => 'required|unique:clients,login',
+                    'params' => 'required|array',
+                ]
+            );
         }
 
         if($this->is('api/v1/clients/*') && $this->isMethod('patch'))

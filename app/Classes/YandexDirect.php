@@ -2,6 +2,7 @@
 
 namespace App\Classes;
 
+use App\Models\BalanceAccount;
 use App\Models\Client;
 use App\Models\Transaction;
 use GuzzleHttp\Promise\PromiseInterface;
@@ -157,8 +158,17 @@ class YandexDirect
     public function deposit(Client $client, Request $request)
     {
         $user = request()->user();
+        $client->lockForUpdate();
         $amountDeposit = (int)$request->get('amount_deposit');
         $amount = (int)$request->get('amount');
+
+        if(!BalanceAccount::isEnoughBalance($amount, $user))
+        {
+            return $this->wrapResponse(
+                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                __('Not enough balance')
+            );
+        }
 
         if(!$this->canDoDeposit($client))
         {
@@ -221,11 +231,13 @@ class YandexDirect
                 );
             }
 
-            $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->first();
+            $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->firstOrFail();
             if($balanceAccount)
             {
                 $balanceAccount->decreaseBalance($amount);
             }
+
+            $client->increaseBalance($amount);
 
             $transaction->update(
                 [

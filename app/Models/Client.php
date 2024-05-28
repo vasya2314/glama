@@ -2,19 +2,36 @@
 
 namespace App\Models;
 
-use App\Jobs\EnableSharedAccount;
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Client extends Model
 {
-    use HasFactory;
+    use HasFactory, Filterable;
 
     protected $table = 'clients';
     protected $guarded = false;
+
+    public function increaseBalance(int $amount): bool
+    {
+        $balance = $this->balance + $amount;
+        $this->balance = $balance;
+
+        if($this->save()) return true;
+        return false;
+    }
+
+    public function decreaseBalance(int $amount): bool
+    {
+        $balance = $this->balance - $amount;
+        $this->balance = $balance;
+
+        if($this->save()) return true;
+        return false;
+    }
 
     public static function getTableName()
     {

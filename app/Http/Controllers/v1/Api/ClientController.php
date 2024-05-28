@@ -4,6 +4,7 @@ namespace App\Http\Controllers\v1\Api;
 
 use App\Facades\YandexDirect;
 use App\Http\Controllers\Controller;
+use App\Http\Filters\Models\ClientFilter;
 use App\Http\Requests\v1\ClientRequest;
 use App\Http\Resources\v1\ClientResource;
 use App\Models\Client;
@@ -15,11 +16,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ClientController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(ClientRequest $request): JsonResponse
     {
+        $data = $request->validated();
         $user = $request->user();
 
-        $clients = ClientResource::collection($user->clients()->paginate(9))
+        $filter = app()->make(ClientFilter::class, ['queryParams' => array_filter($data)]);
+
+        $clients = ClientResource::collection($user->clients()->filter($filter)->paginate(9))
             ->response()
             ->getData(true);
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +10,7 @@ use Illuminate\Support\Str;
 
 class Transaction extends Model
 {
-    use HasFactory;
+    use HasFactory, Filterable;
 
     protected $table = 'transactions';
     protected $guarded = false;
@@ -35,6 +36,19 @@ class Transaction extends Model
     const TYPE_DEPOSIT = 'deposit';
     const TYPE_DEPOSIT_INVOICE = 'deposit_invoice';
     const TYPE_DEPOSIT_YANDEX_ACCOUNT = 'deposit_yandex_account';
+    const TYPE_REMOVAL = 'removal';
+    const TYPE_CASHBACK = 'cashback';
+
+    public static function getAllTypes(): array
+    {
+        return [
+            self::TYPE_DEPOSIT,
+            self::TYPE_DEPOSIT_INVOICE,
+            self::TYPE_DEPOSIT_YANDEX_ACCOUNT,
+            self::TYPE_REMOVAL,
+            self::TYPE_CASHBACK,
+        ];
+    }
 
     public static function generateUUID(): string
     {

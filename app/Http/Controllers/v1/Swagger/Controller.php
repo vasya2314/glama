@@ -29,6 +29,9 @@ namespace App\Http\Controllers\v1\Swagger;
  * @OA\Tag(
  *     name="Договор",
  * )
+ * @OA\Tag(
+ *     name="Транзакции",
+ * )
  */
 class Controller extends \App\Http\Controllers\Controller
 {
