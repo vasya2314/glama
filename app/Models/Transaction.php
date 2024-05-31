@@ -35,9 +35,32 @@ class Transaction extends Model
 
     const TYPE_DEPOSIT = 'deposit';
     const TYPE_DEPOSIT_INVOICE = 'deposit_invoice';
-    const TYPE_DEPOSIT_YANDEX_ACCOUNT = 'deposit_yandex_account';
-    const TYPE_REMOVAL = 'removal';
+    const TYPE_DEPOSIT_YANDEX_ACCOUNT = 'deposit_yandex_account'; // Cнятие
+    const TYPE_REMOVAL = 'removal'; // Вывод средств, снятие
     const TYPE_CASHBACK = 'cashback';
+
+    const METHOD_TYPE_CARD = 'card';
+    const METHOD_TYPE_QR = 'qr';
+    const METHOD_TYPE_INVOICE = 'invoice';
+    const METHOD_TYPE_YANDEX_INVOICE = 'yandex_invoice';
+
+
+    public static function getRefillsTypes(): array
+    {
+        return [
+            self::TYPE_DEPOSIT,
+            self::TYPE_DEPOSIT_INVOICE,
+            self::TYPE_CASHBACK,
+        ];
+    }
+
+    public static function getRemovalTypes(): array
+    {
+        return [
+            self::TYPE_DEPOSIT_YANDEX_ACCOUNT,
+            self::TYPE_REMOVAL,
+        ];
+    }
 
     public static function getAllTypes(): array
     {

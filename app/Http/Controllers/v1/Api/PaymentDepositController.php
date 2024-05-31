@@ -131,12 +131,12 @@ class PaymentDepositController extends Controller
 
         $response = json_decode($tinkoff->response);
 
-        if($request->get('method_type') == 'card')
+        if($request->get('method_type') == Transaction::METHOD_TYPE_CARD)
         {
             return $this->wrapResponse(Response::HTTP_OK, __('Ok'), (array)$response);
         }
 
-        if($request->get('method_type') == 'qr')
+        if($request->get('method_type') == Transaction::METHOD_TYPE_QR)
         {
             $tinkoff->generateQr($response);
             $response = json_decode($tinkoff->response);
@@ -149,12 +149,12 @@ class PaymentDepositController extends Controller
 
     private function checkCommission(int $amountDeposit, int $amount): bool
     {
-        if(request()->get('method_type') == 'card')
+        if(request()->get('method_type') == Transaction::METHOD_TYPE_CARD)
         {
             return $amountDeposit + ($amountDeposit * 0.0259) == $amount;
         }
 
-        if(request()->get('method_type') == 'qr')
+        if(request()->get('method_type') == Transaction::METHOD_TYPE_QR)
         {
             return $amountDeposit + ($amountDeposit * 0.017) == $amount;
         }

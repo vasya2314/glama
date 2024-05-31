@@ -196,7 +196,7 @@ class YandexDirect
                     'order_id' => Transaction::generateUUID(),
                     'amount_deposit' => $amountDeposit,
                     'amount' => $amount,
-                    'method_type' => 'yandex_invoice'
+                    'method_type' => Transaction::METHOD_TYPE_YANDEX_INVOICE
                 ]
             );
 

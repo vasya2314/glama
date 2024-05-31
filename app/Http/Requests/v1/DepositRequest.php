@@ -45,7 +45,7 @@ class DepositRequest extends FormRequest
             return array_merge(
                 $rules,
                 [
-                    'method_type' => 'in:qr,card',
+                    'method_type' => 'in:' . Transaction::METHOD_TYPE_QR .', ' . Transaction::METHOD_TYPE_CARD,
                     'amount_deposit' => 'required|numeric'
                 ]
             );
@@ -90,7 +90,7 @@ class DepositRequest extends FormRequest
             'order_id' => null,
             'amount_deposit' => (int)request()->get('amount'),
             'amount' => (int)request()->get('amount'),
-            'method_type' => 'invoice',
+            'method_type' => Transaction::METHOD_TYPE_INVOICE,
         ];
     }
 

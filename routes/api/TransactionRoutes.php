@@ -9,4 +9,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index']);
+    Route::get('/transactions/refills', [TransactionController::class, 'getRefills']);
+    Route::get('/transactions/removals', [TransactionController::class, 'getRemovals']);
 });

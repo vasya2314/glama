@@ -37,6 +37,59 @@ use App\Http\Controllers\Controller;
  *          ),
  *      ),
  *  ),
+ *
+ * @OA\Get(
+ *     path="/transactions/refills",
+ *     summary="Получить все успешные транзакции на пополнение",
+ *     tags={"Транзакции"},
+ *     security={{ "bearerAuth": {} }},
+ *
+ *     @OA\Response(
+ *         response=200,
+ *         description="Ok",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="code", type="string", example="200"),
+ *             @OA\Property(property="message", type="string", example="Ok"),
+ *             @OA\Property(property="resource", type="object",
+ *                 @OA\Property(property="amount", type="string", example="5000.55"),
+ *             )
+ *         ),
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=500,
+ *         description="Error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Some error"),
+ *         ),
+ *     ),
+ * ),
+ * @OA\Get(
+ *     path="/transactions/removals",
+ *     summary="Получить все успешные транзакции на вывод денег",
+ *     tags={"Транзакции"},
+ *     security={{ "bearerAuth": {} }},
+ *
+ *     @OA\Response(
+ *         response=200,
+ *         description="Ok",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="code", type="string", example="200"),
+ *             @OA\Property(property="message", type="string", example="Ok"),
+ *             @OA\Property(property="resource", type="object",
+ *                 @OA\Property(property="amount", type="string", example="5000.55"),
+ *             )
+ *         ),
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=500,
+ *         description="Error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Some error"),
+ *         ),
+ *     ),
+ * ),
  */
 class TransactionController extends Controller
 {

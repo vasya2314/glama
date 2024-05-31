@@ -33,6 +33,7 @@ class UserRequest extends FormRequest
         }
 
         if ($this->is('api/v1/user/change-password'))
+        {
             return [
                 'current_password' => 'required|string|current_password',
                 'new_password' => [
@@ -42,6 +43,14 @@ class UserRequest extends FormRequest
                         ->symbols()
                 ]
             ];
+        }
+
+        if ($this->is('api/v1/user/withdrawal-money'))
+        {
+            return [
+                'amount' => 'required|numeric',
+            ];
+        }
 
         return [];
     }
