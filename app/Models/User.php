@@ -93,4 +93,9 @@ namespace App\Models;
         return $this->hasOne(BalanceAccount::class);
     }
 
+    public function reports(): HasMany
+    {
+        return $this->hasMany(Report::class);
+    }
+
 }

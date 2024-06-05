@@ -2,11 +2,12 @@
 
 namespace App\Classes;
 
+use App\Jobs\GenerateReportYandexDirect;
 use App\Models\BalanceAccount;
 use App\Models\Client;
+use App\Models\Report;
 use App\Models\Transaction;
-use GuzzleHttp\Promise\PromiseInterface;
-use Illuminate\Http\Client\Response;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,28 +15,11 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
-class YandexDirect
+class YandexDirect extends YandexDirectExtend
 {
-    protected static string $token;
-    protected static string $urlV4;
-    protected static string $urlV5;
-    protected static string $masterToken;
-    protected static string $login;
-    protected static string $contractId;
-
     public function __construct()
     {
-        $this->setProperties();
-    }
-
-    private function setProperties(): void
-    {
-        self::$masterToken = config('yandex')['master_token'];
-        self::$login = config('yandex')['login'];
-        self::$token = config('yandex')['token'];
-        self::$urlV4 = env('YANDEX_API_LIVE_V4');
-        self::$urlV5 = env('YANDEX_API');
-        self::$contractId = config('yandex')['contract_id'];
+        parent::__construct();
     }
 
     public function getAllClients(array $params): ?object
@@ -155,10 +139,9 @@ class YandexDirect
 
     }
 
-    public function deposit(Client $client, Request $request)
+    public function deposit(Client $client, Request $request): JsonResponse
     {
         $user = request()->user();
-        $client->lockForUpdate();
         $amountDeposit = (int)$request->get('amount_deposit');
         $amount = (int)$request->get('amount');
 
@@ -186,8 +169,18 @@ class YandexDirect
             );
         }
 
+        if(!$client->is_enable_shared_account)
+        {
+            return $this->wrapResponse(
+                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                __('The shared account is not yet connected')
+            );
+        }
+
         try {
             DB::beginTransaction();
+
+            $client->lockForUpdate();
 
             $transaction = $user->transactions()->create(
                 [
@@ -264,70 +257,106 @@ class YandexDirect
 
     }
 
-    protected function generateFinanceToken(string $action, string $method, int $operationNum): string
+    public function generateReport(User $user, Report $report = null)
     {
-        return hash('sha256', self::$masterToken . $operationNum . $action . $method . self::$login);
-    }
+        try {
+            $clients = $user->clients;
 
-    protected static function storeRequest(string $url, array $data, array $headers = []): PromiseInterface|Response
-    {
-        $baseHeaders = [
-            'Accept-Language' => 'ru',
-        ];
+            if($clients->isNotEmpty())
+            {
+                $resultData = [];
 
-        $headers = array_merge($baseHeaders, $headers);
-        return Http::withHeaders($headers)->withToken(self::$token)->post($url, $data);
-    }
+                foreach($clients as $client)
+                {
+                    $response = self::storeRequest(
+                        self::$urlV5 . 'reports',
+                        [
+                            'params' => [
+                                'SelectionCriteria' => (object)[],
+                                'FieldNames' => ['Date', 'CampaignId', 'Cost'],
+                                'OrderBy' => [
+                                    [
+                                        'Field' => 'Date'
+                                    ]
+                                ],
+                                'ReportName' => '',
+                                'ReportType' => 'CAMPAIGN_PERFORMANCE_REPORT',
+                                'DateRangeType' => 'LAST_MONTH',
+                                'Format' => 'TSV',
+                                'IncludeVAT' => 'YES',
+                            ]
+                        ],
+                        [
+                            'Client-Login' => $client->login,
+                            'processingMode' => 'offline',
+                            'returnMoneyInMicros' => false
+                        ]
+                    );
 
-    protected function hasErrors(Response $response): bool
-    {
-        $object = $response->object();
+                    if(!$this->hasErrors($response))
+                    {
+                        $report = $user->reports()->create(
+                            [
+                                'data' => json_encode([]),
+                            ]
+                        );
 
-        if(
-            isset($object->data->Errors) ||
-            isset($object->error) ||
-            isset($object->error_code)
-        )
-        {
-            return true;
+                        if($response->status() == 200)
+                        {
+                            $data = $this->parseCSV($response->body());
+                            $resultData[$client->login] = $data;
+                        }
+
+                        if(
+                            $response->status() == 201 ||
+                            $response->status() == 202 ||
+                            $response->status() == 400 ||
+                            $response->status() == 500
+                        ) {
+                            $resultData[$client->login] = null;
+                            dispatch(new GenerateReportYandexDirect($user, $report))->delay(now()->addMinutes(1));
+                        }
+                    }
+                }
+
+                $report->update($resultData);
+
+
+
+
+
+
+//                if($response->status() == 200)
+//                {
+//                    $data = $this->parseCSV($response->body());
+//
+//                    DB::transaction(function () use ($client, $data) {
+//                        $client->reports()->create(
+//                            [
+//                                'data' => json_encode($data),
+//                            ]
+//                        );
+//                    });
+//
+//                    return;
+//                }
+//
+//                if($this->hasErrors($response))
+//                {
+//                    Log::error('Не удалось сформировать отчет! | ' . $client . '|' . $response->body());
+//                }
+//
+//                dispatch(new GenerateReportYandexDirect($client))->delay(now()->addMinutes(1));
+//                Log::info('Отчет для клиента не сформировался и поставлен в очередь | ' . $client . '|' . $response->body());
+
+
+
+
+            }
+
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
         }
-
-        return false;
-
     }
-
-    protected function canDoDeposit(Client $client): bool
-    {
-        if($client->qty_campaigns > 0 && $client->is_enable_shared_account == true)
-        {
-            return true;
-        }
-
-        if($client->qty_campaigns > 0 && $client->account_id == null)
-        {
-            $this->enableSharedAccount($client);
-            return false;
-        }
-
-        return false;
-    }
-
-    protected function checkCommission(int $amountDeposit, int $amount): bool
-    {
-        return $amountDeposit + ($amountDeposit * 0.2) == $amount;
-    }
-
-    private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse
-    {
-        $result = [
-            'code' => $code,
-            'message' => $message
-        ];
-
-        if (count($resource)) $result = array_merge($result, ['resource' => $resource]);
-
-        return response()->json($result, $code);
-    }
-
 
 }

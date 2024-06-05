@@ -6,4 +6,5 @@ return [
     'login' => env('YANDEX_LOGIN', ''),
     'inn_company' => env('YANDEX_INN_COMPANY', ''),
     'contract_id' => env('YANDEX_CONTRACT_ID', ''),
+    'cashback_coefficient' => env('YANDEX_CASHBACK_COEFFICIENT', ''),
 ];

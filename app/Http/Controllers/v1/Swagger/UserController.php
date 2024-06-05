@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
  *     path="/user/update-user",
  *     summary="Изменение данных пользователя",
  *     tags={"Пользователь"},
+ *     security={{ "bearerAuth": {} }},
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(ref="#/components/schemas/UserUpdateRequest"),
@@ -47,6 +48,7 @@ use App\Http\Controllers\Controller;
  *     path="/user/change-password",
  *     summary="Изменение пароля",
  *     tags={"Пользователь"},
+ *     security={{ "bearerAuth": {} }},
  *
  *     @OA\RequestBody(
  *         @OA\JsonContent(ref="#/components/schemas/UserChangePasswordRequest"),

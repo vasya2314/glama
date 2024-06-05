@@ -95,5 +95,6 @@
     "Invalid amount": "Неверная сумма",
     "The balance has been successfully replenished": "Баланс успешно пополнен",
     "Account not found": "Счет не найден",
-    "Not enough balance": "Недостаточно баланса"
+    "Not enough balance": "Недостаточно баланса",
+    "The shared account is not yet connected": "Общий счет еще не подключен"
 }
