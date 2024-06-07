@@ -31,13 +31,14 @@ class GenerateReports extends Command
      */
     public function handle(): void
     {
-        User::with('clients')->chunk(150, function (Collection $users) {
+        User::with('clients')->where('created_at', '<', now()->startOfMonth())->chunk(150, function (Collection $users)
+        {
             if($users->isNotempty())
             {
-                foreach($users as $user)
+                $users->each(function (User $user)
                 {
                     YandexDirect::generateReport($user);
-                }
+                });
             }
         });
     }

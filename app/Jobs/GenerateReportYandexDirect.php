@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 class GenerateReportYandexDirect implements ShouldQueue
 {
@@ -15,6 +16,8 @@ class GenerateReportYandexDirect implements ShouldQueue
 
     protected $user;
     protected $report;
+
+    public $tries = 0;
 
     /**
      * Create a new job instance.
@@ -30,6 +33,13 @@ class GenerateReportYandexDirect implements ShouldQueue
      */
     public function handle(): void
     {
-        YandexDirect::generateReposts($this->user, $this->report);
+        // if(YandexDirect::generateReport($this->user, $this->report) == false) {
+        //     $this->release(60);
+        // }
+    }
+
+    public function middleware(): array
+    {
+        return [new WithoutOverlapping($this->user->id)];
     }
 }

@@ -39,16 +39,18 @@ abstract class YandexDirectExtend
 
         if(!empty($dataRows) && is_array($dataRows))
         {
-            $headers = str_getcsv($dataRows[1],"\t");
+            $headers = str_getcsv($dataRows[0],"\t");
             unset($dataRows[0]);
-            unset($dataRows[1]);
-            array_pop($dataRows);
 
-            foreach ($dataRows as $key => $row)
-            {
-                $parseRow = str_getcsv($row,"\t");
-                $res = array_combine($headers, $parseRow);
-                $actualData[] = $res;
+            if(!empty($dataRows) && is_array($dataRows)) {
+                foreach ($dataRows as $key => $row)
+                {
+                    $parseRow = str_getcsv($row,"\t");
+                    $res = array_combine($headers, $parseRow);
+                    $actualData[] = $res;
+                }
+            } else {
+                $actualData[] = 'NO DATA';
             }
         }
 

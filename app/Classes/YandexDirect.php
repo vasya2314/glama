@@ -2,10 +2,10 @@
 
 namespace App\Classes;
 
+use App\Events\ReportHasBeenGenerated;
 use App\Jobs\GenerateReportYandexDirect;
 use App\Models\BalanceAccount;
 use App\Models\Client;
-use App\Models\Report;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Exception;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class YandexDirect extends YandexDirectExtend
@@ -254,20 +255,26 @@ class YandexDirect extends YandexDirectExtend
             ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
             __('Error')
         );
-
     }
 
-    public function generateReport(User $user, Report $report = null)
+    public function generateReport(User $user): void
     {
         try {
+            DB::beginTransaction();
+
+            $resultData = [];
             $clients = $user->clients;
+
+            $report = $user->reports()->create(
+                [
+                    'data' => json_encode([]),
+                ]
+            );
 
             if($clients->isNotEmpty())
             {
-                $resultData = [];
+                $clients->each(function (Client $client) use ($user, &$resultData, &$report) {
 
-                foreach($clients as $client)
-                {
                     $response = self::storeRequest(
                         self::$urlV5 . 'reports',
                         [
@@ -289,74 +296,57 @@ class YandexDirect extends YandexDirectExtend
                         [
                             'Client-Login' => $client->login,
                             'processingMode' => 'offline',
-                            'returnMoneyInMicros' => false
+                            'returnMoneyInMicros' => 'false',
+                            'skipReportHeader' => 'true',
+                            'skipReportSummary' => 'true',
                         ]
                     );
 
-                    if(!$this->hasErrors($response))
+                    if($this->hasErrors($response))
                     {
-                        $report = $user->reports()->create(
-                            [
-                                'data' => json_encode([]),
-                            ]
-                        );
-
-                        if($response->status() == 200)
-                        {
-                            $data = $this->parseCSV($response->body());
-                            $resultData[$client->login] = $data;
-                        }
-
-                        if(
-                            $response->status() == 201 ||
-                            $response->status() == 202 ||
-                            $response->status() == 400 ||
-                            $response->status() == 500
-                        ) {
-                            $resultData[$client->login] = null;
-                            dispatch(new GenerateReportYandexDirect($user, $report))->delay(now()->addMinutes(1));
-                        }
+                        throw new Exception($response->object());
                     }
-                }
 
-                $report->update($resultData);
+                    if($response->status() == 200)
+                    {
+                        $data = $this->parseCSV($response->body());
 
+                        $resultData[$client->login] = $data;
+                    }
 
+                    if(
+                        $response->status() == 201 ||
+                        $response->status() == 202 ||
+                        $response->status() == 400 ||
+                        $response->status() == 500
+                    ) {
+                        $resultData[$client->login] = null;
+                        dispatch(new GenerateReportYandexDirect($user, $report))->delay(now()->addMinutes(1));
+                        Log::info('Отчет для клиента не сформировался и поставлен в очередь | ' . $client . '|' . $response->body());
+                    }
+                });
 
-
-
-
-//                if($response->status() == 200)
-//                {
-//                    $data = $this->parseCSV($response->body());
-//
-//                    DB::transaction(function () use ($client, $data) {
-//                        $client->reports()->create(
-//                            [
-//                                'data' => json_encode($data),
-//                            ]
-//                        );
-//                    });
-//
-//                    return;
-//                }
-//
-//                if($this->hasErrors($response))
-//                {
-//                    Log::error('Не удалось сформировать отчет! | ' . $client . '|' . $response->body());
-//                }
-//
-//                dispatch(new GenerateReportYandexDirect($client))->delay(now()->addMinutes(1));
-//                Log::info('Отчет для клиента не сформировался и поставлен в очередь | ' . $client . '|' . $response->body());
-
-
-
-
+                $report->update(
+                    [
+                        'data' => json_encode($resultData),
+                    ]
+                );
+            } else {
+                $resultData = ['NO CLIENTS'];
             }
 
+            if(!in_array(null, $resultData))
+            {
+                event(new ReportHasBeenGenerated($user, $report));
+            }
+
+            DB::commit();
+
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error($e->getMessage());
         }
+
     }
 
 }
