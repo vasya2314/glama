@@ -1917,7 +1917,7 @@
                     "Транзакции"
                 ],
                 "summary": "Получить все транзакции пользователя",
-                "description": "Возможна фильтрация по полям type:deposit, deposit_invoice, deposit_yandex_account, removal, cashback. Дате date_start, date_end. Формат даты: 2024-05-18",
+                "description": "Возможна фильтрация по полям type:deposit, deposit_yandex_account, removal, cashback. Дате date_start, date_end. Формат даты: 2024-05-18",
                 "operationId": "378efe211748bf3cb7b82e9d83e71931",
                 "responses": {
                     "200": {
@@ -3241,12 +3241,6 @@
                         "description": "Количество активных РК",
                         "format": "integer",
                         "example": "10"
-                    },
-                    "balance": {
-                        "title": "Баланс в рублях",
-                        "description": "Баланс в рублях",
-                        "format": "integer",
-                        "example": "1000.00"
                     },
                     "is_enable_shared_account": {
                         "title": "Подключен ли общий счет",

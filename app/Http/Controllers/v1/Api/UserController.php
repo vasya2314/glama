@@ -3,24 +3,41 @@
 namespace App\Http\Controllers\v1\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\v1\Api\Auth\RegisterController;
+use App\Http\Requests\v1\AuthRequest;
 use App\Http\Requests\v1\UserRequest;
 use App\Http\Resources\v1\UserResource;
+use App\Mail\AttachToAgency;
 use App\Models\BalanceAccount;
-use App\Models\Message;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Traits\UserTrait;
 use ErrorException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
     use UserTrait;
+
+    public function confirmAttachToAgency(Request $request, User $user, User $agencyUser): JsonResponse
+    {
+        if (!$request->hasValidSignature()) {
+            return $this->wrapResponse(Response::HTTP_UNAUTHORIZED, __('Error'));
+        }
+
+        $user->update(
+            [
+                'parent_id' => $agencyUser->id,
+            ]
+        );
+
+        return $this->wrapResponse(Response::HTTP_OK, __('Ok'));
+
+    }
 
     /**
      * @throws ErrorException
@@ -70,16 +87,16 @@ class UserController extends Controller
         return $this->wrapResponse(Response::HTTP_OK, __('Ok'), ['balance' => kopToRub((int)$balanceAccount->balance)]);
     }
 
-    public function  withdrawalMoney(UserRequest $request): JsonResponse
+    public function withdrawalMoney(UserRequest $request): JsonResponse
     {
         $user = $request->user();
         $data = $request->validated();
         $amount = (int)$data['amount'];
 
-        if(!BalanceAccount::isEnoughBalance($amount, $user))
+        if(!BalanceAccount::isEnoughBalance($amount, $user, BalanceAccount::BALANCE_REWARD))
         {
             return $this->wrapResponse(
-                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                Response::HTTP_SERVICE_UNAVAILABLE,
                 __('Not enough balance')
             );
         }
@@ -94,100 +111,59 @@ class UserController extends Controller
                 'amount' => $amount,
                 'data' => null,
                 'method_type' => Transaction::METHOD_TYPE_CARD,
+                'balance_account_type' => BalanceAccount::BALANCE_REWARD,
             ]
         );
 
         return $this->wrapResponse(Response::HTTP_OK, __('Ok'));
     }
 
-    public function confirmTransaction(Request $request, User $user, Transaction $transaction): JsonResponse
+    public function createUser(AuthRequest $request): JsonResponse
     {
-        Gate::authorize('confirmTransaction', [Transaction::class, $user,$transaction]);
+        $user = $request->user();
 
-        $amount = (int)$transaction->amount;
+        return (new RegisterController())->register($request, User::TYPE_SIMPLE, $user->id);
+    }
+
+    public function attachUser(Request $request, User $user): JsonResponse
+    {
+        $agencyUser = $request->user();
 
         if(
-            $transaction->status !== Transaction::STATUS_NEW &&
-            $transaction->status !== Transaction::STATUS_SUBMITTED
-        ) {
-            return $this->wrapResponse(Response::HTTP_SERVICE_UNAVAILABLE, __('The transaction has an invalid status'));
-        }
-
-        if(!BalanceAccount::isEnoughBalance($amount, $user))
+            $agencyUser->user_type !== $user::TYPE_AGENCY ||
+            $user->user_type !== $user::TYPE_SIMPLE ||
+            $user->role !== $user::ROLE_USER
+        )
         {
-            return $this->wrapResponse(
-                Response::HTTP_SERVICE_UNAVAILABLE,
-                __('Not enough balance')
-            );
+            return $this->wrapResponse(Response::HTTP_BAD_REQUEST, __('Error'));
         }
 
-        try {
-            DB::beginTransaction();
-
-            $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->first();
-            if($balanceAccount)
-            {
-                $balanceAccount->decreaseBalance($amount);
-            }
-
-            $transaction->update(
-                [
-                    'status' => Transaction::STATUS_CONFIRMED,
-                ]
-            );
-
-            DB::commit();
-            return $this->wrapResponse(Response::HTTP_OK, __('Ok'));
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error($e->getMessage());
+        if($user->parent_id !== null)
+        {
+            return $this->wrapResponse(Response::HTTP_BAD_REQUEST, __('The user is already assigned to the agency'));
         }
 
-        return $this->wrapResponse(Response::HTTP_INTERNAL_SERVER_ERROR, __('Error'));
+        dispatch(function () use ($user, $agencyUser) {
+            $url = env('VIEW_APP_URL') . '/attach-to-agency/?url=' . URL::signedRoute('confirm-attach-to-agency', [
+                'user' => $user->id,
+                'agencyUser' => $agencyUser->id,
+            ]);
+            Mail::to($user->contact_email)->send(new AttachToAgency($user, $agencyUser, $url));
+        })->afterResponse();
+
+        return $this->wrapResponse(Response::HTTP_OK, __('You have successfully submitted a request to add a user to your agency'));
 
     }
 
-    public function rejectTransaction(Request $request, User $user, Transaction $transaction): JsonResponse
+    public function allUsers(Request $request): JsonResponse
     {
-        Gate::authorize('rejectTransaction', [Transaction::class, $user,$transaction]);
+        $user = $request->user();
 
-        $amount = (int)$transaction->amount;
+        $childUsers = UserResource::collection($user->childUsers()->paginate(12))
+            ->response()
+            ->getData(true);
 
-        if(
-            $transaction->status !== Transaction::STATUS_NEW &&
-            $transaction->status !== Transaction::STATUS_SUBMITTED
-        ) {
-            return $this->wrapResponse(Response::HTTP_SERVICE_UNAVAILABLE, __('The transaction has an invalid status'));
-        }
-
-        if(!BalanceAccount::isEnoughBalance($amount, $user))
-        {
-            return $this->wrapResponse(
-                Response::HTTP_SERVICE_UNAVAILABLE,
-                __('Not enough balance')
-            );
-        }
-
-        try {
-            DB::beginTransaction();
-
-            $transaction->update(
-                [
-                    'status' => Transaction::STATUS_DRAFT,
-                ]
-            );
-
-            DB::commit();
-            return $this->wrapResponse(Response::HTTP_OK, __('Ok'));
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error($e->getMessage());
-        }
-
-        return $this->wrapResponse(Response::HTTP_INTERNAL_SERVER_ERROR, __('Error'));
-
+        return $this->wrapResponse(Response::HTTP_OK, __('All users'), (array)$childUsers);
     }
 
     private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse

@@ -24,7 +24,11 @@ class AuthRequest extends FormRequest
      */
     public function rules(): array
     {
-        if ($this->is('api/v1/register'))
+        if (
+            $this->is('api/v1/register') ||
+            $this->is('api/v1/admin/users/agency-user/create') ||
+            $this->is('api/v1/users/create-user')
+        )
         {
             return [
                 'name' => 'nullable|string|max:30',
@@ -73,14 +77,16 @@ class AuthRequest extends FormRequest
         return [];
     }
 
-    public function validatedData(): array
+    public function validatedData(string $userType, int|null $parentId): array
     {
         return array_merge(
             $this->validated(),
             [
                 'balance' => 0,
                 'role' => User::ROLE_USER,
-                'password' => Hash::make($this->validated()['password'])
+                'user_type' => $userType,
+                'password' => Hash::make($this->validated()['password']),
+                'parent_id' => $parentId,
             ]
         );
     }

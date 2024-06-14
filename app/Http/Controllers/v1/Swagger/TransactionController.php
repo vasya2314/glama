@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 /**
  * @OA\Get(
  *      path="/transactions",
- *      description="Возможна фильтрация по полям type:deposit, deposit_invoice, deposit_yandex_account, removal, cashback. Дате date_start, date_end. Формат даты: 2024-05-18",
+ *      description="Возможна фильтрация по полям type:deposit, deposit_yandex_account, removal, cashback. Дате date_start, date_end. Формат даты: 2024-05-18",
  *      summary="Получить все транзакции пользователя",
  *      tags={"Транзакции"},
  *      security={{ "bearerAuth": {} }},

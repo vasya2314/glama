@@ -96,5 +96,10 @@
     "The balance has been successfully replenished": "Баланс успешно пополнен",
     "Account not found": "Счет не найден",
     "Not enough balance": "Недостаточно баланса",
-    "The shared account is not yet connected": "Общий счет еще не подключен"
+    "The shared account is not yet connected": "Общий счет еще не подключен",
+    "The user is already assigned to the agency": "Пользователь уже закреплен за агенством",
+    "You have successfully submitted a request to add a user to your agency": "Вы успешно отправли завявку на добавление пользователя в своё агенство",
+    "Attach to agency": "Добавление в агенство",
+    "User :email invites you to his agency. You can complete the process by clicking the button below": "Пользователь :email приглашает Вас в свое агенство. Вы можете завершить процесс нажав по кнопке ниже",
+    "Confirm": "Подтвердить"
 }

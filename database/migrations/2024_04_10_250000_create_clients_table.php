@@ -15,14 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('contract_id')->unique()->nullable()->constrained('contracts')->onDelete('set null');
-            $table->string('account_name', 50);
+            $table->string('account_name', 100);
             $table->string('login', 50)->unique();
             $table->string('password');
             $table->unsignedBigInteger('client_id')->unique();
             $table->unsignedBigInteger('account_id')->unique()->nullable();
             $table->integer('qty_campaigns')->default(0);
             $table->boolean('is_enable_shared_account')->default(false);
-            $table->bigInteger('balance')->default(0);
             $table->timestamps();
         });
     }

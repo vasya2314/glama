@@ -12,9 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RegisterController extends Controller
 {
-    public function register(AuthRequest $request): JsonResponse
+    public function register(AuthRequest $request, string $userType = User::TYPE_SIMPLE, int|null $parentId = null): JsonResponse
     {
-        if ($user = User::create($request->validatedData())) {
+        if ($user = User::create($request->validatedData($userType, $parentId))) {
             event(new Registered($user));
 
             return response()->json(['code' => Response::HTTP_CREATED, 'message' => __('Account has been successfully registered, please check your email to verify your account.')], Response::HTTP_CREATED);

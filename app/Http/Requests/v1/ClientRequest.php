@@ -154,7 +154,8 @@ class ClientRequest extends FormRequest
             $params,
             [
                 'qty_campaigns' => 0,
-                'balance' => 0,
+                'account_id' => null,
+                'is_enable_shared_account' => false,
             ]
         );
     }

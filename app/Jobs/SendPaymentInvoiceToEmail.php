@@ -18,6 +18,8 @@ class SendPaymentInvoiceToEmail implements ShouldQueue
     protected $transaction;
     protected $user;
 
+    public $tries = 2;
+
     /**
      * Create a new job instance.
      */

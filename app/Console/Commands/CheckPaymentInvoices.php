@@ -31,7 +31,10 @@ class CheckPaymentInvoices extends Command
     public function handle(): void
     {
         $token = config('tinkoff')['token'];
-        $transactions = Transaction::where('status', Transaction::STATUS_SUBMITTED)->get();
+        $transactions = Transaction::where('status', Transaction::STATUS_SUBMITTED)
+            ->where('type', Transaction::TYPE_DEPOSIT)
+            ->where('method_type', Transaction::METHOD_TYPE_INVOICE)
+            ->get();
 
         if($transactions->isNotEmpty())
         {
@@ -64,7 +67,7 @@ class CheckPaymentInvoices extends Command
 
                             if($body->status == Transaction::STATUS_EXECUTED)
                             {
-                                $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->first();
+                                $balanceAccount = $transaction->user->balanceAccount($transaction->balance_account_type)->lockForUpdate()->firstOrFail();
                                 if($balanceAccount)
                                 {
                                     $balanceAccount->increaseBalance((int)$transaction->amount_deposit);

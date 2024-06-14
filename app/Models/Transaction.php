@@ -27,30 +27,24 @@ class Transaction extends Model
     const STATUS_PARTIAL_REFUNDED = 'PARTIAL_REFUNDED';
     const STATUS_PARTIAL_REVERSED = 'PARTIAL_REVERSED';
     const STATUS_CONFIRMED = 'CONFIRMED';
-
     const STATUS_SUBMITTED = 'SUBMITTED';
     const STATUS_DRAFT = 'DRAFT';
     const STATUS_EXECUTED = 'EXECUTED';
 
-
-    const TYPE_DEPOSIT = 'deposit';
-    const TYPE_DEPOSIT_INVOICE = 'deposit_invoice';
-    const TYPE_DEPOSIT_YANDEX_ACCOUNT = 'deposit_yandex_account'; // Cнятие
-    const TYPE_REMOVAL = 'removal'; // Вывод средств, снятие
-    const TYPE_CASHBACK = 'cashback';
+    const TYPE_DEPOSIT = 'deposit'; // Пополнение
+    const TYPE_DEPOSIT_YANDEX_ACCOUNT = 'deposit_yandex_account'; // Вывод на яндекс
+    const TYPE_REMOVAL = 'removal'; // Вывод средств из аккаунта
 
     const METHOD_TYPE_CARD = 'card';
     const METHOD_TYPE_QR = 'qr';
     const METHOD_TYPE_INVOICE = 'invoice';
-    const METHOD_TYPE_YANDEX_INVOICE = 'yandex_invoice';
+    const METHOD_TYPE_CASHBACK = 'cashback';
 
 
     public static function getRefillsTypes(): array
     {
         return [
             self::TYPE_DEPOSIT,
-            self::TYPE_DEPOSIT_INVOICE,
-            self::TYPE_CASHBACK,
         ];
     }
 
@@ -66,10 +60,8 @@ class Transaction extends Model
     {
         return [
             self::TYPE_DEPOSIT,
-            self::TYPE_DEPOSIT_INVOICE,
             self::TYPE_DEPOSIT_YANDEX_ACCOUNT,
             self::TYPE_REMOVAL,
-            self::TYPE_CASHBACK,
         ];
     }
 

@@ -75,22 +75,6 @@ class TicketController extends Controller
     /**
      * @throws \ErrorException
      */
-    public function assignedTo(TicketRequest $request, Ticket $ticket): JsonResponse
-    {
-        if ($ticket->update($request->validated())) {
-            $ticket = (new TicketResource($ticket))
-                ->response()
-                ->getData(true);
-
-            return $this->wrapResponse(Response::HTTP_OK, __('The ticket updated successfully.'), $ticket);
-        }
-
-        throw new \ErrorException(__('Failed to get service, please try again.'), Response::HTTP_INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * @throws \ErrorException
-     */
     public function delete(Ticket $ticket): JsonResponse
     {
         Gate::authorize('delete', $ticket);

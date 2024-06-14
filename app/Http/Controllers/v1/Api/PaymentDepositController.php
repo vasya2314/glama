@@ -68,7 +68,7 @@ class PaymentDepositController extends Controller
 
                     if($request['Status'] === Transaction::STATUS_CONFIRMED)
                     {
-                        $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->first();
+                        $balanceAccount = $transaction->user->balanceAccount($transaction->balance_account_type)->lockForUpdate()->first();
                         if($balanceAccount)
                         {
                             $balanceAccount->increaseBalance((int)$transaction->amount_deposit);

@@ -102,17 +102,6 @@ class ClientResponse
 
     /**
      * @OA\Property(
-     *     property="balance",
-     *     format="integer",
-     *     title="Баланс в рублях",
-     *     description="Баланс в рублях",
-     *     example="1000.00",
-     * )
-     */
-    public $balance;
-
-    /**
-     * @OA\Property(
      *     property="is_enable_shared_account",
      *     format="boolean",
      *     title="Подключен ли общий счет",

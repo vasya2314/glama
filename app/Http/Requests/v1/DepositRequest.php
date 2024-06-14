@@ -3,6 +3,7 @@
 namespace App\Http\Requests\v1;
 
 use App\Classes\Tinkoff;
+use App\Models\BalanceAccount;
 use App\Models\Operation;
 use App\Models\PaymentInvoice;
 use App\Models\Transaction;
@@ -45,7 +46,7 @@ class DepositRequest extends FormRequest
             return array_merge(
                 $rules,
                 [
-                    'method_type' => 'in:' . Transaction::METHOD_TYPE_QR .', ' . Transaction::METHOD_TYPE_CARD,
+                    'method_type' => 'in:' . Transaction::METHOD_TYPE_QR .',' . Transaction::METHOD_TYPE_CARD,
                     'amount_deposit' => 'required|numeric'
                 ]
             );
@@ -57,13 +58,6 @@ class DepositRequest extends FormRequest
         }
 
         return [];
-    }
-
-    public function storePaymentInvoice(): array
-    {
-        return [
-            'status' => PaymentInvoice::STATUS_NEW,
-        ];
     }
 
     public function storeNaturalPersonTransaction(string $transactionType, Request $request, Tinkoff $tinkoff): array
@@ -78,19 +72,21 @@ class DepositRequest extends FormRequest
             'amount_deposit' => (int)$request->get('amount_deposit'),
             'amount' => (int)$data->Amount,
             'method_type' => $request->get('method_type'),
+            'balance_account_type' => BalanceAccount::BALANCE_MAIN,
         ];
     }
 
     public function storeInvoiceTransaction(): array
     {
         return [
-            'type' => Transaction::TYPE_DEPOSIT_INVOICE,
+            'type' => Transaction::TYPE_DEPOSIT,
             'status' => Transaction::STATUS_NEW,
             'payment_id' => null,
             'order_id' => null,
             'amount_deposit' => (int)request()->get('amount'),
             'amount' => (int)request()->get('amount'),
             'method_type' => Transaction::METHOD_TYPE_INVOICE,
+            'balance_account_type' => BalanceAccount::BALANCE_MAIN,
         ];
     }
 

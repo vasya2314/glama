@@ -36,7 +36,10 @@ class CheckPaymentQrState extends Command
         $terminal = config('tinkoff')['terminal'];
         $secretKey = config('tinkoff')['secret_key'];
 
-        $transactions = Transaction::where('method_type', 'qr')->whereIn('status', ['NEW', 'PREAUTHORIZING', 'FORM_SHOWED'])->get();
+        $transactions = Transaction::where('method_type', Transaction::METHOD_TYPE_QR)
+            ->where('type', Transaction::TYPE_DEPOSIT)
+            ->whereIn('status', ['NEW', 'PREAUTHORIZING', 'FORM_SHOWED'])
+            ->get();
         $tinkoff = new Tinkoff($apiUrl, $terminal, $secretKey);
 
         if($transactions->isNotEmpty())
@@ -58,7 +61,7 @@ class CheckPaymentQrState extends Command
 
                     if($state == Transaction::STATUS_CONFIRMED)
                     {
-                        $balanceAccount = BalanceAccount::lockForUpdate()->where('user_id', $transaction->user_id)->first();
+                        $balanceAccount = BalanceAccount::lockForUpdate()->where('user_id', $transaction->user_id)->where('type', BalanceAccount::BALANCE_MAIN)->firstOrFail();
                         if($balanceAccount)
                         {
                             $balanceAccount->increaseBalance((int)$transaction->amount_deposit);

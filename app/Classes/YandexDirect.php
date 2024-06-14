@@ -6,6 +6,7 @@ use App\Events\ReportHasBeenGenerated;
 use App\Jobs\GenerateReportYandexDirect;
 use App\Models\BalanceAccount;
 use App\Models\Client;
+use App\Models\Report;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -146,7 +147,7 @@ class YandexDirect extends YandexDirectExtend
         $amountDeposit = (int)$request->get('amount_deposit');
         $amount = (int)$request->get('amount');
 
-        if(!BalanceAccount::isEnoughBalance($amount, $user))
+        if(!BalanceAccount::isEnoughBalance($amount, $user, BalanceAccount::BALANCE_MAIN))
         {
             return $this->wrapResponse(
                 ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
@@ -181,8 +182,6 @@ class YandexDirect extends YandexDirectExtend
         try {
             DB::beginTransaction();
 
-            $client->lockForUpdate();
-
             $transaction = $user->transactions()->create(
                 [
                     'type' => Transaction::TYPE_DEPOSIT_YANDEX_ACCOUNT,
@@ -190,7 +189,7 @@ class YandexDirect extends YandexDirectExtend
                     'order_id' => Transaction::generateUUID(),
                     'amount_deposit' => $amountDeposit,
                     'amount' => $amount,
-                    'method_type' => Transaction::METHOD_TYPE_YANDEX_INVOICE
+                    'method_type' => Transaction::METHOD_TYPE_INVOICE
                 ]
             );
 
@@ -231,8 +230,6 @@ class YandexDirect extends YandexDirectExtend
                 $balanceAccount->decreaseBalance($amount);
             }
 
-            $client->increaseBalance($amount);
-
             $transaction->update(
                 [
                     'status' => Transaction::STATUS_CONFIRMED,
@@ -265,78 +262,56 @@ class YandexDirect extends YandexDirectExtend
             $resultData = [];
             $clients = $user->clients;
 
+            if($clients->isEmpty()) return;
+
             $report = $user->reports()->create(
                 [
                     'data' => json_encode([]),
                 ]
             );
 
-            if($clients->isNotEmpty())
-            {
-                $clients->each(function (Client $client) use ($user, &$resultData, &$report) {
-
-                    $response = self::storeRequest(
-                        self::$urlV5 . 'reports',
-                        [
-                            'params' => [
-                                'SelectionCriteria' => (object)[],
-                                'FieldNames' => ['Date', 'CampaignId', 'Cost'],
-                                'OrderBy' => [
-                                    [
-                                        'Field' => 'Date'
-                                    ]
-                                ],
-                                'ReportName' => '',
-                                'ReportType' => 'CAMPAIGN_PERFORMANCE_REPORT',
-                                'DateRangeType' => 'LAST_MONTH',
-                                'Format' => 'TSV',
-                                'IncludeVAT' => 'YES',
-                            ]
-                        ],
-                        [
-                            'Client-Login' => $client->login,
-                            'processingMode' => 'offline',
-                            'returnMoneyInMicros' => 'false',
-                            'skipReportHeader' => 'true',
-                            'skipReportSummary' => 'true',
-                        ]
-                    );
-
-                    if($this->hasErrors($response))
-                    {
-                        throw new Exception($response->object());
-                    }
-
-                    if($response->status() == 200)
-                    {
-                        $data = $this->parseCSV($response->body());
-
-                        $resultData[$client->login] = $data;
-                    }
-
-                    if(
-                        $response->status() == 201 ||
-                        $response->status() == 202 ||
-                        $response->status() == 400 ||
-                        $response->status() == 500
-                    ) {
-                        $resultData[$client->login] = null;
-                        dispatch(new GenerateReportYandexDirect($user, $report))->delay(now()->addMinutes(1));
-                        Log::info('Отчет для клиента не сформировался и поставлен в очередь | ' . $client . '|' . $response->body());
-                    }
-                });
-
-                $report->update(
-                    [
-                        'data' => json_encode($resultData),
-                    ]
+            $clients->each(function (Client $client) use ($user, &$resultData, &$report) {
+                $response = self::storeRequest(
+                    self::$urlV5 . 'reports',
+                    $this->getRequestReportParams(),
+                    $this->getRequestReportHeaders($client->login),
                 );
-            } else {
-                $resultData = ['NO CLIENTS'];
-            }
 
-            if(!in_array(null, $resultData))
+                if($this->hasErrors($response))
+                {
+                    Log::error('Ошибка генерации отчета для: ' . $client->login . ' | ' . $response->body());
+                    exit();
+                }
+
+                if($response->status() == 200)
+                {
+                    $data = $this->parseCSV($response->body());
+
+                    $resultData[$client->login] = $data;
+                }
+
+                if(
+                    $response->status() == 201 ||
+                    $response->status() == 202 ||
+                    $response->status() == 400 ||
+                    $response->status() == 500
+                ) {
+                    $resultData[$client->login] = 'NO_DATA';
+                }
+            });
+
+            $report->update(
+                [
+                    'data' => json_encode($resultData),
+                ]
+            );
+            $report = $report->refresh();
+
+            if(in_array('NO_DATA', $resultData))
             {
+                dispatch(new GenerateReportYandexDirect($user, $report))->delay(now()->addMinutes(1));
+                Log::info('Отчет для пользователя не сформировался и поставлен в очередь | ' . $report);
+            } else {
                 event(new ReportHasBeenGenerated($user, $report));
             }
 
@@ -349,4 +324,64 @@ class YandexDirect extends YandexDirectExtend
 
     }
 
+    public function updateReport(User $user, Report $report): bool
+    {
+        $isSuccess = false;
+
+        try {
+            DB::beginTransaction();
+
+            $resultData = (array)@json_decode($report->data);
+
+            $logins = collect($resultData)->filter(function ($value) {
+                return $value === 'NO_DATA';
+            })->keys();
+
+            if($logins->isNotEmpty())
+            {
+                $logins->each(function (string $login) use ($user, &$resultData, &$report) {
+                    $response = self::storeRequest(
+                        self::$urlV5 . 'reports',
+                        $this->getRequestReportParams(),
+                        $this->getRequestReportHeaders($login),
+                    );
+
+                    if($this->hasErrors($response))
+                    {
+                        throw new Exception($response->object());
+                    }
+
+                    if($response->status() == 200)
+                    {
+                        $data = $this->parseCSV($response->body());
+
+                        $resultData[$login] = $data;
+                    }
+                });
+
+                $report->update(
+                    [
+                        'data' => json_encode($resultData),
+                    ]
+                );
+
+                $report = $report->refresh();
+                $resultData = (array)@json_decode($report->data);
+            }
+
+            if(!in_array('NO_DATA', $resultData))
+            {
+                $isSuccess = true;
+                event(new ReportHasBeenGenerated($user, $report));
+            }
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+        }
+
+        return $isSuccess;
+    }
 }

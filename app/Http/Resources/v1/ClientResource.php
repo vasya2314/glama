@@ -22,7 +22,6 @@ class ClientResource extends JsonResource
             'password' => $this->password,
             'client_id' => $this->client_id,
             'qty_campaigns' => $this->qty_campaigns,
-            'balance' => kopToRub((int)$this->balance),
             'is_enable_shared_account' => $this->is_enable_shared_account,
             'created_at' => $this->created_at->toDateTimeString(),
         ];

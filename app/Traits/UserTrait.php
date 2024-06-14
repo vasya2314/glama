@@ -3,6 +3,9 @@
 namespace App\Traits;
 
 use App\Http\Requests\v1\UserRequest;
+use App\Models\Report;
+use App\Models\Transaction;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 trait UserTrait

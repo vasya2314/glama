@@ -29,7 +29,10 @@ class CheckSharedYandexDirectAccount extends Command
      */
     public function handle(): void
     {
-        $clients = Client::where('is_enable_shared_account', false)->whereNot('account_id', null)->get()->pluck('login');
+        $clients = Client::where('is_enable_shared_account', false)
+            ->whereNot('account_id', null)
+            ->get()
+            ->pluck('login');
 
         if($clients->isEmpty()) return;
 

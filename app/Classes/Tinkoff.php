@@ -18,7 +18,6 @@ class Tinkoff {
 
     protected $error;
     protected $response;
-
     protected $payment_id;
     protected $payment_url;
     protected $payment_status;

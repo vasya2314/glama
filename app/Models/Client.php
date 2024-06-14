@@ -16,24 +16,6 @@ class Client extends Model
     protected $table = 'clients';
     protected $guarded = false;
 
-    public function increaseBalance(int $amount): bool
-    {
-        $balance = $this->balance + $amount;
-        $this->balance = $balance;
-
-        if($this->save()) return true;
-        return false;
-    }
-
-    public function decreaseBalance(int $amount): bool
-    {
-        $balance = $this->balance - $amount;
-        $this->balance = $balance;
-
-        if($this->save()) return true;
-        return false;
-    }
-
     public static function getTableName()
     {
         return with(new static)->getTable();

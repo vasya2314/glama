@@ -23,6 +23,8 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'email_verified_at' => $this->email_verified_at,
             'role' => $this->role,
+            'user_type' => $this->user_type,
+            'parent_id' => $this->parent_id,
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }

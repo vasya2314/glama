@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('balance')->default(0);
             $table->string('type');
-            $table->foreignId('user_id')->unique()->constrained('users');
+            $table->foreignId('user_id')->constrained('users');
+
+            $table->unique(['user_id', 'type']);
         });
     }
 

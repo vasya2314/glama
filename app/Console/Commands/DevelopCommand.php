@@ -4,43 +4,50 @@ namespace App\Console\Commands;
 
 use App\Facades\YandexDirect;
 use App\Models\Client;
+use App\Models\Report;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class GenerateReports extends Command
+class DevelopCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:generate-reports';
+    protected $signature = 'develop';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate reports for clients';
+    protected $description = '';
 
     /**
      * Execute the console command.
      */
     public function handle(): void
     {
-        User::with('clients')
-            ->where('created_at', '<', now()->startOfMonth())
-            ->chunk(150, function (Collection $users) {
-            if($users->isNotempty())
-            {
-                $users->each(function (User $user)
-                {
-                    YandexDirect::generateReport($user);
-                });
-            }
-        });
+
+        try {
+            DB::beginTransaction();
+
+            $user = User::find(1);
+            $report = Report::find(1);
+
+            $amount = $user->accrueCashback($report);
+
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+        }
+
     }
 }

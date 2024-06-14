@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('amount_deposit');
             $table->integer('amount');
             $table->string('method_type')->index();
+            $table->string('balance_account_type', 50)->index();
             $table->json('data')->nullable();
             $table->timestamps();
         });

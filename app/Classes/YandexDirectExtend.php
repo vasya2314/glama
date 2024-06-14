@@ -32,25 +32,25 @@ abstract class YandexDirectExtend
         self::$contractId = config('yandex')['contract_id'];
     }
 
-    protected function parseCSV(string $csv): array
+    protected function parseCSV(string $csv): array|string
     {
         $actualData = [];
         $dataRows = str_getcsv($csv,"\n");
 
-        if(!empty($dataRows) && is_array($dataRows))
+        if(!empty($dataRows))
         {
             $headers = str_getcsv($dataRows[0],"\t");
             unset($dataRows[0]);
 
             if(!empty($dataRows) && is_array($dataRows)) {
-                foreach ($dataRows as $key => $row)
+                foreach ($dataRows as $row)
                 {
                     $parseRow = str_getcsv($row,"\t");
                     $res = array_combine($headers, $parseRow);
                     $actualData[] = $res;
                 }
             } else {
-                $actualData[] = 'NO DATA';
+                return 'EMPTY';
             }
         }
 
@@ -120,6 +120,37 @@ abstract class YandexDirectExtend
         if (count($resource)) $result = array_merge($result, ['resource' => $resource]);
 
         return response()->json($result, $code);
+    }
+
+    protected function getRequestReportParams(): array
+    {
+        return [
+            'params' => [
+                'SelectionCriteria' => (object)[],
+                'FieldNames' => ['Date', 'CampaignId', 'Cost'],
+                'OrderBy' => [
+                    [
+                        'Field' => 'Date'
+                    ]
+                ],
+                'ReportName' => 'REPORT',
+                'ReportType' => 'CAMPAIGN_PERFORMANCE_REPORT',
+                'DateRangeType' => 'LAST_MONTH',
+                'Format' => 'TSV',
+                'IncludeVAT' => 'NO',
+                'IncludeDiscount' => 'YES',
+            ]
+        ];
+    }
+
+    protected function getRequestReportHeaders(string $login): array
+    {
+        return [
+            'Client-Login' => $login,
+            'processingMode' => 'offline',
+            'skipReportHeader' => 'true',
+            'skipReportSummary' => 'true',
+        ];
     }
 
     abstract function enableSharedAccount(Client $client);

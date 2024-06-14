@@ -13,11 +13,14 @@ class BalanceAccount extends Model
     protected $table = 'balance_accounts';
     protected $guarded = false;
 
+    const BALANCE_MAIN = 'main';
+    const BALANCE_REWARD = 'reward';
+
     public $timestamps = false;
 
-    public static function isEnoughBalance(int $amount, User $user): bool
+    public static function isEnoughBalance(int $amount, User $user, string $type): bool
     {
-        $balanceAccount = $user->balanceAccount;
+        $balanceAccount = $user->balanceAccount($type)->firstOrFail();
 
         return (int)$balanceAccount->balance >= $amount;
     }
