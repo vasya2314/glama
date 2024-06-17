@@ -38,4 +38,9 @@ class Client extends Model
         return $this->belongsTo(Contract::class);
     }
 
+    public function clients(): HasMany
+    {
+        return $this->hasMany(ClosingAct::class);
+    }
+
 }

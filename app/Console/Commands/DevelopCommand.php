@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Facades\YandexDirect;
 use App\Models\Client;
+use App\Models\ClosingAct;
 use App\Models\Report;
 use App\Models\Transaction;
 use App\Models\User;
@@ -40,7 +41,14 @@ class DevelopCommand extends Command
             $user = User::find(1);
             $report = Report::find(1);
 
-            $amount = $user->accrueCashback($report);
+            // $amount = $user->accrueCashback($report);
+
+            $closingAct = ClosingAct::create(
+                [
+
+                ]
+            );
+
 
 
 
