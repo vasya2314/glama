@@ -101,5 +101,6 @@
     "You have successfully submitted a request to add a user to your agency": "Вы успешно отправли завявку на добавление пользователя в своё агенство",
     "Attach to agency": "Добавление в агенство",
     "User :email invites you to his agency. You can complete the process by clicking the button below": "Пользователь :email приглашает Вас в свое агенство. Вы можете завершить процесс нажав по кнопке ниже",
-    "Confirm": "Подтвердить"
+    "Confirm": "Подтвердить",
+    "The client does not have a contract attached": "У клиента не прикреплен договор"
 }

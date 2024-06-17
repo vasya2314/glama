@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\v1;
 
+use App\Models\Client;
 use App\Models\Contract;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -141,11 +142,16 @@ class ClientRequest extends FormRequest
 
     }
 
-    public function updateClient(): array
+    public function updateClient(Client $client): array
     {
-        return [
-            'contract_id' => $this->get('contract_id'),
-        ];
+        $result = [];
+
+        if($client->contract == null || $client->contract->id == $this->get('contract_id')) {
+            $result['contract_id'] = $this->get('contract_id');
+        }
+
+        return $result;
+
     }
 
     public function storeClient(array $params): array

@@ -43,6 +43,7 @@ class DevelopCommand extends Command
             $amount = $user->accrueCashback($report);
 
 
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

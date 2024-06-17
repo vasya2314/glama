@@ -33,9 +33,9 @@ class Client extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function contract(): HasOne
+    public function contract(): BelongsTo
     {
-        return $this->hasOne(Contract::class);
+        return $this->belongsTo(Contract::class);
     }
 
 }

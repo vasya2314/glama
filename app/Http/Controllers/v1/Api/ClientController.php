@@ -72,7 +72,7 @@ class ClientController extends Controller
         Gate::authorize('update', $client);
 
         DB::transaction(function () use ($request, &$client) {
-            $client->update($request->updateClient());
+            $client->update($request->updateClient($client));
         });
 
         $client = (new ClientResource($client))

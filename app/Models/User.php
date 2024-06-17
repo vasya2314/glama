@@ -64,12 +64,12 @@ namespace App\Models;
 
          if($this->parent_id !== null)
          {
-             $self = User::findOrFail($this->parent_id);
+             $user = User::findOrFail($this->parent_id);
          } else {
-             $self = $this;
+             $user = $this;
          }
 
-         $balanceAccount = $self->balanceAccount(BalanceAccount::BALANCE_REWARD)->lockForUpdate()->firstOrFail();
+         $balanceAccount = $user->balanceAccount(BalanceAccount::BALANCE_REWARD)->lockForUpdate()->firstOrFail();
 
          if(!empty($data))
          {
@@ -94,7 +94,7 @@ namespace App\Models;
                  $amountCashBack = rubToKop((float)$amountCashBack);
                  $balanceAccount->increaseBalance($amountCashBack);
 
-                 $self->transactions()->create(
+                 $user->transactions()->create(
                      [
                          'type' => Transaction::TYPE_DEPOSIT,
                          'status' => Transaction::STATUS_CONFIRMED,

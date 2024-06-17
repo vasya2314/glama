@@ -147,6 +147,13 @@ class YandexDirect extends YandexDirectExtend
         $amountDeposit = (int)$request->get('amount_deposit');
         $amount = (int)$request->get('amount');
 
+        if($client->contract == null) {
+            return $this->wrapResponse(
+                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                __('The client does not have a contract attached')
+            );
+        }
+
         if(!BalanceAccount::isEnoughBalance($amount, $user, BalanceAccount::BALANCE_MAIN))
         {
             return $this->wrapResponse(
