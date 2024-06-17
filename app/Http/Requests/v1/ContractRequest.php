@@ -51,67 +51,35 @@ class ContractRequest extends FormRequest
         return [];
     }
 
-    public function getTypeContract(): ?string
-    {
-        if($this->contract_type == Contract::LEGAL_ENTITY)
-        {
-            return LegalEntity::class;
-        }
-
-        if($this->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR)
-        {
-            return IndividualEntrepreneur::class;
-        }
-
-        if($this->contract_type == Contract::NATURAL_PERSON)
-        {
-            return NaturalPerson::class;
-        }
-
-        return null;
-    }
-
-    public function storeEntityContract(): array
+    public function storeContract(): array
     {
         $data = $this->validated();
         unset($data['contract_type']);
-        unset($data['client_id']);
 
-        return $data;
-    }
-
-    public function updateEntityContract(): array
-    {
-        $data = $this->validated();
-        unset($data['client_id']);
-
-        return $data;
-    }
-
-    public function storeContract(): array
-    {
-        $result = ['user_id' => $this->user()->id];
-        if($this->request->has('client_id')) $result['client_id'] = $this->client_id;
-        $result['display_name'] = $this->generateDisplayName($this->request->get('contract_type'));
-
-        return $result;
+        return [
+            'contract_type' => $this->request->get('contract_type'),
+            'display_name' => $this->generateDisplayName($this->request->get('contract_type')),
+            'data' => json_encode($data),
+        ];
     }
 
     public function updateContract(): array
     {
-        $result = [];
-        if($this->request->has('client_id')) $result['client_id'] = $this->client_id;
-        $result['display_name'] = $this->generateDisplayName($this->contract->contractable_type);
+        $data = $this->validated();
+        unset($data['contract_type']);
 
-        return $result;
+        return [
+            'display_name' => $this->generateDisplayName($this->contract->contract_type),
+            'data' => json_encode($data),
+        ];
     }
 
     private function includeRules(): array
     {
         if(
             $this->contract_type == Contract::LEGAL_ENTITY ||
-            isset($this->contract->contractable_type) &&
-            $this->contract->contractable_type == Contract::LEGAL_ENTITY
+            isset($this->contract) &&
+            $this->contract->contract_type == Contract::LEGAL_ENTITY
         )
         {
             return $this->rulesLegalEntityRequest();
@@ -119,8 +87,8 @@ class ContractRequest extends FormRequest
 
         if(
             $this->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR ||
-            isset($this->contract->contractable_type) &&
-            $this->contract->contractable_type == Contract::INDIVIDUAL_ENTREPRENEUR
+            isset($this->contract) &&
+            $this->contract->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR
         )
         {
             return $this->rulesIndividualEntrepreneurRequest();
@@ -128,8 +96,8 @@ class ContractRequest extends FormRequest
 
         if(
             $this->contract_type == Contract::NATURAL_PERSON ||
-            isset($this->contract->contractable_type) &&
-            $this->contract->contractable_type == Contract::NATURAL_PERSON
+            isset($this->contract) &&
+            $this->contract->contract_type == Contract::NATURAL_PERSON
         )
         {
             return $this->rulesNaturalPersonRequest();

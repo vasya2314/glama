@@ -20,32 +20,6 @@ class Contract extends Model
     protected $table = 'contracts';
     protected $guarded = false;
 
-    public static function boot(): void
-    {
-        parent::boot();
-
-        static::deleting(function($contract)
-        {
-            $contract->contractable()->delete();
-        });
-    }
-
-    protected function contractableType(): Attribute
-    {
-        return Attribute::make(
-            get: fn (string $value) => $this->castContractType($value),
-        );
-    }
-
-    private function castContractType(string $string): string|null
-    {
-        return match ($string) {
-            LegalEntity::class => self::LEGAL_ENTITY,
-            IndividualEntrepreneur::class => self::INDIVIDUAL_ENTREPRENEUR,
-            NaturalPerson::class => self::NATURAL_PERSON,
-        };
-    }
-
     public static function getAllTypes(): array
     {
         return [
@@ -53,11 +27,6 @@ class Contract extends Model
             self::INDIVIDUAL_ENTREPRENEUR,
             self::NATURAL_PERSON,
         ];
-    }
-
-    public function contractable(): MorphTo
-    {
-        return $this->morphTo();
     }
 
     public function user(): BelongsTo

@@ -25,8 +25,8 @@ class InvoiceDepositController extends Controller
         $this->contract = Contract::findOrFail($request->get('contract_id'));
 
         if(
-            $this->contract->contractable_type == Contract::LEGAL_ENTITY ||
-            $this->contract->contractable_type == Contract::INDIVIDUAL_ENTREPRENEUR
+            $this->contract->contract_type == Contract::LEGAL_ENTITY ||
+            $this->contract->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR
         )
         {
             return $this->generateInvoice($request);

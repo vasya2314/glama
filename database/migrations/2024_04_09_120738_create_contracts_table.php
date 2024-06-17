@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('display_name');
-            $table->morphs('contractable');
+            $table->string('contract_type')->index();
+            $table->json('data');
             $table->timestamps();
         });
     }

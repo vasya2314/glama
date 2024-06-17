@@ -28,8 +28,8 @@ class ContractResource extends JsonResource
         return array_merge(
             $response,
             [
-                'contract_type' => $this->contractable_type,
-                'contract_details' => ContractPolymorphicResource::make($this->contractable),
+                'contract_type' => $this->contract_type,
+                'contract_details' => @json_decode($this->data),
                 'created_at' => $this->created_at->toDateTimeString(),
             ]
         );

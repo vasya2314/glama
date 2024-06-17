@@ -129,19 +129,6 @@ class ClientRequest extends FormRequest
         }
     }
 
-    protected function getContractType(Contract $contract): string
-    {
-        $contractType = $contract->contractable_type;
-
-        return match ($contractType) {
-            $contract::LEGAL_ENTITY => 'LEGAL',
-            $contract::NATURAL_PERSON => 'PHYSICAL',
-            $contract::INDIVIDUAL_ENTREPRENEUR => 'INDIVIDUAL',
-            default => "NONE",
-        };
-
-    }
-
     public function updateClient(Client $client): array
     {
         $result = [];

@@ -35,12 +35,11 @@ class ContractController extends Controller
 
     public function store(ContractRequest $request): JsonResponse
     {
-        $type = $request->getTypeContract();
+        $user = $request->user();
         $contract = null;
 
-        DB::transaction(function () use ($request, $type, &$contract) {
-            $entityContract = $type::create($request->storeEntityContract());
-            $contract = $entityContract->contract()->create($request->storeContract());
+        DB::transaction(function () use ($request, $user, &$contract) {
+            $contract = $user->contracts()->create($request->storeContract());
         });
 
         $contract = (new ContractResource($contract))
@@ -68,11 +67,8 @@ class ContractController extends Controller
     {
         Gate::authorize('update', $contract);
 
-        $entityContract = $contract->contractable();
-
-        DB::transaction(function () use ($request, &$entityContract, &$contract) {
+        DB::transaction(function () use ($request, &$contract) {
             $contract->update($request->updateContract());
-            $entityContract->update($request->updateEntityContract());
         });
 
         $contract = (new ContractResource($contract))

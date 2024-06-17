@@ -23,7 +23,7 @@ class PaymentDepositController extends Controller
     {
         $this->contract = Contract::findOrFail($request->get('contract_id'));
 
-        if($this->contract->contractable_type == Contract::NATURAL_PERSON)
+        if($this->contract->contract_type == Contract::NATURAL_PERSON)
         {
             return $this->depositForNaturalPerson($request);
         }
