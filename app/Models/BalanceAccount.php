@@ -18,6 +18,14 @@ class BalanceAccount extends Model
 
     public $timestamps = false;
 
+    public static function getAllBalanceAccountsTypes(): array
+    {
+        return [
+            self::BALANCE_REWARD,
+            self::BALANCE_MAIN,
+        ];
+    }
+
     public static function isEnoughBalance(int $amount, User $user, string $type): bool
     {
         $balanceAccount = $user->balanceAccount($type)->firstOrFail();

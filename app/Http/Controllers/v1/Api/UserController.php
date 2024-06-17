@@ -79,10 +79,10 @@ class UserController extends Controller
         return $this->wrapResponse(Response::HTTP_OK, __('Your profile'), $user);
     }
 
-    public function getBalance(Request $request): JsonResponse
+    public function getBalance(Request $request, string $balanceType): JsonResponse
     {
         $user = $request->user();
-        $balanceAccount = $user->balanceAccount;
+        $balanceAccount = $user->balanceAccount($balanceType)->firstOrFail();
 
         return $this->wrapResponse(Response::HTTP_OK, __('Ok'), ['balance' => kopToRub((int)$balanceAccount->balance)]);
     }
@@ -93,7 +93,7 @@ class UserController extends Controller
         $data = $request->validated();
         $amount = (int)$data['amount'];
 
-        if(!BalanceAccount::isEnoughBalance($amount, $user, BalanceAccount::BALANCE_REWARD))
+        if(!BalanceAccount::isEnoughBalance($amount, $user, $data['account_type']))
         {
             return $this->wrapResponse(
                 Response::HTTP_SERVICE_UNAVAILABLE,
@@ -111,7 +111,7 @@ class UserController extends Controller
                 'amount' => $amount,
                 'data' => null,
                 'method_type' => Transaction::METHOD_TYPE_CARD,
-                'balance_account_type' => BalanceAccount::BALANCE_REWARD,
+                'balance_account_type' => $data['account_type'],
             ]
         );
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\v1;
 
+use App\Models\BalanceAccount;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
 
@@ -49,6 +50,7 @@ class UserRequest extends FormRequest
         {
             return [
                 'amount' => 'required|numeric',
+                'account_type' => 'required|in:' . implode(',', BalanceAccount::getAllBalanceAccountsTypes()),
             ];
         }
 
