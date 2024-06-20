@@ -3,11 +3,14 @@
 namespace App\Listeners;
 
 use App\Events\ReportHasBeenGenerated;
+use App\Traits\UserTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CloseMonthForUser
 {
+    use UserTrait;
+
     /**
      * Handle the event.
      */
@@ -19,8 +22,8 @@ class CloseMonthForUser
             $user = $event->user;
             $report = $event->report;
 
-            $amountCashback = $user->accrueCashback($report);
-
+            $this->accrueCashback($user, $report);
+            $this->generateClosingDocuments($user, $report);
 
             DB::commit();
         } catch (\Exception $e) {

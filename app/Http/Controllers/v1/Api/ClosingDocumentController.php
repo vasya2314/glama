@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\v1\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\ClosingAct;
-use App\Models\ClosingDocument;
-use App\Models\ClosingInvoice;
-use App\Models\Contract;
+use App\Http\Resources\v1\ClosingDocumentResource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 
 class ClosingDocumentController extends Controller
 {
@@ -16,6 +14,21 @@ class ClosingDocumentController extends Controller
     {
         $user = $request->user();
 
-        dd($user->closingDocuments);
+        $closingDocuments = $user->closingDocuments()->latest()->paginate(20);
+        $closingDocuments = ClosingDocumentResource::collection($closingDocuments)->response()->getData(true);
+
+        return $this->wrapResponse(Response::HTTP_OK, __('All closing documents.'), (array)$closingDocuments);
+    }
+
+    private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse
+    {
+        $result = [
+            'code' => $code,
+            'message' => $message
+        ];
+
+        if (count($resource)) $result = array_merge($result, ['resource' => $resource]);
+
+        return response()->json($result, $code);
     }
 }

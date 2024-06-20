@@ -15,6 +15,11 @@ class ClosingDocument extends Model
     protected $table = 'closing_documents';
     protected $guarded = false;
 
+    public function contract(): BelongsTo
+    {
+        return $this->belongsTo(Contract::class);
+    }
+
     public function closingAct(): BelongsTo
     {
         return $this->belongsTo(ClosingAct::class);

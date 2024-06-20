@@ -57,52 +57,52 @@ namespace App\Models;
         $this->notify(new ResetPasswordNotification($url));
     }
 
-     public function accrueCashback(Report $report): float|int
-     {
-         $resultCost = 0;
-         $data = (array)@json_decode($report->data);
+    public function accrueCashback(Report $report): float|int
+    {
+        $resultCost = 0;
+        $data = (array)@json_decode($report->data);
 
-         if($this->parent_id !== null)
-         {
-             $user = User::findOrFail($this->parent_id);
-         } else {
-             $user = $this;
-         }
+        if($this->parent_id !== null)
+        {
+            $user = User::findOrFail($this->parent_id);
+        } else {
+            $user = $this;
+        }
 
-         $balanceAccount = $user->balanceAccount(BalanceAccount::BALANCE_REWARD)->lockForUpdate()->firstOrFail();
+        $balanceAccount = $user->balanceAccount(BalanceAccount::BALANCE_REWARD)->lockForUpdate()->firstOrFail();
 
-         if(!empty($data))
-         {
-             foreach($data as $login => $arrItems)
-             {
-                 $resultCost += getClientAmountByReport($login, $report);
-             }
+        if(!empty($data))
+        {
+            foreach($data as $login => $arrItems)
+            {
+                $resultCost += getClientAmountByReport($login, $report);
+            }
 
-             if($resultCost > 0)
-             {
-                 $amountCashBack = $resultCost * env('YANDEX_CASHBACK_COEFFICIENT');
-                 $amountCashBack = rubToKop((float)$amountCashBack);
-                 $balanceAccount->increaseBalance($amountCashBack);
+            if($resultCost > 0)
+            {
+                $amountCashBack = $resultCost * env('YANDEX_CASHBACK_COEFFICIENT');
+                $amountCashBack = rubToKop((float)$amountCashBack);
+                $balanceAccount->increaseBalance($amountCashBack);
 
-                 $user->transactions()->create(
-                     [
-                         'type' => Transaction::TYPE_DEPOSIT,
-                         'status' => Transaction::STATUS_CONFIRMED,
-                         'payment_id' => null,
-                         'order_id' => Transaction::generateUUID(),
-                         'amount_deposit' => $amountCashBack,
-                         'amount' => $amountCashBack,
-                         'data' => $report->data,
-                         'method_type' => Transaction::METHOD_TYPE_CASHBACK,
-                         'balance_account_type' => BalanceAccount::BALANCE_REWARD,
-                     ]
-                 );
-             }
-         }
+                $user->transactions()->create(
+                    [
+                        'type' => Transaction::TYPE_DEPOSIT,
+                        'status' => Transaction::STATUS_CONFIRMED,
+                        'payment_id' => null,
+                        'order_id' => Transaction::generateUUID(),
+                        'amount_deposit' => $amountCashBack,
+                        'amount' => $amountCashBack,
+                        'data' => $report->data,
+                        'method_type' => Transaction::METHOD_TYPE_CASHBACK,
+                        'balance_account_type' => BalanceAccount::BALANCE_REWARD,
+                    ]
+                );
+            }
+        }
 
-         return $resultCost;
+        return $resultCost;
 
-     }
+    }
 
     public function clients(): HasMany
     {

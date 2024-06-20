@@ -102,5 +102,6 @@
     "Attach to agency": "Добавление в агенство",
     "User :email invites you to his agency. You can complete the process by clicking the button below": "Пользователь :email приглашает Вас в свое агенство. Вы можете завершить процесс нажав по кнопке ниже",
     "Confirm": "Подтвердить",
-    "The client does not have a contract attached": "У клиента не прикреплен договор"
+    "The client does not have a contract attached": "У клиента не прикреплен договор",
+    "All closing documents.": "Все закрывающие документы"
 }
