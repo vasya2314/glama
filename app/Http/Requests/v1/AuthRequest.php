@@ -5,6 +5,7 @@ namespace App\Http\Requests\v1;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class AuthRequest extends FormRequest
@@ -24,10 +25,25 @@ class AuthRequest extends FormRequest
      */
     public function rules(): array
     {
+        if ($this->is('api/v1/agency/user/login') && $this->isMethod('POST'))
+        {
+            return [
+                'user_id' => [
+                    'required',
+                    Rule::exists('users', 'id')->where(function ($query) {
+                        $query->where('parent_id', $this->user()->id);
+                    }),
+                ],
+            ];
+        }
+
         if (
-            $this->is('api/v1/register') ||
-            $this->is('api/v1/admin/users/agency-user/create') ||
-            $this->is('api/v1/users/create-user')
+            (
+                $this->is('api/v1/register') ||
+                $this->is('api/v1/admin/users/agency-user/create') ||
+                $this->is('api/v1/agency/users/create-user')
+            ) &&
+            $this->isMethod('POST')
         )
         {
             return [
@@ -45,7 +61,7 @@ class AuthRequest extends FormRequest
             ];
         }
 
-        if ($this->is('api/v1/login'))
+        if ($this->is('api/v1/login') && $this->isMethod('POST'))
         {
             return [
                 'email' => 'required|email',
@@ -53,14 +69,14 @@ class AuthRequest extends FormRequest
             ];
         }
 
-        if ($this->is('api/v1/forgot-password'))
+        if ($this->is('api/v1/forgot-password') && $this->isMethod('POST'))
         {
             return [
                 'email' => 'required|email',
             ];
         }
 
-        if ($this->is('api/v1/reset-password'))
+        if ($this->is('api/v1/reset-password') && $this->isMethod('POST'))
         {
             return [
                 'token' => 'required',

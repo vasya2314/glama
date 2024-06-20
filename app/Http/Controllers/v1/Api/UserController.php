@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\v1\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\v1\Api\Auth\LoginController;
 use App\Http\Controllers\v1\Api\Auth\RegisterController;
 use App\Http\Requests\v1\AuthRequest;
 use App\Http\Requests\v1\UserRequest;
 use App\Http\Resources\v1\UserResource;
 use App\Mail\AttachToAgency;
 use App\Models\BalanceAccount;
+use App\Models\ClosingAct;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Traits\UserTrait;
@@ -164,6 +166,21 @@ class UserController extends Controller
             ->getData(true);
 
         return $this->wrapResponse(Response::HTTP_OK, __('All users'), (array)$childUsers);
+    }
+
+    public function agencyLogin(AuthRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $user = User::findOrFail($data['user_id']);
+
+        return (new LoginController())->login($request, $user);
+    }
+
+    public function generateClosingActPdf(UserRequest $request, ClosingAct $closingAct)
+    {
+        $data = $request->validated();
+
+        dd($data);
     }
 
     private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse

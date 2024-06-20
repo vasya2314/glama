@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\AuthRequest;
 use App\Http\Resources\v1\UserResource;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,18 +17,21 @@ class LoginController extends Controller
     /**
      * @throws ValidationException
      */
-    public function login(AuthRequest $request): JsonResponse
+    public function login(AuthRequest $request, User $user = null): JsonResponse
     {
-        $credentials = $request->only('email', 'password');
-
-        if(!Auth::attempt($credentials))
+        if($user == null)
         {
-            throw ValidationException::withMessages([
-                'message' => __('The credentials does not match.')
-            ]);
-        }
+            $credentials = $request->only('email', 'password');
 
-        $user = Auth::user();
+            if(!Auth::attempt($credentials))
+            {
+                throw ValidationException::withMessages([
+                    'message' => __('The credentials does not match.')
+                ]);
+            }
+
+            $user = Auth::user();
+        }
 
         $user = (new UserResource($user))
             ->additional(['token' => $user->createToken('access-token', [$user->role])->plainTextToken])

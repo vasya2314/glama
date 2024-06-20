@@ -13,14 +13,17 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/user/deposit/payment', [PaymentDepositController::class, 'deposit']);
     Route::middleware('throttle:4,0.16')->post('/user/deposit/invoice', [InvoiceDepositController::class, 'deposit']);
     Route::post('/user/yandex-direct/deposit', [YandexDirectPaymentController::class, 'deposit']);
-    Route::get('/user/balance/{balanceType}', [UserController::class, 'getBalance']);
-    Route::post('/user/withdrawal-money', [UserController::class, 'withdrawalMoney']); // ВЫВОД СРЕДСТВ
+    Route::get('/user/balance/{balanceType}', [UserController::class, 'getBalance']); // NEW
+    Route::post('/user/withdrawal-money', [UserController::class, 'withdrawalMoney']); // ВЫВОД СРЕДСТВ // NEW
+
+    Route::post('/user/closing-acts/pdf', [UserController::class, 'generateClosingActPdf']);
 });
 
 Route::middleware(['auth:sanctum', 'verified', 'agencyUser'])->group(function () {
-    Route::get('/users/child-users', [UserController::class, 'allUsers']); // NEW
-    Route::post('/users/create-user/', [UserController::class, 'createUser']); // NEW
-    Route::get('/users/{user}/attach-user/', [UserController::class, 'attachUser']); // NEW
+    Route::get('/agency/users/child-users', [UserController::class, 'allUsers']); // NEW
+    Route::post('/agency/users/create-user', [UserController::class, 'createUser']); // NEW
+    Route::get('/agency/users/{user}/attach-user', [UserController::class, 'attachUser']); // NEW
+    Route::post('/agency/user/login', [UserController::class, 'agencyLogin']); // NEW
 });
 
 Route::get('/users/confirm-attach-to-agency/{user}/{agencyUser}', [UserController::class, 'confirmAttachToAgency'])->name('confirm-attach-to-agency'); // NEW
