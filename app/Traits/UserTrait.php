@@ -40,18 +40,18 @@ trait UserTrait
                             $amount = getClientAmountByReport($client->login, $report);
                             if($amount) $amount = rubToKop($amount);
 
-                            $dataGenerated = Carbon::now()->subMonth()->endOfMonth();
+                            $dateGenerated = Carbon::now()->subMonth()->endOfMonth();
 
                             $closingAct = $contract->closingActs()->create(
                                 [
-                                    'date_generated' => $dataGenerated,
+                                    'date_generated' => $dateGenerated,
                                     'amount' => $amount,
                                 ]
                             );
 
                             $closingInvoice = $contract->closingInvoice()->create(
                                 [
-                                    'date_generated' => $dataGenerated,
+                                    'date_generated' => $dateGenerated,
                                     'amount' => $amount,
                                 ]
                             );

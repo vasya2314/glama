@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('act_number', 200)->nullable();
             $table->foreignId('contract_id')->constrained('contracts');
+            $table->dateTime('date_generated');
             $table->bigInteger('amount');
             $table->timestamps();
         });

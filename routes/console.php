@@ -6,3 +6,4 @@ Schedule::command('app:check-payment-qr')->everyMinute()->withoutOverlapping(); 
 Schedule::command('app:check-payment-invoices')->hourly()->withoutOverlapping(); // Проверка оплаты по счету
 Schedule::command('app:check-client-campaigns-qty')->daily()->withoutOverlapping(); // Обновление количества компаний у агенстких клиентов
 Schedule::command('app:check-shared-yandex-direct-account')->everyFiveMinutes()->withoutOverlapping(); // Проверка подключен ли общий счет
+Schedule::command('app:generate-reports')->monthlyOn(1, '01:00'); // Генерация отчетов
