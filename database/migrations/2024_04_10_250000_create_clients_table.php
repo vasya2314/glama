@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('contract_id')->unique()->nullable()->constrained('contracts')->onDelete('set null');
             $table->string('account_name', 100);
-            $table->string('login', 50)->unique();
+            $table->string('login', 50)->unique()->index();
             $table->string('password');
             $table->unsignedBigInteger('client_id')->unique();
             $table->unsignedBigInteger('account_id')->unique()->nullable();

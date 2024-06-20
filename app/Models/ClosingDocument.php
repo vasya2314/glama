@@ -2,40 +2,32 @@
 
 namespace App\Models;
 
-use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class Client extends Model
+class ClosingDocument extends Model
 {
-    use HasFactory, Filterable;
+    use HasFactory;
 
-    protected $table = 'clients';
+    protected $table = 'closing_documents';
     protected $guarded = false;
 
-    protected function casts(): array
+    public function closingAct(): BelongsTo
     {
-        return [
-            'is_enable_shared_account' => 'boolean',
-        ];
+        return $this->belongsTo(ClosingAct::class);
     }
 
-    public static function getTableName()
+    public function closingInvoice(): BelongsTo
     {
-        return with(new static)->getTable();
+        return $this->belongsTo(ClosingInvoice::class);
     }
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function contract(): BelongsTo
-    {
-        return $this->belongsTo(Contract::class);
     }
 
 }

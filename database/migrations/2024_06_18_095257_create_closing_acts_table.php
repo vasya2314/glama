@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('closing_acts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->nullable()->constrained('clients')->onDelete('set null');
-            $table->json('data');
+            $table->string('act_number', 200)->nullable();
+            $table->foreignId('contract_id')->constrained('contracts');
+            $table->dateTime('date_generated');
+            $table->bigInteger('amount');
             $table->timestamps();
         });
     }

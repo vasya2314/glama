@@ -3,7 +3,7 @@
 use App\Http\Controllers\v1\Api\ContractController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/contracts', [ContractController::class, 'index']);
     Route::post('/contracts', [ContractController::class, 'store']);
     Route::get('/contracts/{contract}', [ContractController::class, 'show']);

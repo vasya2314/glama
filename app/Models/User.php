@@ -73,19 +73,9 @@ namespace App\Models;
 
          if(!empty($data))
          {
-             foreach($data as $arrItems)
+             foreach($data as $login => $arrItems)
              {
-                 if(!empty($arrItems) && is_array($arrItems))
-                 {
-                     foreach($arrItems as $item)
-                     {
-                         if(isset($item->Cost))
-                         {
-                             $cost = (int)$item->Cost / 1000000;
-                             $resultCost += $cost;
-                         }
-                     }
-                 }
+                 $resultCost += getClientAmountByReport($login, $report);
              }
 
              if($resultCost > 0)
@@ -152,6 +142,11 @@ namespace App\Models;
     public function reports(): HasMany
     {
         return $this->hasMany(Report::class);
+    }
+
+    public function closingDocuments(): HasMany
+    {
+        return $this->hasMany(ClosingDocument::class);
     }
 
 }
