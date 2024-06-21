@@ -176,13 +176,6 @@ class UserController extends Controller
         return (new LoginController())->login($request, $user);
     }
 
-    public function generateClosingActPdf(UserRequest $request, ClosingAct $closingAct)
-    {
-        $data = $request->validated();
-
-        dd($data);
-    }
-
     private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse
     {
         $result = [

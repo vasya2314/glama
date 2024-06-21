@@ -38,7 +38,12 @@ trait UserTrait
                         )
                         {
                             $amount = getClientAmountByReport($client->login, $report);
-                            if($amount) $amount = rubToKop($amount);
+                            $amountNDS = 0;
+                            if($amount)
+                            {
+                                $amountNDS = rubToKop($amount * env('NDS_KOEF'));
+                                $amount = rubToKop($amount);
+                            }
 
                             $dateGenerated = Carbon::now()->subMonth()->endOfMonth();
 
@@ -46,6 +51,7 @@ trait UserTrait
                                 [
                                     'date_generated' => $dateGenerated,
                                     'amount' => $amount,
+                                    'amount_nds' => $amountNDS,
                                 ]
                             );
 
@@ -53,6 +59,7 @@ trait UserTrait
                                 [
                                     'date_generated' => $dateGenerated,
                                     'amount' => $amount,
+                                    'amount_nds' => $amountNDS,
                                 ]
                             );
 

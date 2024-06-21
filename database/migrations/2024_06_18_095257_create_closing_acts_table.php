@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('contract_id')->constrained('contracts');
             $table->dateTime('date_generated');
             $table->bigInteger('amount');
+            $table->bigInteger('amount_nds');
             $table->timestamps();
         });
     }

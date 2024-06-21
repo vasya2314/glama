@@ -24,18 +24,6 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        if ($this->is('api/v1/user/closing-acts/pdf') && $this->isMethod('POST'))
-        {
-            return [
-                'closing_act_id' => [
-                    'required',
-                    Rule::exists('closing_documents', 'closing_act_id')->where(function ($query) {
-                        $query->where('user_id', $this->user()->id);
-                    }),
-                ],
-            ];
-        }
-
         if ($this->is('api/v1/user/update-user'))
         {
             return [

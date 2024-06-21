@@ -5,4 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/closing-documents', [ClosingDocumentController::class, 'index']); // NEW
+    Route::post('/user/closing-acts/pdf', [ClosingDocumentController::class, 'generateClosingActPdf']); // NEW
 });

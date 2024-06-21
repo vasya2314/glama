@@ -15,8 +15,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/user/yandex-direct/deposit', [YandexDirectPaymentController::class, 'deposit']);
     Route::get('/user/balance/{balanceType}', [UserController::class, 'getBalance']); // NEW
     Route::post('/user/withdrawal-money', [UserController::class, 'withdrawalMoney']); // ВЫВОД СРЕДСТВ // NEW
-
-    Route::post('/user/closing-acts/pdf', [UserController::class, 'generateClosingActPdf']);
 });
 
 Route::middleware(['auth:sanctum', 'verified', 'agencyUser'])->group(function () {

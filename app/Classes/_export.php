@@ -46,3 +46,11 @@ if (!function_exists('getClientAmountByReport'))
 
     }
 }
+
+if (!function_exists('priceFormat'))
+{
+    function priceFormat(float|int $amount): string
+    {
+        return number_format($amount, 2, ',', ' ');
+    }
+}
