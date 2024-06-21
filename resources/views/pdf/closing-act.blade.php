@@ -8,11 +8,47 @@
 </head>
 <body>
     <style>
+        @font-face {
+            font-family: 'Open Sans';
+            src: url({{ storage_path("fonts/static/OpenSans/OpenSans-Bold.ttf") }}) format("truetype");
+            font-weight: 700;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Open Sans';
+            src: url({{ storage_path("fonts/static/OpenSans/OpenSans-Italic.ttf") }}) format("truetype");
+            font-weight: 400;
+            font-style: italic;
+        }
+        @font-face {
+            font-family: 'Open Sans';
+            src: url({{ storage_path("fonts/static/OpenSans/OpenSans-Medium.ttf") }}) format("truetype");
+            font-weight: 500;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Open Sans';
+            src: url({{ storage_path("fonts/static/OpenSans/OpenSans-MediumItalic.ttf") }}) format("truetype");
+            font-weight: 500;
+            font-style: italic;
+        }
+        @font-face {
+            font-family: 'Open Sans';
+            src: url({{ storage_path("fonts/static/OpenSans/OpenSans-Regular.ttf") }}) format("truetype");
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Open Sans';
+            src: url({{ storage_path("fonts/static/OpenSans/OpenSans-SemiBold.ttf") }}) format("truetype");
+            font-weight: 600;
+            font-style: normal;
+        }
         html {
             padding: 0;
         }
         body{
-            font-family: 'DejaVu Sans', sans-serif;
+            font-family: 'Open Sans', sans-serif;
             font-size: 12px;
             padding: 15px 30px 15px 30px;
             position: relative;
@@ -84,10 +120,10 @@
         .closing-act__amount-notify {
             font-size: 10px;
             padding: 0 20px;
-            margin-bottom: 30px;
+            margin-bottom: 10px;
         }
         .closing-act__bottom {
-
+            margin-top: -40px;
         }
         .closing-act__bottom td {
             vertical-align: bottom;
@@ -101,9 +137,35 @@
             width: 200px;
             height: 200px;
             object-fit: contain;
+            margin-top: auto;
         }
         .closing-act__bottom .value {
             display:block;
+            vertical-align: bottom;
+            margin-top: auto;
+            font-style: italic;
+            font-size: 10px;
+        }
+        .closing-act__bottom .left {
+            display:inline-block;
+            margin-top: auto;
+            vertical-align: bottom;
+        }
+        .closing-act__bottom .right {
+            display:inline-block;
+            margin-top: auto;
+            vertical-align: bottom;
+        }
+        .closing-act__bottom .signature-left {
+            position: relative;
+            bottom: -30px;
+        }
+        .closing-act__bottom .value-right {
+            border-top: 1px solid #000000;
+            padding: 0 15px;
+            margin-left: 10px;
+            position: relative;
+            bottom: -30px;
         }
     </style>
 
@@ -198,20 +260,20 @@
             <table class="closing-act__bottom">
                 <tbody>
                     <tr>
-                        <td style="width: 75%">
-                            <span style="display:inline-block; margin-top: auto; vertical-align: bottom;" class="left">Исполнитель:</span>
-                            <span style="margin-top: auto" class="signature">
-                                <img style="vertical-align: bottom; margin-top: auto;" class="image-signature left" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/static/signature.png'))) }}" alt="signature">
-                                <span style="vertical-align: bottom; margin-top: auto; text-align: center;" class="value">
+                        <td style="width: 70%; padding-bottom: 20px;">
+                            <span class="left">Исполнитель:</span>
+                            <span style="margin-top: auto" class="signature signature-left">
+                                <img class="image-signature left" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('storage/static/signature.png'))) }}" alt="signature">
+                                <span style="text-align: center;" class="value">
                                     подпись
                                 </span>
                             </span>
-                            <span style="display:inline-block; margin-top: auto; vertical-align: bottom;" class="left" class="right">{{ env('COMPANY_DIRECTOR_INITIALS') }}</span>
+                            <span class="right">{{ env('COMPANY_DIRECTOR_INITIALS') }}</span>
                         </td>
-                        <td style="width: 25%">
-                            <span style="display:inline-block; margin-top: auto; vertical-align: bottom" class="left">Заказчик:</span>
-                            <span style="margin-top: auto" class="signature">
-                                <span style="vertical-align: bottom; margin-top: auto;" class="value">
+                        <td style="width: 30%;">
+                            <span class="left">Заказчик:</span>
+                            <span style="display: inline-block; margin-top: auto" class="signature">
+                                <span class="value value-right">
                                     подпись
                                 </span>
                             </span>

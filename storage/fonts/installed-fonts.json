@@ -1,0 +1,10 @@
+{
+    "open sans": {
+        "bold": "D:\\laraProjects\\glama_v1\\storage\\fonts\/open_sans_bold_61cbec57adbceb25c82221902050688b",
+        "italic": "D:\\laraProjects\\glama_v1\\storage\\fonts\/open_sans_italic_544aa09b4334fd72dd901e6defa22147",
+        "500": "D:\\laraProjects\\glama_v1\\storage\\fonts\/open_sans_500_5a030915078d1fd7fcfd343779e410ee",
+        "500_italic": "D:\\laraProjects\\glama_v1\\storage\\fonts\/open_sans_500_italic_5e28a5bb6dc9bfcbfd7fe0c11af27ba9",
+        "normal": "D:\\laraProjects\\glama_v1\\storage\\fonts\/open_sans_normal_a251ed04679efe4dba08293eb38aedbf",
+        "600": "open_sans_600_74a092b5a5e0925181160c44ca476bf8"
+    }
+}
