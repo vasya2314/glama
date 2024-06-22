@@ -246,7 +246,7 @@
                         <td class="right no-wrap">{{ priceFormat(kopToRub($closingAct->amount_nds)) }}</td>
                     </tr>
                     <tr>
-                        <td class="right" colspan="2">в том числе НДС 20%:</td>
+                        <td class="right" colspan="2">в том числе НДС {{ env('NDS_KOEF') * 100 }}%:</td>
                         <td class="right no-wrap">{{ priceFormat(kopToRub($nds)) }}</td>
                     </tr>
                 </tfoot>

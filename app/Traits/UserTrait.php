@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Http\Controllers\v1\Api\ClosingDocumentController;
 use App\Http\Requests\v1\UserRequest;
 use App\Models\BalanceAccount;
 use App\Models\Client;
@@ -41,7 +42,7 @@ trait UserTrait
                             $amountNDS = 0;
                             if($amount)
                             {
-                                $amountNDS = rubToKop($amount * env('NDS_KOEF'));
+                                $amountNDS = rubToKop($amount + ($amount * env('NDS_KOEF')));
                                 $amount = rubToKop($amount);
                             }
 
@@ -63,13 +64,17 @@ trait UserTrait
                                 ]
                             );
 
-                            $user->closingDocuments()->create(
+                            $closingDocument = $user->closingDocuments()->create(
                                 [
                                     'contract_id' => $contract->id,
                                     'closing_act_id' => $closingAct->id,
                                     'closing_invoice_id' => $closingInvoice->id,
                                 ]
                             );
+
+                            ClosingDocumentController::generateClosingActPdf($contract, $closingInvoice, $closingAct, $closingDocument);
+                            ClosingDocumentController::generateClosingInvoicePdf($contract, $closingInvoice, $closingAct, $closingDocument);
+
                         }
                     });
                 }

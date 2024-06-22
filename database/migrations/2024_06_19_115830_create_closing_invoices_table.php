@@ -17,6 +17,7 @@ return new class extends Migration
             $table->dateTime('date_generated');
             $table->bigInteger('amount');
             $table->bigInteger('amount_nds');
+            $table->string('path')->nullable();
             $table->timestamps();
         });
     }

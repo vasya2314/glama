@@ -3,9 +3,6 @@
 namespace App\Http\Requests\v1;
 
 use App\Models\Contract;
-use App\Models\IndividualEntrepreneur;
-use App\Models\LegalEntity;
-use App\Models\NaturalPerson;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -162,6 +159,10 @@ class ContractRequest extends FormRequest
                 'numeric',
                 'regex:/^\\d{15}$/',
             ],
+            'kpp' => [
+                'required',
+                'numeric',
+            ],
             'company_name' => 'required|string|max:512',
             'legal_address' => 'required|string',
             'actual_address' => 'required|string',
@@ -253,6 +254,19 @@ class ContractRequest extends FormRequest
             'firstname' => __('firstname'),
             'surname' => __('surname'),
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        if(
+            $this->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR ||
+            isset($this->contract) &&
+            $this->contract->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR
+        ) {
+            $this->merge([
+                'kpp' => 0,
+            ]);
+        }
     }
 
 }
