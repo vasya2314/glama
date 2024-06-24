@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('contract_id')->nullable()->constrained('contracts');
+            $table->foreignId('user_id')->nullable()->constrained('users');
             $table->string('type');
             $table->string('status');
             $table->string('payment_id')->nullable();

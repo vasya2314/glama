@@ -32,11 +32,11 @@ class MessageController extends Controller
         $user = $request->user();
 
         if ($message = $user->messages()->create($request->storeValidatedData())) {
+            $message->uploadFiles($request, 'files');
+
             $message = (new MessageResource($message))
                 ->response()
                 ->getData(true);
-
-            $message->uploadFiles($request, 'files');
 
             return $this->wrapResponse(Response::HTTP_CREATED, __('Message created successfully.'), $message);
         }

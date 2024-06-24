@@ -109,6 +109,7 @@ trait UserTrait
 
                 $user->transactions()->create(
                     [
+                        'contract_id' => null,
                         'type' => Transaction::TYPE_DEPOSIT,
                         'status' => Transaction::STATUS_CONFIRMED,
                         'payment_id' => null,

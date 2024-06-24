@@ -21,7 +21,8 @@ class PaymentDepositController extends Controller
      */
     public function deposit(DepositRequest $request): JsonResponse
     {
-        $this->contract = Contract::findOrFail($request->get('contract_id'));
+        $data = $request->validated();
+        $this->contract = Contract::findOrFail($data['contract_id']);
 
         if($this->contract->contract_type == Contract::NATURAL_PERSON)
         {

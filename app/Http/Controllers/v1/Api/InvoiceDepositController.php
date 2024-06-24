@@ -22,7 +22,8 @@ class InvoiceDepositController extends Controller
      */
     public function deposit(DepositRequest $request): JsonResponse
     {
-        $this->contract = Contract::findOrFail($request->get('contract_id'));
+        $data = $request->validated();
+        $this->contract = Contract::findOrFail($data['contract_id']);
 
         if(
             $this->contract->contract_type == Contract::LEGAL_ENTITY ||
@@ -67,16 +68,16 @@ class InvoiceDepositController extends Controller
 
         if($this->transaction)
         {
-            $contractVariation = $this->contract->contractable;
+            $contractVariation = json_decode($this->contract->data);
 
             $body = [
                 "invoiceNumber" => (string)$this->transaction->id,
                 "dueDate" => date('Y-m-d'),
                 "invoiceDate" => date('Y-m-d', strtotime('+1 day')),
-                "accountNumber" => $contractVariation->correspondent_account,
+                "accountNumber" => (string)$contractVariation->correspondent_account,
                 "payer" => [
-                    "name" => $contractVariation->company_name,
-                    "inn" => $contractVariation->inn,
+                    "name" => (string)$contractVariation->company_name,
+                    "inn" => (string)$contractVariation->inn,
                 ],
                 "items" => [
                     [
@@ -89,10 +90,10 @@ class InvoiceDepositController extends Controller
                 ],
                 "contacts" => [
                     [
-                        "email" => $contractVariation->email,
+                        "email" => (string)$contractVariation->email,
                     ],
                 ],
-                "contactPhone" => $contractVariation->phone,
+                "contactPhone" => (string)$contractVariation->phone,
                 "comment" => "Покупка GCoins"
             ];
 

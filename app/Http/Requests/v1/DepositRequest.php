@@ -65,6 +65,7 @@ class DepositRequest extends FormRequest
         $data = json_decode($tinkoff->response);
 
         return [
+            'contract_id' => $request->get('contract_id'),
             'type' => $transactionType,
             'status' => $data->Status,
             'payment_id' => $data->PaymentId,
@@ -83,6 +84,7 @@ class DepositRequest extends FormRequest
             'status' => Transaction::STATUS_NEW,
             'payment_id' => null,
             'order_id' => null,
+            'contract_id' => request()->get('contract_id'),
             'amount_deposit' => (int)request()->get('amount'),
             'amount' => (int)request()->get('amount'),
             'method_type' => Transaction::METHOD_TYPE_INVOICE,

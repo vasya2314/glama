@@ -191,6 +191,7 @@ class YandexDirect extends YandexDirectExtend
 
             $transaction = $user->transactions()->create(
                 [
+                    'contract_id' => $client->contract_id,
                     'type' => Transaction::TYPE_DEPOSIT_YANDEX_ACCOUNT,
                     'status' => Transaction::STATUS_NEW,
                     'order_id' => Transaction::generateUUID(),
