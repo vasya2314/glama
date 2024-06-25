@@ -852,6 +852,178 @@
                 ]
             }
         },
+        "/closing-documents": {
+            "get": {
+                "tags": [
+                    "Закрывающие документы"
+                ],
+                "summary": "Получение всех закрывающих документов пользователя",
+                "operationId": "24c1816a13003cce8669cb41d932d641",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All closing documents."
+                                        },
+                                        "resource": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/ClosingDocumentResponse"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object",
+                                            "oneOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/Pagination"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/closing-act/get": {
+            "post": {
+                "tags": [
+                    "Закрывающие документы"
+                ],
+                "summary": "Получить закрывающий акт",
+                "operationId": "a08b79b0477e34e4717ae012e18c17fe",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "closing_act_id": {
+                                        "title": "ID закрывающего акта",
+                                        "description": "ID закрывающего акта",
+                                        "format": "iteger",
+                                        "example": "6"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Возвращается File через stream"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/closing-invoice/get": {
+            "post": {
+                "tags": [
+                    "Закрывающие документы"
+                ],
+                "summary": "Получить закрывающую счет фактуру",
+                "operationId": "c401903a3b2c20ffd24dbacebc4a03f2",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "closing_invoice_id": {
+                                        "title": "ID закрывающей счет - фактуры",
+                                        "description": "ID закрывающей счет - фактуры",
+                                        "format": "iteger",
+                                        "example": "7"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Возвращается File через stream"
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/contracts": {
             "get": {
                 "tags": [
@@ -2314,13 +2486,23 @@
                 ]
             }
         },
-        "/user/balance": {
+        "/user/balance/{balanceType}": {
             "get": {
                 "tags": [
                     "Пользователь"
                 ],
                 "summary": "Получение баланса пользователя",
-                "operationId": "4fcb79ba99319be47b6209a5272de94f",
+                "description": "Типы: main,reward",
+                "operationId": "58f3c19da442234468363b21df80ec38",
+                "parameters": [
+                    {
+                        "name": "balanceType",
+                        "in": "path",
+                        "description": "Тип счета",
+                        "required": true,
+                        "example": "main"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Ok",
@@ -2370,6 +2552,307 @@
                     },
                     "500": {
                         "description": "Error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/agency/users/child-users": {
+            "get": {
+                "tags": [
+                    "Агентский пользователь"
+                ],
+                "summary": "Получение всех дочерних пользователей",
+                "operationId": "fe7ce45409480b5c99479a002a64158c",
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All users"
+                                        },
+                                        "resource": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/UserResponse"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object",
+                                            "oneOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/Pagination"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/agency/users/create-user": {
+            "post": {
+                "tags": [
+                    "Агентский пользователь"
+                ],
+                "summary": "Создание агентского аккаунта",
+                "operationId": "89129f8efe3114c528537bbb2b474fa8",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserRegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "201"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Account has been successfully registered, please check your email to verify your account."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "500"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Your account failed to register."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/agency/users/{user}/attach-user": {
+            "get": {
+                "tags": [
+                    "Агентский пользователь"
+                ],
+                "summary": "Получение баланса пользователя",
+                "operationId": "7b94b0950337d3d6b7f859056917b451",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "ID пользователя",
+                        "required": true,
+                        "example": "2"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "You have successfully submitted a request to add a user to your agency"
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Bad Request"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/agency/user/login": {
+            "post": {
+                "tags": [
+                    "Агентский пользователь"
+                ],
+                "summary": "Вход в дочерний аккаунт",
+                "operationId": "fdc8a9c81bb450ebff4b1e68abefd0d3",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "allOf": [
+                                    {
+                                        "properties": {
+                                            "user_id": {
+                                                "type": "integer",
+                                                "example": "2"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logged in succesfully"
+                                        },
+                                        "response": {
+                                            "$ref": "#/components/schemas/UserResponse"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|32SuQYzh3jCFDoVYgk8bubmx6V12hTShaSDtRIlKc9518c76"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "example": "Bearer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The credentials do not match."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "message": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The credentials do not match."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -3263,6 +3746,88 @@
                 },
                 "type": "object"
             },
+            "ClosingDocumentResponse": {
+                "title": "Возвращаемый закрывающий документ",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "format": "iteger",
+                        "example": "1"
+                    },
+                    "contract": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": "1"
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "ООО iHor хостинг"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "closing_invoice": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": "2"
+                            },
+                            "date_generated": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-06-22 13:55:21"
+                            },
+                            "amount": {
+                                "type": "number",
+                                "format": "float",
+                                "example": "1000.00"
+                            },
+                            "amount_nds": {
+                                "type": "number",
+                                "format": "float",
+                                "example": "1200.00"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "closing_act": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": "2"
+                            },
+                            "date_generated": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2024-06-22 13:55:21"
+                            },
+                            "number": {
+                                "type": "string",
+                                "example": "2024/05/31-16"
+                            },
+                            "amount": {
+                                "type": "number",
+                                "format": "float",
+                                "example": "2000.00"
+                            },
+                            "amount_nds": {
+                                "type": "number",
+                                "format": "float",
+                                "example": "1400.00"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-06-22 13:40:21"
+                    }
+                },
+                "type": "object"
+            },
             "ContractResponse": {
                 "title": "Возвращаемый договор",
                 "properties": {
@@ -3584,6 +4149,18 @@
                         "format": "integer",
                         "example": "1"
                     },
+                    "user_type": {
+                        "title": "Тип пользователя",
+                        "description": "Тип пользователя. Варианты: agency, simple",
+                        "format": "string",
+                        "example": "simple"
+                    },
+                    "parent_id": {
+                        "title": "ID родительского аккунта",
+                        "description": "ID родительского аккунта",
+                        "format": "integer",
+                        "example": "null"
+                    },
                     "created_at": {
                         "title": "Дата регистрации",
                         "description": "Дата регистрации",
@@ -3606,6 +4183,12 @@
             "name": "Пользователь"
         },
         {
+            "name": "Админ"
+        },
+        {
+            "name": "Агентский пользователь"
+        },
+        {
             "name": "Клиенты"
         },
         {
@@ -3616,6 +4199,9 @@
         },
         {
             "name": "Транзакции"
+        },
+        {
+            "name": "Закрывающие документы"
         }
     ]
 }

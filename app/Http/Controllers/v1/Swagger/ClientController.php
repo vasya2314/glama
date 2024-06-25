@@ -130,6 +130,7 @@ use App\Http\Controllers\Controller;
  *         ),
  *     ),
  * ),
+ *
  * @OA\Get(
  *      path="/clients/{client}/update/campaigns-qty",
  *      summary="Обновление счетсчика количества компании на аккаунте Яндекс",

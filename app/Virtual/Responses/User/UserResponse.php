@@ -100,6 +100,28 @@ class UserResponse
 
     /**
      * @OA\Property(
+     *     property="user_type",
+     *     format="string",
+     *     title="Тип пользователя",
+     *     description="Тип пользователя. Варианты: agency, simple",
+     *     example="simple",
+     * )
+     */
+    public $userType;
+
+    /**
+     * @OA\Property(
+     *     property="parent_id",
+     *     format="integer",
+     *     title="ID родительского аккунта",
+     *     description="ID родительского аккунта",
+     *     example="null",
+     * )
+     */
+    public $parentId;
+
+    /**
+     * @OA\Property(
      *     property="created_at",
      *     format="date",
      *     title="Дата регистрации",

@@ -8,6 +8,5 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/clients', [ClientController::class, 'index']);
     Route::get('/clients/{client}', [ClientController::class, 'show']);
     Route::patch('/clients/{client}', [ClientController::class, 'update']);
-
-    Route::get('/clients/{client}/update/campaigns-qty', [ClientController::class, 'updateCampaignsQty']); // NEW
+    Route::get('/clients/{client}/update/campaigns-qty', [ClientController::class, 'updateCampaignsQty']);
 });

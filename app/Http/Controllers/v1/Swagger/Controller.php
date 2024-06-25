@@ -21,6 +21,12 @@ namespace App\Http\Controllers\v1\Swagger;
  *     name="Пользователь",
  * )
  * @OA\Tag(
+ *     name="Админ",
+ * )
+ * @OA\Tag(
+ *     name="Агентский пользователь",
+ * )
+ * @OA\Tag(
  *     name="Клиенты",
  * )
  * @OA\Tag(
@@ -31,6 +37,9 @@ namespace App\Http\Controllers\v1\Swagger;
  * )
  * @OA\Tag(
  *     name="Транзакции",
+ * )
+ * @OA\Tag(
+ *     name="Закрывающие документы",
  * )
  */
 class Controller extends \App\Http\Controllers\Controller

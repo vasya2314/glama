@@ -49,44 +49,46 @@ class ClosingDocumentController extends Controller
         $logo = base64_encode(file_get_contents(public_path('storage/static/glama_logo.png')));
         $template = view('pdf.closing-act', compact('closingAct', 'logo', 'closingDocument', 'closingInvoice', 'contract'))->render();
 
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->getDomPDF()->set_option('enable_php', true);
-        $pdf->loadHTML($template);
-        $pdf->render();
-        $output = $pdf->output();
-
+        $output = self::initDomPdf($template);
         $fileName = str_replace('/', '_', $closingAct->act_number) . '_Act.pdf';
         $path = resource_path('closing-documents/closing-acts/' . $fileName);
 
-        file_put_contents($path, $output);
-
-        $closingAct->update(
-            [
-                'path' => $path,
-            ]
-        );
+        if(file_put_contents($path, $output))
+        {
+            $closingAct->update(
+                [
+                    'path' => $path,
+                ]
+            );
+        }
     }
 
     public static function generateClosingInvoicePdf(Contract $contract, ClosingInvoice $closingInvoice, ClosingAct $closingAct, ClosingDocument $closingDocument): void
     {
         $template = view('pdf.closing-invoice', compact('closingInvoice','closingDocument', 'closingAct', 'contract'))->render();
 
+        $output = self::initDomPdf($template);
+        $fileName = $closingInvoice->id . '_Invoice.pdf';
+        $path = resource_path('closing-documents/closing-invoices/' . $fileName);
+
+        if(file_put_contents($path, $output))
+        {
+            $closingInvoice->update(
+                [
+                    'path' => $path,
+                ]
+            );
+        }
+    }
+
+    public static function initDomPdf(string $template)
+    {
         $pdf = App::make('dompdf.wrapper');
         $pdf->getDomPDF()->set_option('enable_php', true);
         $pdf->loadHTML($template);
         $pdf->render();
-        $output = $pdf->output();
 
-        $fileName = $closingInvoice->id . '_Invoice.pdf';
-        $path = resource_path('closing-documents/closing-invoices/' . $fileName);
-
-        file_put_contents($path, $output);
-
-        $closingInvoice->update(
-            [
-                'path' => $path,
-            ]
-        );
+        return $pdf->output();
     }
 
     private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse
