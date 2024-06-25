@@ -43,7 +43,7 @@ class LoginController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        if ($request->user()->tokens()->delete()) return $this->wrapResponse(Response::HTTP_OK, __('Logged out succesfully.'));
+        if ($request->user()->currentAccessToken()->delete()) return $this->wrapResponse(Response::HTTP_OK, __('Logged out succesfully.'));
 
         return $this->wrapResponse(Response::HTTP_NOT_FOUND, __('Logged out failed.'));
     }
