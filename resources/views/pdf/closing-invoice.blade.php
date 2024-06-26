@@ -164,7 +164,14 @@
                                 </tr>
                                 <tr>
                                     <td>К платежно-расчетному документу №</td>
-                                    <td style="border-bottom: 1px solid #000">#updpp#</td>
+                                    <td style="border-bottom: 1px solid #000">
+                                        @foreach($transactions as $transaction)
+                                            {{ '№ ' . $transaction->id . ' от ' . Carbon\Carbon::parse($closingAct->date_generated)->translatedFormat('d.m.Y') }}
+                                            @if($transactions->last() !== $transaction)
+                                                {{ ', ' }}
+                                            @endif
+                                        @endforeach
+                                    </td>
                                     <td>(5)</td>
                                 </tr>
                                 <tr>

@@ -22,7 +22,6 @@ class TransactionRequest extends FormRequest
      */
     public function rules(): array
     {
-
         if ($this->is('api/v1/transactions') && $this->isMethod('get'))
         {
             return [

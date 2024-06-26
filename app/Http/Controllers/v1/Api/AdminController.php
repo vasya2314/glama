@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\v1\Api;
 
+use App\Facades\YandexDirect;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\v1\Api\Auth\RegisterController;
 use App\Http\Requests\v1\AuthRequest;
 use App\Http\Requests\v1\TicketRequest;
+use App\Http\Requests\v1\YandexDirectPaymentRequest;
 use App\Http\Resources\v1\TicketResource;
 use App\Models\BalanceAccount;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Models\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -128,6 +131,22 @@ class AdminController extends Controller
         }
 
         return $this->wrapResponse(Response::HTTP_INTERNAL_SERVER_ERROR, __('Error'));
+
+    }
+
+    public function returnMoneyYandexDirect(YandexDirectPaymentRequest $request)
+    {
+        $data = $request->validated();
+
+        $client = Client::find($data['client_id']);
+        $amount = YandexDirect::getBalanceSharedAccount($client);
+
+        if($data['amount'] > $amount)
+        {
+            return $this->wrapResponse(Response::HTTP_BAD_REQUEST, __('Invalid amount'));
+        }
+
+        // Тут логика возврата денег (работа с транзакциями и т.д.)
 
     }
 

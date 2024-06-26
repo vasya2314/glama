@@ -25,6 +25,8 @@ class CloseMonthForUser
             $this->accrueCashback($user, $report);
             $this->generateClosingDocuments($user, $report);
 
+            dump('ВСЕ ОК!');
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

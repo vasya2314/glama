@@ -72,8 +72,15 @@ trait UserTrait
                                 ]
                             );
 
-                            ClosingDocumentController::generateClosingActPdf($contract, $closingInvoice, $closingAct, $closingDocument);
-                            ClosingDocumentController::generateClosingInvoicePdf($contract, $closingInvoice, $closingAct, $closingDocument);
+                            $params = [
+                                'contract' => $contract,
+                                'closingInvoice' => $closingInvoice,
+                                'closingAct' => $closingAct,
+                                'closingDocument' => $closingDocument,
+                            ];
+
+                            ClosingDocumentController::generateClosingActPdf($params);
+                            ClosingDocumentController::generateClosingInvoicePdf($params);
 
                         }
                     });

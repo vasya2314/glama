@@ -9,13 +9,14 @@ use App\Models\Client;
 use App\Models\Report;
 use App\Models\Transaction;
 use App\Models\User;
+use GuzzleHttp\Promise\PromiseInterface;
+use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Exception;
-use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class YandexDirect extends YandexDirectExtend
 {
@@ -81,7 +82,7 @@ class YandexDirect extends YandexDirectExtend
         if($this->hasErrors($response))
         {
             return $this->wrapResponse(
-                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                Response::HTTP_SERVICE_UNAVAILABLE,
                 __('Error'),
                 (array)$response->object());
         }
@@ -110,6 +111,41 @@ class YandexDirect extends YandexDirectExtend
         );
 
         return $response->object();
+    }
+
+    public function getBalanceSharedAccount(Client $client): JsonResponse|int
+    {
+        if($client->account_id == null) {
+            return $this->wrapResponse(Response::HTTP_BAD_REQUEST, __('The general account is not connected'));
+        }
+
+        $response = self::storeRequest(
+            self::$urlV4,
+            [
+                'method' => 'AccountManagement',
+                'token' => self::$token,
+                'param' => [
+                    'Action' => 'Get',
+                    'SelectionCriteria' => [
+                        'Logins' => [
+                            $client->login,
+                        ],
+                    ],
+                ],
+            ]
+        );
+
+        if($this->hasErrors($response))
+        {
+            return $this->wrapResponse(
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                __('Error'),
+                (array)$response->object(),
+            );
+        }
+
+        return rubToKop((int)$response->object()->data->Accounts[0]->Amount);
+
     }
 
     public function enableSharedAccount(Client $client): bool
@@ -149,7 +185,7 @@ class YandexDirect extends YandexDirectExtend
 
         if($client->contract == null) {
             return $this->wrapResponse(
-                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                Response::HTTP_SERVICE_UNAVAILABLE,
                 __('The client does not have a contract attached')
             );
         }
@@ -157,7 +193,7 @@ class YandexDirect extends YandexDirectExtend
         if(!BalanceAccount::isEnoughBalance($amount, $user, BalanceAccount::BALANCE_MAIN))
         {
             return $this->wrapResponse(
-                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                Response::HTTP_SERVICE_UNAVAILABLE,
                 __('Not enough balance')
             );
         }
@@ -165,7 +201,7 @@ class YandexDirect extends YandexDirectExtend
         if(!$this->canDoDeposit($client))
         {
             return $this->wrapResponse(
-                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                Response::HTTP_SERVICE_UNAVAILABLE,
                 __('At the moment you cannot top up your balance. Either you do not have a single active advertising company, or the joint account has not yet been connected (connected automatically). Please try again later.')
             );
         }
@@ -173,7 +209,7 @@ class YandexDirect extends YandexDirectExtend
         if(!$this->checkCommission($amountDeposit, $amount))
         {
             return $this->wrapResponse(
-                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                Response::HTTP_SERVICE_UNAVAILABLE,
                 __('Invalid amount')
             );
         }
@@ -181,7 +217,7 @@ class YandexDirect extends YandexDirectExtend
         if(!$client->is_enable_shared_account)
         {
             return $this->wrapResponse(
-                ResponseAlias::HTTP_SERVICE_UNAVAILABLE,
+                Response::HTTP_SERVICE_UNAVAILABLE,
                 __('The shared account is not yet connected')
             );
         }
@@ -226,7 +262,7 @@ class YandexDirect extends YandexDirectExtend
             if($this->hasErrors($response))
             {
                 return $this->wrapResponse(
-                    ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
+                    Response::HTTP_INTERNAL_SERVER_ERROR,
                     __('Error'),
                     (array)$response->object(),
                 );
@@ -247,7 +283,7 @@ class YandexDirect extends YandexDirectExtend
             DB::commit();
 
             return $this->wrapResponse(
-                ResponseAlias::HTTP_OK,
+                Response::HTTP_OK,
                 __('The balance has been successfully replenished')
             );
 
@@ -257,7 +293,7 @@ class YandexDirect extends YandexDirectExtend
         }
 
         return $this->wrapResponse(
-            ResponseAlias::HTTP_INTERNAL_SERVER_ERROR,
+            Response::HTTP_INTERNAL_SERVER_ERROR,
             __('Error')
         );
     }
