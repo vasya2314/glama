@@ -43,6 +43,7 @@ class Transaction extends Model
     const METHOD_TYPE_QR = 'qr';
     const METHOD_TYPE_INVOICE = 'invoice';
     const METHOD_TYPE_CASHBACK = 'cashback';
+    const METHOD_TYPE_RETURN = 'return';
 
 
     public static function getRefillsTypes(): array

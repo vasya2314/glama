@@ -9,6 +9,5 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/contracts/{contract}', [ContractController::class, 'show']);
     Route::patch('/contracts/{contract}', [ContractController::class, 'update']);
 //    Route::delete('/contracts/{contract}', [ContractController::class, 'delete']);
+    Route::get('/contracts/{contract}/pdf', [ContractController::class, 'generatePdf']);
 });
-
-Route::get('/contracts/{contract}/pdf', [ContractController::class, 'generatePdf']);

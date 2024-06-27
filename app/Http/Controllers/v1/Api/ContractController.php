@@ -92,11 +92,13 @@ class ContractController extends Controller
 
     public function generatePdf(Request $request, Contract $contract)
     {
+        Gate::authorize('view', $contract);
+
         $logo = base64_encode(file_get_contents(public_path('storage/static/glama_logo.png')));
         $template = view('pdf.contract', compact('contract', 'logo'))->render();
 
         $pdf = App::make('dompdf.wrapper');
-        $pdf->getDomPDF()->set_option("enable_php", true);
+        $pdf->getDomPDF()->set_option('enable_php', true);
         $pdf->loadHTML($template);
         return $pdf->stream();
     }

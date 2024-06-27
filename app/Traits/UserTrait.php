@@ -118,7 +118,7 @@ trait UserTrait
                     [
                         'contract_id' => null,
                         'type' => Transaction::TYPE_DEPOSIT,
-                        'status' => Transaction::STATUS_CONFIRMED,
+                        'status' => Transaction::STATUS_EXECUTED,
                         'payment_id' => null,
                         'order_id' => Transaction::generateUUID(),
                         'amount_deposit' => $amountCashBack,

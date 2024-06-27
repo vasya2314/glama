@@ -10,6 +10,8 @@ use App\Http\Requests\v1\TicketRequest;
 use App\Http\Requests\v1\YandexDirectPaymentRequest;
 use App\Http\Resources\v1\TicketResource;
 use App\Models\BalanceAccount;
+use App\Models\Contract;
+use App\Models\PaymentClosingInvoice;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use App\Models\User;
@@ -44,9 +46,9 @@ class AdminController extends Controller
         throw new \ErrorException(__('Failed to get service, please try again.'), Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
-    public function confirmTransaction(Request $request, User $user, Transaction $transaction): JsonResponse
+    public function executeTransaction(Request $request, User $user, Transaction $transaction): JsonResponse
     {
-        Gate::authorize('confirmTransaction', [Transaction::class, $user,$transaction]);
+        Gate::authorize('executeTransaction', [Transaction::class, $user,$transaction]);
 
         $amount = (int)$transaction->amount;
 
@@ -76,7 +78,7 @@ class AdminController extends Controller
 
             $transaction->update(
                 [
-                    'status' => Transaction::STATUS_CONFIRMED,
+                    'status' => Transaction::STATUS_EXECUTED,
                 ]
             );
 
@@ -134,19 +136,49 @@ class AdminController extends Controller
 
     }
 
-    public function returnMoneyYandexDirect(YandexDirectPaymentRequest $request)
+    public function returnMoneyYandexDirect(YandexDirectPaymentRequest $request): JsonResponse
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
+            $contract = Contract::findOrFail($data['contract_id']);
+            $user = $contract->user;
+            $amount = $data['amount'];
 
-        $client = Client::find($data['client_id']);
-        $amount = YandexDirect::getBalanceSharedAccount($client);
+            if(
+                $contract->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR ||
+                $contract->contract_type == Contract::LEGAL_ENTITY
+            ) {
+                $paymentClosingInvoices = PaymentClosingInvoice::where('contract_id', $contract->id)->where('amount', '>', 0)
+                    ->orderBy('created_at', 'ASC')
+                    ->get();
 
-        if($data['amount'] > $amount)
-        {
-            return $this->wrapResponse(Response::HTTP_BAD_REQUEST, __('Invalid amount'));
+                ClosingDocumentController::getAndModifyNeedTransactions($paymentClosingInvoices, $data['amount']);
+            }
+
+            $balanceAccount = $user->balanceAccount(BalanceAccount::BALANCE_MAIN)->lockForUpdate()->firstOrFail();
+            $balanceAccount->increaseBalance($data['amount']);
+
+            $user->transactions()->create(
+                [
+                    'type' => Transaction::TYPE_DEPOSIT,
+                    'status' => Transaction::STATUS_EXECUTED,
+                    'payment_id' => null,
+                    'order_id' => Transaction::generateUUID(),
+                    'amount_deposit' => $amount,
+                    'amount' => $amount,
+                    'data' => null,
+                    'method_type' => Transaction::METHOD_TYPE_RETURN,
+                    'balance_account_type' => BalanceAccount::BALANCE_MAIN,
+                ]
+            );
+
+            return $this->wrapResponse(Response::HTTP_OK, __('Ok'));
+
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
         }
 
-        // Тут логика возврата денег (работа с транзакциями и т.д.)
+        return $this->wrapResponse(Response::HTTP_OK, __('Error'));
 
     }
 

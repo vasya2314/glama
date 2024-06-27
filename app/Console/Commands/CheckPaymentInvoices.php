@@ -68,14 +68,11 @@ class CheckPaymentInvoices extends Command
                             if($body->status == Transaction::STATUS_EXECUTED)
                             {
                                 $balanceAccount = $transaction->user->balanceAccount($transaction->balance_account_type)->lockForUpdate()->firstOrFail();
-                                if($balanceAccount)
-                                {
-                                    $balanceAccount->increaseBalance((int)$transaction->amount_deposit);
-                                }
+                                $balanceAccount->increaseBalance((int)$transaction->amount_deposit);
 
                                 $transaction->update(
                                     [
-                                        'status' => Transaction::STATUS_CONFIRMED
+                                        'status' => Transaction::STATUS_EXECUTED
                                     ]
                                 );
                             }

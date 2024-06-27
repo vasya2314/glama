@@ -27,19 +27,7 @@ class YandexDirectPaymentRequest extends FormRequest
         {
             return [
                 'amount' => 'required',
-                'user_id' => 'required|exists:users,id',
-                'client_id' => [
-                    'required',
-                    Rule::exists('clients', 'id')->where(function ($query) {
-                        $query->where('user_id', $this->get('user_id'));
-                    }),
-                ],
-                'transaction_id' => [
-                    'required',
-                    Rule::exists('transactions', 'id')->where(function ($query) {
-                        $query->where('user_id', $this->get('user_id'));
-                    }),
-                ],
+                'contract_id' => 'required|exists:contracts,id',
             ];
         }
 

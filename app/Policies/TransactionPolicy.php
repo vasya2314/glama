@@ -9,7 +9,7 @@ use App\Models\User;
 
 class TransactionPolicy
 {
-    public function confirmTransaction(User $user, User $authUser, Transaction $transaction): bool
+    public function executeTransaction(User $user, User $authUser, Transaction $transaction): bool
     {
         return $transaction->user_id == $authUser->id && $user->isAdmin();
     }

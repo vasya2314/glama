@@ -113,40 +113,40 @@ class YandexDirect extends YandexDirectExtend
         return $response->object();
     }
 
-    public function getBalanceSharedAccount(Client $client): JsonResponse|int
-    {
-        if($client->account_id == null) {
-            return $this->wrapResponse(Response::HTTP_BAD_REQUEST, __('The general account is not connected'));
-        }
-
-        $response = self::storeRequest(
-            self::$urlV4,
-            [
-                'method' => 'AccountManagement',
-                'token' => self::$token,
-                'param' => [
-                    'Action' => 'Get',
-                    'SelectionCriteria' => [
-                        'Logins' => [
-                            $client->login,
-                        ],
-                    ],
-                ],
-            ]
-        );
-
-        if($this->hasErrors($response))
-        {
-            return $this->wrapResponse(
-                Response::HTTP_INTERNAL_SERVER_ERROR,
-                __('Error'),
-                (array)$response->object(),
-            );
-        }
-
-        return rubToKop((int)$response->object()->data->Accounts[0]->Amount);
-
-    }
+//    public function getBalanceSharedAccount(Client $client): JsonResponse|int
+//    {
+//        if($client->account_id == null) {
+//            return $this->wrapResponse(Response::HTTP_BAD_REQUEST, __('The general account is not connected'));
+//        }
+//
+//        $response = self::storeRequest(
+//            self::$urlV4,
+//            [
+//                'method' => 'AccountManagement',
+//                'token' => self::$token,
+//                'param' => [
+//                    'Action' => 'Get',
+//                    'SelectionCriteria' => [
+//                        'Logins' => [
+//                            $client->login,
+//                        ],
+//                    ],
+//                ],
+//            ]
+//        );
+//
+//        if($this->hasErrors($response))
+//        {
+//            return $this->wrapResponse(
+//                Response::HTTP_INTERNAL_SERVER_ERROR,
+//                __('Error'),
+//                (array)$response->object(),
+//            );
+//        }
+//
+//        return rubToKop((int)$response->object()->data->Accounts[0]->Amount);
+//
+//    }
 
     public function enableSharedAccount(Client $client): bool
     {
@@ -268,7 +268,7 @@ class YandexDirect extends YandexDirectExtend
                 );
             }
 
-            $balanceAccount = $transaction->user->balanceAccount()->lockForUpdate()->firstOrFail();
+            $balanceAccount = $transaction->user->balanceAccount(BalanceAccount::BALANCE_MAIN)->lockForUpdate()->firstOrFail();
             if($balanceAccount)
             {
                 $balanceAccount->decreaseBalance($amount);
@@ -276,7 +276,7 @@ class YandexDirect extends YandexDirectExtend
 
             $transaction->update(
                 [
-                    'status' => Transaction::STATUS_CONFIRMED,
+                    'status' => Transaction::STATUS_EXECUTED,
                 ]
             );
 

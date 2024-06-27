@@ -12,11 +12,15 @@ use App\Models\ClosingInvoice;
 use App\Models\Contract;
 use App\Models\PaymentClosingInvoice;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use http\Message;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -37,6 +41,8 @@ class ClosingDocumentController extends Controller
         $data = $request->validated();
         $closingAct = ClosingAct::findOrFail($data['closing_act_id']);
 
+        Gate::authorize('getClosingAct', $closingAct);
+
         return response()->file($closingAct->path);
     }
 
@@ -45,22 +51,22 @@ class ClosingDocumentController extends Controller
         $data = $request->validated();
         $closingInvoice = ClosingInvoice::findOrFail($data['closing_invoice_id']);
 
+        Gate::authorize('getClosingInvoice', $closingInvoice);
+
         return response()->file($closingInvoice->path);
     }
 
     public static function generateClosingActPdf(array $params): void
     {
-        $contract = $params['contract'];
-        $closingInvoice = $params['closingInvoice'];
-        $closingAct = $params['closingAct'];
-        $closingDocument = $params['closingDocument'];
+        extract($params);
 
         $logo = base64_encode(file_get_contents(public_path('storage/static/glama_logo.png')));
-        $template = view('pdf.closing-act', compact('closingAct', 'logo', 'closingDocument', 'closingInvoice', 'contract'))->render();
+        $template = view('pdf.closing-act',
+            compact('closingAct', 'logo', 'closingDocument', 'closingInvoice', 'contract'))
+            ->render();
 
         $output = self::initDomPdf($template);
-        $fileName = str_replace('/', '_', $closingAct->act_number) . '_Act.pdf';
-        $path = resource_path('closing-documents/closing-acts/' . $fileName);
+        $path = self::generatePathClosingAct($closingAct);
 
         if(file_put_contents($path, $output))
         {
@@ -72,22 +78,22 @@ class ClosingDocumentController extends Controller
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     public static function generateClosingInvoicePdf(array $params): void
     {
-        $contract = $params['contract'];
-        $closingInvoice = $params['closingInvoice'];
-        $closingAct = $params['closingAct'];
-        $closingDocument = $params['closingDocument'];
+        extract($params);
 
         $paymentClosingInvoices = PaymentClosingInvoice::where('contract_id', $contract->id)->where('amount', '>', 0)->orderBy('created_at', 'ASC')->get();
-        $needTransactionIds = self::getNeedTransactions($paymentClosingInvoices, $closingInvoice->amount);
-        $transactions = Transaction::select(['id', 'created_at'])->whereIn('id', $needTransactionIds)->get();
+        $transactions = self::getAndModifyNeedTransactions($paymentClosingInvoices, $closingInvoice->amount);
 
-        $template = view('pdf.closing-invoice', compact('closingInvoice','closingDocument', 'closingAct', 'contract', 'transactions'))->render();
+        $template = view('pdf.closing-invoice',
+            compact('closingInvoice','closingDocument', 'closingAct', 'contract', 'transactions'))
+            ->render();
 
         $output = self::initDomPdf($template);
-        $fileName = $closingInvoice->id . '_Invoice.pdf';
-        $path = resource_path('closing-documents/closing-invoices/' . $fileName);
+        $path = self::generatePathClosingInvoice($closingInvoice);
 
         if(file_put_contents($path, $output))
         {
@@ -112,7 +118,7 @@ class ClosingDocumentController extends Controller
     /**
      * @throws \Exception
      */
-    public static function getNeedTransactions(Collection $paymentClosingInvoices, int $amount): array
+    public static function getAndModifyNeedTransactions(Collection $paymentClosingInvoices, int $amount): Collection
     {
         $list = [];
         $number = $amount;
@@ -138,11 +144,28 @@ class ClosingDocumentController extends Controller
                 }
             });
 
-            return $list;
+            return Transaction::select(['id', 'created_at'])->whereIn('id', $list)->get();
         }
 
+        Log::error('Нет свободных транзакции на которых есть баланс');
         throw new \Exception('Нет свободных транзакции на которых есть баланс');
 
+    }
+
+    public static function generatePathClosingAct(ClosingAct $closingAct): string
+    {
+        $fileName = Carbon::parse($closingAct->date_generated)
+                ->translatedFormat('d_m_Y') . '-' . $closingAct->id . '_Act.pdf';
+
+        return resource_path('closing-documents/closing-acts/' . $fileName);
+    }
+
+    public static function generatePathClosingInvoice(ClosingInvoice $closingInvoice): string
+    {
+        $fileName = Carbon::parse($closingInvoice->date_generated)
+                ->translatedFormat('d_m_Y') . '-' . $closingInvoice->id . '_Invoice.pdf';
+
+        return resource_path('closing-documents/closing-invoices/' . $fileName);
     }
 
     private function wrapResponse(int $code, string $message, ?array $resource = []): JsonResponse
