@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Report;
+use App\Models\Transaction;
 
 if (!function_exists('kopToRub'))
 {
@@ -52,5 +53,14 @@ if (!function_exists('priceFormat'))
     function priceFormat(float|int $amount): string
     {
         return number_format($amount, 2, ',', ' ');
+    }
+}
+
+if (!function_exists('generateTransactionData'))
+{
+    function generateTransactionData(): false|string
+    {
+        $args = func_get_args();
+        return Transaction::generateTransactionData(...$args);
     }
 }

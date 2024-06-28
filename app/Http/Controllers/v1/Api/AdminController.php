@@ -70,11 +70,8 @@ class AdminController extends Controller
         try {
             DB::beginTransaction();
 
-            $balanceAccount = $transaction->user->balanceAccount($transaction->balance_account_type)->lockForUpdate()->first();
-            if($balanceAccount)
-            {
-                $balanceAccount->decreaseBalance($amount);
-            }
+            $balanceAccount = $transaction->user->balanceAccount($transaction->balance_account_type)->lockForUpdate()->firstOrFail();
+            $balanceAccount->decreaseBalance($amount);
 
             $transaction->update(
                 [
@@ -156,21 +153,23 @@ class AdminController extends Controller
             }
 
             $balanceAccount = $user->balanceAccount(BalanceAccount::BALANCE_MAIN)->lockForUpdate()->firstOrFail();
-            $balanceAccount->increaseBalance($data['amount']);
 
             $user->transactions()->create(
                 [
+                    'contract_id' => $contract->id,
                     'type' => Transaction::TYPE_DEPOSIT,
                     'status' => Transaction::STATUS_EXECUTED,
                     'payment_id' => null,
                     'order_id' => Transaction::generateUUID(),
                     'amount_deposit' => $amount,
                     'amount' => $amount,
-                    'data' => null,
+                    'data' => generateTransactionData(),
                     'method_type' => Transaction::METHOD_TYPE_RETURN,
                     'balance_account_type' => BalanceAccount::BALANCE_MAIN,
                 ]
             );
+
+            $balanceAccount->increaseBalance($data['amount']);
 
             return $this->wrapResponse(Response::HTTP_OK, __('Ok'));
 

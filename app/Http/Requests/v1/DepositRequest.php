@@ -74,11 +74,17 @@ class DepositRequest extends FormRequest
             'amount' => (int)$data->Amount,
             'method_type' => $request->get('method_type'),
             'balance_account_type' => BalanceAccount::BALANCE_MAIN,
+            'data' => generateTransactionData([]),
         ];
     }
 
-    public function storeInvoiceTransaction(): array
+    public function storeInvoiceTransaction(object $contractData): array
     {
+        $data = [
+            'accountNumber' => $contractData->correspondent_account,
+            'name' => $contractData->company_name,
+        ];
+
         return [
             'type' => Transaction::TYPE_DEPOSIT,
             'status' => Transaction::STATUS_NEW,
@@ -89,6 +95,7 @@ class DepositRequest extends FormRequest
             'amount' => (int)request()->get('amount'),
             'method_type' => Transaction::METHOD_TYPE_INVOICE,
             'balance_account_type' => BalanceAccount::BALANCE_MAIN,
+            'data' => generateTransactionData($data),
         ];
     }
 
@@ -99,7 +106,6 @@ class DepositRequest extends FormRequest
             'payment_id' => null,
             'order_id' => $data->invoiceId,
             'method_type' => 'invoice',
-            'data' => json_encode($data),
         ];
     }
 

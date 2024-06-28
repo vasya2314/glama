@@ -49,12 +49,12 @@ class PaymentDepositController extends Controller
 
             if ($token == $original_token)
             {
-                $transaction = Transaction::where('payment_id', $request['PaymentId'])->first();
+                $transaction = Transaction::where('payment_id', $request['PaymentId'])->firstOrFail();
 
                 if($transaction)
                 {
                     $data = [];
-                    if(isset($request['CardId'])) $data['card_id'] = $request['CardId'];
+                    if(isset($request['CardId'])) $data['accountNumber'] = $request['CardId'];
                     if(isset($request['Pan'])) $data['pan'] = $request['Pan'];
 
                     if($transaction->status !== $request['Status'])
@@ -62,7 +62,7 @@ class PaymentDepositController extends Controller
                         $transaction->update(
                             [
                                 'status' => $request['Status'],
-                                'data' => json_encode($data),
+                                'data' => generateTransactionData($data),
                             ]
                         );
                     }
@@ -70,10 +70,7 @@ class PaymentDepositController extends Controller
                     if($request['Status'] === Transaction::STATUS_CONFIRMED)
                     {
                         $balanceAccount = $transaction->user->balanceAccount($transaction->balance_account_type)->lockForUpdate()->first();
-                        if($balanceAccount)
-                        {
-                            $balanceAccount->increaseBalance((int)$transaction->amount_deposit);
-                        }
+                        $balanceAccount->increaseBalance((int)$transaction->amount_deposit);
                     }
                 }
                 die('OK');

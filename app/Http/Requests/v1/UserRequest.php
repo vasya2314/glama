@@ -51,6 +51,12 @@ class UserRequest extends FormRequest
         {
             return [
                 'amount' => 'required|numeric',
+                'contract_id' => [
+                    'required',
+                    Rule::exists('contracts', 'id')->where(function ($query) {
+                        $query->where('user_id', $this->user()->id);
+                    }),
+                ],
                 'account_type' => 'required|in:' . implode(',', BalanceAccount::getAllBalanceAccountsTypes()),
             ];
         }

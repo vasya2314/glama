@@ -11,6 +11,7 @@ use App\Http\Resources\v1\UserResource;
 use App\Mail\AttachToAgency;
 use App\Models\BalanceAccount;
 use App\Models\ClosingAct;
+use App\Models\Contract;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Traits\UserTrait;
@@ -93,6 +94,7 @@ class UserController extends Controller
     {
         $user = $request->user();
         $data = $request->validated();
+        $contract = Contract::findOrFail($data['contract_id']);
         $amount = (int)$data['amount'];
 
         if(!BalanceAccount::isEnoughBalance($amount, $user, $data['account_type']))
@@ -103,6 +105,9 @@ class UserController extends Controller
             );
         }
 
+        // Тут нужно подумать над логикой подставления data (имя и accountNumber)
+        // Т.е. нужно понимать куда выводить деньги в зависимости от выбранного типа balance_account_type
+
         $user->transactions()->create(
             [
                 'type' => Transaction::TYPE_REMOVAL,
@@ -111,8 +116,8 @@ class UserController extends Controller
                 'order_id' => Transaction::generateUUID(),
                 'amount_deposit' => $amount,
                 'amount' => $amount,
-                'data' => null,
-                'method_type' => Transaction::METHOD_TYPE_CARD,
+                'data' => null, // !!!!!!
+                'method_type' => Transaction::METHOD_TYPE_TRANSFER,
                 'balance_account_type' => $data['account_type'],
             ]
         );

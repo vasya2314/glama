@@ -123,7 +123,7 @@ trait UserTrait
                         'order_id' => Transaction::generateUUID(),
                         'amount_deposit' => $amountCashBack,
                         'amount' => $amountCashBack,
-                        'data' => $report->data,
+                        'data' => generateTransactionData(['report_id' => $report->id]),
                         'method_type' => Transaction::METHOD_TYPE_CASHBACK,
                         'balance_account_type' => BalanceAccount::BALANCE_REWARD,
                     ]

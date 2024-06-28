@@ -233,7 +233,8 @@ class YandexDirect extends YandexDirectExtend
                     'order_id' => Transaction::generateUUID(),
                     'amount_deposit' => $amountDeposit,
                     'amount' => $amount,
-                    'method_type' => Transaction::METHOD_TYPE_INVOICE
+                    'method_type' => Transaction::METHOD_TYPE_INVOICE,
+                    'data' => generateTransactionData(),
                 ]
             );
 

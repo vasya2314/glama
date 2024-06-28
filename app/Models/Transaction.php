@@ -44,6 +44,7 @@ class Transaction extends Model
     const METHOD_TYPE_INVOICE = 'invoice';
     const METHOD_TYPE_CASHBACK = 'cashback';
     const METHOD_TYPE_RETURN = 'return';
+    const METHOD_TYPE_TRANSFER = 'transfer';
 
 
     public static function getRefillsTypes(): array
@@ -83,6 +84,20 @@ class Transaction extends Model
     public function paymentClosingInvoice(): HasOne
     {
         return $this->hasOne(PaymentClosingInvoice::class);
+    }
+
+    public static function generateTransactionData(array $params = []): false|string
+    {
+        extract($params);
+
+        $data = [];
+
+        $data['accountNumber'] = $accountNumber ?? null;
+        $data['pan'] = $cardId ?? null;
+        $data['name'] = $name ?? null;
+        $data['report_id'] = $name ?? null;
+
+        return json_encode($data);
     }
 
 }

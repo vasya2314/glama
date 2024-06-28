@@ -66,42 +66,41 @@ class InvoiceDepositController extends Controller
 
     private function generateBody(DepositRequest $request): false|array
     {
-        $this->transaction = $request->user()->transactions()->create($request->storeInvoiceTransaction());
+        $contractData = json_decode($this->contract->data);
+        $this->transaction = $request->user()->transactions()->create($request->storeInvoiceTransaction($contractData));
 
         if($this->transaction)
         {
-            $contractVariation = json_decode($this->contract->data);
-
             $body = [
-                "invoiceNumber" => (string)$this->transaction->id,
-                "dueDate" => date('Y-m-d'),
-                "invoiceDate" => date('Y-m-d', strtotime('+1 day')),
-                "accountNumber" => (string)$contractVariation->correspondent_account,
-                "payer" => [
-                    "name" => (string)$contractVariation->company_name,
-                    "inn" => (string)$contractVariation->inn,
+                'invoiceNumber' => (string)$this->transaction->id,
+                'dueDate' => date('Y-m-d'),
+                'invoiceDate' => date('Y-m-d', strtotime('+1 day')),
+                'accountNumber' => (string)$contractData->correspondent_account,
+                'payer' => [
+                    'name' => (string)$contractData->company_name,
+                    'inn' => (string)$contractData->inn,
                 ],
-                "items" => [
+                'items' => [
                     [
-                        "name" => "Покупка GCoins",
-                        "price" => $request->get('amount'),
-                        "unit" => "Шт",
-                        "vat" => "None",
-                        "amount" => 1,
+                        'name' => 'Покупка GCoins',
+                        'price' => $request->get('amount'),
+                        'unit' => 'Шт',
+                        'vat' => 'None',
+                        'amount' => 1,
                     ]
                 ],
-                "contacts" => [
+                'contacts' => [
                     [
-                        "email" => (string)$contractVariation->email,
+                        'email' => (string)$contractData->email,
                     ],
                 ],
-                "contactPhone" => (string)$contractVariation->phone,
-                "comment" => "Покупка GCoins"
+                'contactPhone' => (string)$contractData->phone,
+                'comment' => 'Покупка GCoins'
             ];
 
-            if($contractVariation == Contract::LEGAL_ENTITY)
+            if($contractData == Contract::LEGAL_ENTITY)
             {
-                $body['payer']['kpp'] = $contractVariation->kpp;
+                $body['payer']['kpp'] = $contractData->kpp;
             }
 
             return $body;

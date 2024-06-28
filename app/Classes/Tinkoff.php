@@ -339,6 +339,8 @@ class Tinkoff {
         {
             return $this->payment_qr;
         }
+
+        return false;
     }
 
 }
