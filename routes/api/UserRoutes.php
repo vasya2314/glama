@@ -14,7 +14,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::middleware('throttle:4,0.16')->post('/user/deposit/invoice', [InvoiceDepositController::class, 'deposit']);
     Route::post('/user/yandex-direct/deposit', [YandexDirectPaymentController::class, 'deposit']);
     Route::get('/user/balance/{balanceType}', [UserController::class, 'getBalance']);
-    Route::post('/user/withdrawal-money', [UserController::class, 'withdrawalMoney']); // ВЫВОД СРЕДСТВ NEW
+    Route::post('/user/withdrawal-money-main', [UserController::class, 'withdrawalMoneyMain']);
+    Route::post('/user/withdrawal-money-reward', [UserController::class, 'withdrawalMoneyReward']);
 });
 
 Route::middleware(['auth:sanctum', 'verified', 'agencyUser'])->group(function () {

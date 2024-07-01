@@ -1723,6 +1723,316 @@
                 ]
             }
         },
+        "/reward-contracts": {
+            "get": {
+                "tags": [
+                    "Договор на вознаграждение"
+                ],
+                "summary": "Получение всех договоров пользователя",
+                "operationId": "10e193b36f5fa3f5cbb195a99761d3d6",
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "All contracts."
+                                        },
+                                        "resource": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/RewardContractResponse"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Договор на вознаграждение"
+                ],
+                "summary": "Создание договора",
+                "operationId": "13c648f370afb2aea34585bb29ddd754",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RewardContractStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "201"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Contract created successfully."
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/RewardContractResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/reward-contracts/{rewardContract}": {
+            "get": {
+                "tags": [
+                    "Договор на вознаграждение"
+                ],
+                "summary": "Получение конкретного договра",
+                "operationId": "b7a1597ced1827f0b2df19338c7ece7c",
+                "parameters": [
+                    {
+                        "name": "contract",
+                        "in": "path",
+                        "description": "ID договра",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail contract"
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/RewardContractResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Договор на вознаграждение"
+                ],
+                "summary": "Удаление договора (!!!!ОТКЛЮЧЕНО!!!!)",
+                "operationId": "ff031a1940ee4c61b993a310e9598579",
+                "parameters": [
+                    {
+                        "name": "contract",
+                        "in": "path",
+                        "description": "ID договора",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Contract deleted successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "patch": {
+                "tags": [
+                    "Договор на вознаграждение"
+                ],
+                "summary": "Изменение договора",
+                "operationId": "65674ecf964f00996393bdab793f3028",
+                "parameters": [
+                    {
+                        "name": "contract",
+                        "in": "path",
+                        "description": "ID договра",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RewardContractUpdateRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "code": {
+                                            "type": "string",
+                                            "example": "200"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Contract updated successfully."
+                                        },
+                                        "resource": {
+                                            "$ref": "#/components/schemas/RewardContractResponse"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Some error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/reward-contracts/{rewardContract}/pdf": {
+            "get": {
+                "tags": [
+                    "Договор на вознаграждение"
+                ],
+                "summary": "Получение PDF договора",
+                "operationId": "fb1525b5bcadeefd845816e7f9c7411e",
+                "parameters": [
+                    {
+                        "name": "contract",
+                        "in": "path",
+                        "description": "ID договра",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "500": {
+                        "description": "Error"
+                    },
+                    "403": {
+                        "description": "Error"
+                    },
+                    "200": {
+                        "description": "Ok"
+                    }
+                }
+            }
+        },
         "/tickets": {
             "get": {
                 "tags": [
@@ -2862,6 +3172,172 @@
                 ]
             }
         },
+        "/user/withdrawal-money-main": {
+            "post": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Вывод денег с основного счета",
+                "operationId": "ffac8fcbe5b90718927f48f5eafe9c67",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "amount": {
+                                        "type": "number",
+                                        "example": "200000"
+                                    },
+                                    "contract_id": {
+                                        "type": "number",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "200"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ok"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "500"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Error"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/user/withdrawal-money-reward": {
+            "post": {
+                "tags": [
+                    "Пользователь"
+                ],
+                "summary": "Вывод денег со счета вознаграждений",
+                "operationId": "2ee49f01a246734abe1d434f17e37a33",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "amount": {
+                                        "type": "number",
+                                        "example": "200000"
+                                    },
+                                    "reward_contract_id": {
+                                        "type": "number",
+                                        "example": "1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "200"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Ok"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "example": "500"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Error"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/user/yandex-direct/deposit": {
             "post": {
                 "tags": [
@@ -3535,6 +4011,349 @@
                 },
                 "type": "object"
             },
+            "RewardContractIndividualEntrepreneurRequest": {
+                "title": "Создание договора для ИП",
+                "required": [
+                    "inn",
+                    "ogrnip",
+                    "company_name",
+                    "legal_address",
+                    "actual_address",
+                    "contact_face",
+                    "job_title",
+                    "phone",
+                    "email",
+                    "bik",
+                    "checking_account",
+                    "bank_name",
+                    "correspondent_account",
+                    "pick_up",
+                    "is_same_legal_address"
+                ],
+                "properties": {
+                    "inn": {
+                        "title": "ИНН",
+                        "description": "ИНН",
+                        "format": "number",
+                        "example": "1234567890"
+                    },
+                    "ogrnip": {
+                        "title": "ОГРНИП",
+                        "description": "ОГРНИП",
+                        "format": "number",
+                        "example": "1234567890"
+                    },
+                    "company_name": {
+                        "title": "Название компании",
+                        "description": "Название компании",
+                        "format": "string",
+                        "example": "ООО Ромашка"
+                    },
+                    "legal_address": {
+                        "title": "Юридический адрес",
+                        "description": "Юридический адрес",
+                        "format": "string",
+                        "example": "г. Вологда, ул. Кукушкина"
+                    },
+                    "actual_address": {
+                        "title": "Физический адрес",
+                        "description": "Физический адрес",
+                        "format": "string",
+                        "example": "г. Вологда, ул. Кукушкина"
+                    },
+                    "contact_face": {
+                        "title": "Контактное лицо",
+                        "description": "Контактное лицо",
+                        "format": "string",
+                        "example": "Игорь Лебединое-Озеро"
+                    },
+                    "job_title": {
+                        "title": "Должность",
+                        "description": "Должность",
+                        "format": "string",
+                        "example": "Булкоед"
+                    },
+                    "phone": {
+                        "title": "Телефон",
+                        "description": "Телефон",
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "description": "Email",
+                        "format": "string",
+                        "example": "bulkoedstvo@ne-porok.ru"
+                    },
+                    "bik": {
+                        "title": "Бик",
+                        "description": "Бик",
+                        "format": "number",
+                        "example": "123456789"
+                    },
+                    "checking_account": {
+                        "title": "Расчетный счет",
+                        "description": "Расчетный счет",
+                        "format": "number",
+                        "example": "123456789"
+                    },
+                    "bank_name": {
+                        "title": "Название банка",
+                        "description": "Название банка",
+                        "format": "string",
+                        "example": "Булка-банк"
+                    },
+                    "correspondent_account": {
+                        "title": "Корреспондентский счет",
+                        "description": "Корреспондентский счет",
+                        "format": "number",
+                        "example": "123456789012342351324"
+                    },
+                    "pick_up": {
+                        "title": "Как вы будете забирать документы",
+                        "description": "Как вы будете забирать документы (not_need,need_original,need_email)",
+                        "format": "string",
+                        "example": "need_email"
+                    },
+                    "is_same_legal_address": {
+                        "title": "Совпадает с юридическим адресом",
+                        "description": "Совпадает с юридическим адресом",
+                        "format": "boolean",
+                        "example": "need_email"
+                    }
+                },
+                "type": "object"
+            },
+            "RewardContractLegalEntityRequest": {
+                "title": "Создание договора для юридического лица",
+                "required": [
+                    "inn",
+                    "kpp",
+                    "ogrn",
+                    "company_name",
+                    "legal_address",
+                    "actual_address",
+                    "contact_face",
+                    "job_title",
+                    "phone",
+                    "email",
+                    "bik",
+                    "checking_account",
+                    "bank_name",
+                    "correspondent_account",
+                    "pick_up",
+                    "is_same_legal_address"
+                ],
+                "properties": {
+                    "inn": {
+                        "title": "ИНН",
+                        "description": "ИНН",
+                        "format": "number",
+                        "example": "1234567890"
+                    },
+                    "kpp": {
+                        "title": "КПП",
+                        "description": "КПП",
+                        "format": "number",
+                        "example": "1234567890"
+                    },
+                    "ogrn": {
+                        "title": "ОГРН",
+                        "description": "ОГРН",
+                        "format": "number",
+                        "example": "1234567890"
+                    },
+                    "company_name": {
+                        "title": "Название компании",
+                        "description": "Название компании",
+                        "format": "string",
+                        "example": "ООО Ромашка"
+                    },
+                    "legal_address": {
+                        "title": "Юридический адрес",
+                        "description": "Юридический адрес",
+                        "format": "string",
+                        "example": "г. Вологда, ул. Кукушкина"
+                    },
+                    "actual_address": {
+                        "title": "Физический адрес",
+                        "description": "Физический адрес",
+                        "format": "string",
+                        "example": "г. Вологда, ул. Кукушкина"
+                    },
+                    "contact_face": {
+                        "title": "Контактное лицо",
+                        "description": "Контактное лицо",
+                        "format": "string",
+                        "example": "Игорь Лебединое-Озеро"
+                    },
+                    "job_title": {
+                        "title": "Должность",
+                        "description": "Должность",
+                        "format": "string",
+                        "example": "Булкоед"
+                    },
+                    "phone": {
+                        "title": "Телефон",
+                        "description": "Телефон",
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "description": "Email",
+                        "format": "string",
+                        "example": "bulkoedstvo@ne-porok.ru"
+                    },
+                    "bik": {
+                        "title": "Бик",
+                        "description": "Бик",
+                        "format": "number",
+                        "example": "123456789"
+                    },
+                    "checking_account": {
+                        "title": "Расчетный счет",
+                        "description": "Расчетный счет",
+                        "format": "string",
+                        "example": "123456789"
+                    },
+                    "bank_name": {
+                        "title": "Название банка",
+                        "description": "Название банка",
+                        "format": "string",
+                        "example": "Булка-банк"
+                    },
+                    "correspondent_account": {
+                        "title": "Корреспондентский счет",
+                        "description": "Корреспондентский счет",
+                        "format": "number",
+                        "example": "123456789012342351324"
+                    },
+                    "pick_up": {
+                        "title": "Как вы будете забирать документы",
+                        "description": "Как вы будете забирать документы (not_need,need_original,need_email)",
+                        "format": "string",
+                        "example": "need_email"
+                    },
+                    "is_same_legal_address": {
+                        "title": "Совпадает с юридическим адресом",
+                        "description": "Совпадает с юридическим адресом",
+                        "format": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "RewardContractNaturalPersonEntityRequest": {
+                "title": "Создание договора для физического лица",
+                "required": [
+                    "lastname",
+                    "firstname",
+                    "inn",
+                    "address",
+                    "pick_up"
+                ],
+                "properties": {
+                    "lastname": {
+                        "title": "Фамилия",
+                        "description": "Фамилия",
+                        "format": "string",
+                        "example": "Лебедев"
+                    },
+                    "firstname": {
+                        "title": "Имя",
+                        "description": "Имя",
+                        "format": "string",
+                        "example": "Игорь"
+                    },
+                    "surname": {
+                        "title": "Отчество",
+                        "description": "Отчество",
+                        "format": "string",
+                        "example": "Алексеевич"
+                    },
+                    "inn": {
+                        "title": "ИНН",
+                        "description": "ИНН",
+                        "type": "number",
+                        "example": "1234567890"
+                    },
+                    "address": {
+                        "title": "Адрес",
+                        "description": "Адрес",
+                        "type": "string",
+                        "example": "г. Вологда, ул. Герцена, д. 96 кв. 12"
+                    },
+                    "pick_up": {
+                        "title": "Как вы будете забирать документы",
+                        "description": "Как вы будете забирать документы (not_need, need_original, need_email)",
+                        "format": "string",
+                        "example": "not_need"
+                    },
+                    "phone": {
+                        "title": "Телефон",
+                        "description": "Телефон",
+                        "type": "string",
+                        "example": "1234567890"
+                    },
+                    "bank_name": {
+                        "title": "Название банка",
+                        "description": "Название банка",
+                        "type": "string",
+                        "example": "Сбербанк"
+                    },
+                    "card_number": {
+                        "title": "Номер карты",
+                        "description": "card_number",
+                        "type": "string",
+                        "example": "1234123412341234"
+                    },
+                    "email": {
+                        "title": "Email",
+                        "description": "Email",
+                        "format": "string",
+                        "example": "bulkoedstvo@ne-porok.ru"
+                    }
+                },
+                "type": "object"
+            },
+            "RewardContractStoreRequest": {
+                "title": "Создание договора",
+                "required": [
+                    "contract_type"
+                ],
+                "properties": {
+                    "contract_type": {
+                        "title": "Тип контракта",
+                        "description": "Тип контракта - (legal_entity, individual_entrepreneur, natural_person)",
+                        "format": "string",
+                        "example": "natural_person"
+                    }
+                },
+                "type": "object",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/RewardContractNaturalPersonEntityRequest"
+                    }
+                ]
+            },
+            "RewardContractUpdateRequest": {
+                "title": "Изменение договора",
+                "properties": {
+                    "client_id": {
+                        "title": "ID клиента",
+                        "description": "ID клиента",
+                        "format": "iteger",
+                        "example": "null"
+                    }
+                },
+                "type": "object",
+                "oneOf": [
+                    {
+                        "$ref": "#/components/schemas/RewardContractNaturalPersonEntityRequest"
+                    }
+                ]
+            },
             "TicketStoreRequest": {
                 "title": "Создание тикета",
                 "required": [
@@ -3996,6 +4815,93 @@
                 },
                 "type": "object"
             },
+            "RewardContractResponse": {
+                "title": "Возвращаемый договор",
+                "properties": {
+                    "id": {
+                        "title": "ID документа",
+                        "description": "ID документа",
+                        "format": "integer",
+                        "example": "15"
+                    },
+                    "user_id": {
+                        "title": "ID пользователя",
+                        "description": "ID пользователя",
+                        "format": "integer",
+                        "example": "20"
+                    },
+                    "display_name": {
+                        "title": "Отображаемое имя договора",
+                        "description": "Отображаемое имя договора",
+                        "format": "string",
+                        "example": "ООО iHor хостинг"
+                    },
+                    "contract_type": {
+                        "title": "Тип контракта",
+                        "description": "Тип контракта",
+                        "format": "integer",
+                        "example": "natural_person"
+                    },
+                    "contract_details": {
+                        "$ref": "#/components/schemas/RewardNaturalPersonContractResponse"
+                    },
+                    "created_at": {
+                        "title": "Дата создания",
+                        "description": "Дата создания",
+                        "format": "date",
+                        "example": "2024-04-02 09:53:15"
+                    }
+                },
+                "type": "object"
+            },
+            "RewardNaturalPersonContractResponse": {
+                "title": "Договор - физическое лицо (ответ)",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "ID",
+                        "format": "integer",
+                        "example": "15"
+                    },
+                    "lastname": {
+                        "title": "Фамилия",
+                        "description": "Фамилия",
+                        "format": "string",
+                        "example": "Лебедев"
+                    },
+                    "firstname": {
+                        "title": "Имя",
+                        "description": "Имя",
+                        "format": "string",
+                        "example": "Игорь"
+                    },
+                    "surname": {
+                        "title": "Отчество",
+                        "description": "Отчество",
+                        "format": "string",
+                        "example": "Алексеевич"
+                    },
+                    "inn": {
+                        "title": "ИНН",
+                        "description": "ИНН",
+                        "format": "string",
+                        "example": "1234567890"
+                    },
+                    "address": {
+                        "title": "Адрес",
+                        "description": "Адрес",
+                        "format": "string",
+                        "example": "г. Вологда, ул. Герцена, д. 96 кв. 12"
+                    },
+                    "pick_up": {
+                        "title": "Как вы будете забирать документы",
+                        "description": "Как вы будете забирать документы (not_need, need_original, need_email)",
+                        "format": "string",
+                        "example": "not_need"
+                    }
+                },
+                "type": "object"
+            },
             "TicketResponse": {
                 "title": "Возвращаемый тикет",
                 "properties": {
@@ -4208,6 +5114,9 @@
         },
         {
             "name": "Договор"
+        },
+        {
+            "name": "Договор на вознаграждение"
         },
         {
             "name": "Транзакции"

@@ -301,6 +301,84 @@ use App\Http\Controllers\Controller;
  *         )
  *     ),
  * ),
+ * @OA\Post(
+ *     path="/user/withdrawal-money-main",
+ *     summary="Вывод денег с основного счета",
+ *     tags={"Пользователь"},
+ *     security={{ "bearerAuth": {} }},
+ *
+ *     @OA\RequestBody(
+ *        @OA\JsonContent(
+ *            @OA\Property(property="amount", type="number", example="200000"),
+ *            @OA\Property(property="contract_id", type="number", example="1"),
+ *        ),
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=200,
+ *         description="Ok",
+ *         @OA\JsonContent(
+ *             allOf={
+ *                 @OA\Schema(
+ *                     @OA\Property(property="code", type="string", example="200"),
+ *                     @OA\Property(property="message", type="string", example="Ok"),
+ *                 )
+ *             }
+ *         ),
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=500,
+ *         description="Error",
+ *         @OA\JsonContent(
+ *             allOf={
+ *                 @OA\Schema(
+ *                     @OA\Property(property="code", type="string", example="500"),
+ *                     @OA\Property(property="message", type="string", example="Error"),
+ *                 )
+ *             }
+ *         ),
+ *     ),
+ * ),
+ * @OA\Post(
+ *     path="/user/withdrawal-money-reward",
+ *     summary="Вывод денег со счета вознаграждений",
+ *     tags={"Пользователь"},
+ *     security={{ "bearerAuth": {} }},
+ *
+ *     @OA\RequestBody(
+ *        @OA\JsonContent(
+ *            @OA\Property(property="amount", type="number", example="200000"),
+ *            @OA\Property(property="reward_contract_id", type="number", example="1"),
+ *        ),
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=200,
+ *         description="Ok",
+ *         @OA\JsonContent(
+ *             allOf={
+ *                 @OA\Schema(
+ *                     @OA\Property(property="code", type="string", example="200"),
+ *                     @OA\Property(property="message", type="string", example="Ok"),
+ *                 )
+ *             }
+ *         ),
+ *     ),
+ *
+ *     @OA\Response(
+ *         response=500,
+ *         description="Error",
+ *         @OA\JsonContent(
+ *             allOf={
+ *                 @OA\Schema(
+ *                     @OA\Property(property="code", type="string", example="500"),
+ *                     @OA\Property(property="message", type="string", example="Error"),
+ *                 )
+ *             }
+ *         ),
+ *     ),
+ * ),
  */
 class UserController extends Controller
 {

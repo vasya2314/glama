@@ -36,6 +36,9 @@ namespace App\Http\Controllers\v1\Swagger;
  *     name="Договор",
  * )
  * @OA\Tag(
+ *     name="Договор на вознаграждение",
+ * )
+ * @OA\Tag(
  *     name="Транзакции",
  * )
  * @OA\Tag(

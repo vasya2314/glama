@@ -47,24 +47,30 @@ class UserRequest extends FormRequest
             ];
         }
 
-        if ($this->is('api/v1/user/withdrawal-money'))
+        if ($this->is('api/v1/user/withdrawal-money-main') && $this->isMethod('POST'))
         {
             return [
                 'amount' => 'required|numeric',
-                'account_type' => 'required|in:' . implode(',', BalanceAccount::getAllBalanceAccountsTypes()),
-                'reward_contract_id' => [
-                    'required_if:account_type,' . BalanceAccount::BALANCE_REWARD,
-                    Rule::exists('reward_contracts', 'id')->where(function ($query) {
-                        $query->where('user_id', $this->user()->id);
-                    }),
-                ],
                 'contract_id' => [
-                    'required_if:account_type,' . BalanceAccount::BALANCE_MAIN,
+                    'required',
                     Rule::exists('contracts', 'id')->where(function ($query) {
                         $query->where('user_id', $this->user()->id);
                     }),
                 ],
 
+            ];
+        }
+
+        if ($this->is('api/v1/user/withdrawal-money-reward') && $this->isMethod('POST'))
+        {
+            return [
+                'amount' => 'required|numeric',
+                'reward_contract_id' => [
+                    'required',
+                    Rule::exists('reward_contracts', 'id')->where(function ($query) {
+                        $query->where('user_id', $this->user()->id);
+                    }),
+                ]
             ];
         }
 

@@ -91,13 +91,13 @@ class UserController extends Controller
         return $this->wrapResponse(Response::HTTP_OK, __('Ok'), ['balance' => kopToRub((int)$balanceAccount->balance)]);
     }
 
-    public function withdrawalMoney(UserRequest $request): JsonResponse
+    public function withdrawalMoneyMain(UserRequest $request): JsonResponse
     {
         $user = $request->user();
         $data = $request->validated();
         $amount = (int)$data['amount'];
 
-        if(!BalanceAccount::isEnoughBalance($amount, $user, $data['account_type']))
+        if(!BalanceAccount::isEnoughBalance($amount, $user, BalanceAccount::BALANCE_MAIN))
         {
             return $this->wrapResponse(
                 Response::HTTP_SERVICE_UNAVAILABLE,
@@ -105,45 +105,22 @@ class UserController extends Controller
             );
         }
 
+        $contract = Contract::findOrFail($data['contract_id']);
+        $contractData = json_decode($contract->data);
+
         $jsonData = [];
-        if($data['account_type'] == BalanceAccount::BALANCE_MAIN)
+        if($contract->contract_type == RewardContract::NATURAL_PERSON)
         {
-            $contractId = $data['contract_id'];
-            $contractType = Contract::class;
-
-            $contract = Contract::findOrFail($data['contract_id']);
-            $contractData = json_decode($contract->data);
-
-            if($contract->contract_type == RewardContract::NATURAL_PERSON)
-            {
-                $jsonData['name'] = $contract->dispay_name;
-            } else {
-                $jsonData['accountNumber'] = $contractData->correspondent_account;
-                $jsonData['name'] = $contract->display_name;
-            }
-        }
-        else if($data['account_type'] == BalanceAccount::BALANCE_REWARD)
-        {
-            $contractId = $data['reward_contract_id'];
-            $contractType = RewardContract::class;
-
-            $rewardContract = RewardContract::findOrFail($data['reward_contract_id']);
-            $rewardContractData = json_decode($rewardContract->data);
-
-            if($rewardContract->contract_type == RewardContract::NATURAL_PERSON)
-            {
-                $jsonData['pan'] = $rewardContractData->card_number;
-                $jsonData['name'] = $rewardContract->display_name;
-            } else {
-                $jsonData['accountNumber'] = $rewardContractData->correspondent_account;
-                $jsonData['name'] = $rewardContract->dispay_name;
-            }
+            $jsonData['name'] = $contract->dispay_name;
+        } else {
+            $jsonData['accountNumber'] = $contractData->correspondent_account;
+            $jsonData['name'] = $contract->display_name;
         }
 
         $user->transactions()->create(
             [
-                'transactionable_type' => $contractType,
-                'transactionable_id' => $contractId,
+                'transactionable_type' => Contract::class,
+                'transactionable_id' => $data['contract_id'],
                 'type' => Transaction::TYPE_REMOVAL,
                 'status' => Transaction::STATUS_NEW,
                 'payment_id' => null,
@@ -152,7 +129,53 @@ class UserController extends Controller
                 'amount' => $amount,
                 'data' => generateTransactionData($jsonData),
                 'method_type' => Transaction::METHOD_TYPE_TRANSFER,
-                'balance_account_type' => $data['account_type'],
+                'balance_account_type' => BalanceAccount::BALANCE_MAIN,
+            ]
+        );
+
+        return $this->wrapResponse(Response::HTTP_OK, __('Ok'));
+    }
+
+    public function withdrawalMoneyReward(UserRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $data = $request->validated();
+        $amount = (int)$data['amount'];
+
+        if(!BalanceAccount::isEnoughBalance($amount, $user, BalanceAccount::BALANCE_REWARD))
+        {
+            return $this->wrapResponse(
+                Response::HTTP_SERVICE_UNAVAILABLE,
+                __('Not enough balance')
+            );
+        }
+
+        $rewardContract = RewardContract::findOrFail($data['reward_contract_id']);
+        $rewardContractData = json_decode($rewardContract->data);
+
+        $jsonData = [];
+        if($rewardContract->contract_type == RewardContract::NATURAL_PERSON)
+        {
+            $jsonData['pan'] = $rewardContractData->card_number;
+            $jsonData['name'] = $rewardContract->display_name;
+        } else {
+            $jsonData['accountNumber'] = $rewardContractData->correspondent_account;
+            $jsonData['name'] = $rewardContract->dispay_name;
+        }
+
+        $user->transactions()->create(
+            [
+                'transactionable_type' => RewardContract::class,
+                'transactionable_id' => $data['reward_contract_id'],
+                'type' => Transaction::TYPE_REMOVAL,
+                'status' => Transaction::STATUS_NEW,
+                'payment_id' => null,
+                'order_id' => Transaction::generateUUID(),
+                'amount_deposit' => $amount,
+                'amount' => $amount,
+                'data' => generateTransactionData($jsonData),
+                'method_type' => Transaction::METHOD_TYPE_TRANSFER,
+                'balance_account_type' => BalanceAccount::BALANCE_REWARD,
             ]
         );
 
