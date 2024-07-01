@@ -78,17 +78,14 @@ class ContractController extends Controller
         return $this->wrapResponse(Response::HTTP_OK, __('Contract updated successfully.'), $contract);
     }
 
-    /**
-     * @throws \ErrorException
-     */
-    public function delete(Contract $contract): JsonResponse
-    {
-        Gate::authorize('delete', $contract);
-
-        if($contract->delete()) return $this->wrapResponse(Response::HTTP_OK, __('Contract deleted successfully.'));
-
-        throw new \ErrorException(__('Failed to get service, please try again.'), Response::HTTP_INTERNAL_SERVER_ERROR);
-    }
+//    public function delete(Contract $contract): JsonResponse
+//    {
+//        Gate::authorize('delete', $contract);
+//
+//        if($contract->delete()) return $this->wrapResponse(Response::HTTP_OK, __('Contract deleted successfully.'));
+//
+//        throw new \ErrorException(__('Failed to get service, please try again.'), Response::HTTP_INTERNAL_SERVER_ERROR);
+//    }
 
     public function generatePdf(Request $request, Contract $contract)
     {

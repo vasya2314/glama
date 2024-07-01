@@ -6,6 +6,7 @@ use App\Events\ReportHasBeenGenerated;
 use App\Jobs\GenerateReportYandexDirect;
 use App\Models\BalanceAccount;
 use App\Models\Client;
+use App\Models\Contract;
 use App\Models\Report;
 use App\Models\Transaction;
 use App\Models\User;
@@ -227,7 +228,8 @@ class YandexDirect extends YandexDirectExtend
 
             $transaction = $user->transactions()->create(
                 [
-                    'contract_id' => $client->contract_id,
+                    'transactionable_type' => Contract::class,
+                    'transactionable_id' => $client->contract_id,
                     'type' => Transaction::TYPE_DEPOSIT_YANDEX_ACCOUNT,
                     'status' => Transaction::STATUS_NEW,
                     'order_id' => Transaction::generateUUID(),

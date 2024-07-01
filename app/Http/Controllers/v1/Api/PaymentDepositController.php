@@ -10,6 +10,7 @@ use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class PaymentDepositController extends Controller
@@ -54,8 +55,9 @@ class PaymentDepositController extends Controller
                 if($transaction)
                 {
                     $data = [];
-                    if(isset($request['CardId'])) $data['accountNumber'] = $request['CardId'];
                     if(isset($request['Pan'])) $data['pan'] = $request['Pan'];
+
+                    Log::info(print_r($request, true));
 
                     if($transaction->status !== $request['Status'])
                     {

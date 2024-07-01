@@ -9,5 +9,6 @@ include __DIR__ . '/api/ContractRoutes.php';
 include __DIR__ . '/api/PaymentRoutes.php';
 include __DIR__ . '/api/TransactionRoutes.php';
 include __DIR__ . '/api/ClosingDocumentRoutes.php';
+include __DIR__ . '/api/RewardContractRoutes.php';
 
 include __DIR__ . '/api/AdminRoutes.php';

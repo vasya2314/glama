@@ -116,14 +116,13 @@ trait UserTrait
 
                 $user->transactions()->create(
                     [
-                        'contract_id' => null,
                         'type' => Transaction::TYPE_DEPOSIT,
                         'status' => Transaction::STATUS_EXECUTED,
                         'payment_id' => null,
                         'order_id' => Transaction::generateUUID(),
                         'amount_deposit' => $amountCashBack,
                         'amount' => $amountCashBack,
-                        'data' => generateTransactionData(['report_id' => $report->id]),
+                        'data' => generateTransactionData(['reportId' => $report->id]),
                         'method_type' => Transaction::METHOD_TYPE_CASHBACK,
                         'balance_account_type' => BalanceAccount::BALANCE_REWARD,
                     ]

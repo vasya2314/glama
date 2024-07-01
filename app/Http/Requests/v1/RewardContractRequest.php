@@ -3,10 +3,10 @@
 namespace App\Http\Requests\v1;
 
 use App\Models\Contract;
+use App\Models\RewardContract;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class ContractRequest extends FormRequest
+class RewardContractRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,24 +23,15 @@ class ContractRequest extends FormRequest
      */
     public function rules(): array
     {
-//        $rules = [
-//            'client_id' => [
-//                'nullable',
-//                Rule::exists('clients', 'id')->where(function ($query) {
-//                    $query->where('user_id', $this->user()->id);
-//                }),
-//                Rule::unique('contracts', 'client_id'),
-//            ]
-//        ];
         $rules = [];
 
-        if ($this->is('api/v1/contracts') && $this->isMethod('post'))
+        if ($this->is('api/v1/reward-contracts') && $this->isMethod('post'))
         {
             $rules['contract_type'] = 'required|in:' . implode(',', Contract::getAllTypes());
             return array_merge($rules, $this->includeRules());
         }
 
-        if ($this->is('api/v1/contracts/*') && $this->isMethod('patch'))
+        if ($this->is('api/v1/reward-contracts/*') && $this->isMethod('patch'))
         {
             return array_merge($this->includeRules());
         }
@@ -48,7 +39,7 @@ class ContractRequest extends FormRequest
         return [];
     }
 
-    public function storeContract(): array
+    public function storeRewardContract(): array
     {
         $data = $this->validated();
         unset($data['contract_type']);
@@ -60,13 +51,13 @@ class ContractRequest extends FormRequest
         ];
     }
 
-    public function updateContract(): array
+    public function updateRewardContract(): array
     {
         $data = $this->validated();
         unset($data['contract_type']);
 
         return [
-            'display_name' => $this->generateDisplayName($this->contract->contract_type),
+            'display_name' => $this->generateDisplayName($this->rewardContract->contract_type),
             'data' => json_encode($data),
         ];
     }
@@ -76,13 +67,13 @@ class ContractRequest extends FormRequest
         if(
             (
                 $this->isMethod('POST') &&
-                $this->contract_type == Contract::LEGAL_ENTITY
+                $this->contract_type == RewardContract::LEGAL_ENTITY
             )
             ||
             (
                 $this->isMethod('PATCH') &&
-                isset($this->contract) &&
-                $this->contract->contract_type == Contract::LEGAL_ENTITY
+                isset($this->rewardContract) &&
+                $this->rewardContract->contract_type == RewardContract::LEGAL_ENTITY
             )
         )
         {
@@ -92,13 +83,13 @@ class ContractRequest extends FormRequest
         if(
             (
                 $this->isMethod('POST') &&
-                $this->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR
+                $this->contract_type == RewardContract::INDIVIDUAL_ENTREPRENEUR
             )
             ||
             (
                 $this->isMethod('PATCH') &&
-                isset($this->contract) &&
-                $this->contract->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR
+                isset($this->rewardContract) &&
+                $this->rewardContract->contract_type == RewardContract::INDIVIDUAL_ENTREPRENEUR
             )
         )
         {
@@ -108,13 +99,13 @@ class ContractRequest extends FormRequest
         if(
             (
                 $this->isMethod('POST') &&
-                $this->contract_type == Contract::NATURAL_PERSON
+                $this->contract_type == RewardContract::NATURAL_PERSON
             )
             ||
             (
                 $this->isMethod('PATCH') &&
-                isset($this->contract) &&
-                $this->contract->contract_type == Contract::NATURAL_PERSON
+                isset($this->rewardContract) &&
+                $this->rewardContract->contract_type == RewardContract::NATURAL_PERSON
             )
         )
         {
@@ -226,6 +217,12 @@ class ContractRequest extends FormRequest
                 'regex:/^((\\+7)([0-9]){10})$/',
             ],
             'email' => 'required|string|email',
+            'bank_name' => 'required|string',
+            'card_number' => [
+                'required',
+                'string',
+                'regex:/^\\d{16}$/',
+            ],
             'pick_up' => 'required|string|in:not_need,need_original,need_email',
         ];
     }
@@ -239,7 +236,7 @@ class ContractRequest extends FormRequest
 
     private function generateDisplayName(string $contractType): string
     {
-        if($contractType == Contract::NATURAL_PERSON)
+        if($contractType == RewardContract::NATURAL_PERSON)
         {
             $displayName = $this->request->get('lastname')  . ' ' . $this->request->get('firstname');
             if($this->request->get('surname')) $displayName .= ' ' . $this->request->get('surname');
@@ -280,9 +277,9 @@ class ContractRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         if(
-            $this->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR ||
-            isset($this->contract) &&
-            $this->contract->contract_type == Contract::INDIVIDUAL_ENTREPRENEUR
+            $this->contract_type == RewardContract::INDIVIDUAL_ENTREPRENEUR ||
+            isset($this->rewardContract) &&
+            $this->rewardContract->contract_type == RewardContract::INDIVIDUAL_ENTREPRENEUR
         ) {
             $this->merge([
                 'kpp' => 0,

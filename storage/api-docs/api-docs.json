@@ -4053,6 +4053,12 @@
                         "format": "integer",
                         "example": "15"
                     },
+                    "contract_id": {
+                        "title": "ID договора",
+                        "description": "ID договора",
+                        "format": "integer",
+                        "example": "10"
+                    },
                     "user_id": {
                         "title": "ID пользователя",
                         "description": "ID пользователя",
@@ -4088,6 +4094,12 @@
                         "description": "Тип пополнения",
                         "format": "integer",
                         "example": "qr"
+                    },
+                    "balance_account_type": {
+                        "title": "Тип счета",
+                        "description": "Тип счета",
+                        "format": "string",
+                        "example": "main"
                     },
                     "created_at": {
                         "title": "Дата создания",

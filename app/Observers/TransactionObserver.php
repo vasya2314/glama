@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\Contract;
 use App\Models\Transaction;
 
 class TransactionObserver
@@ -22,12 +23,13 @@ class TransactionObserver
         if(
             $transaction->type == Transaction::TYPE_DEPOSIT &&
             $transaction->method_type == Transaction::METHOD_TYPE_INVOICE &&
-            $transaction->status = Transaction::STATUS_EXECUTED
+            $transaction->status == Transaction::STATUS_EXECUTED &&
+            $transaction->transactionable_type == Contract::class
         )
         {
             $transaction->paymentClosingInvoice()->create(
                 [
-                    'contract_id' => $transaction->contract_id,
+                    'contract_id' => $transaction->transactionable_id,
                     'amount' => $transaction->amount_deposit,
                 ]
             );

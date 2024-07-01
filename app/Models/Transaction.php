@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Str;
 
 #[ObservedBy([TransactionObserver::class])]
@@ -76,6 +77,11 @@ class Transaction extends Model
         return Str::uuid()->toString();
     }
 
+    public function transactionable(): MorphTo
+    {
+        return $this->morphTo();
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -93,9 +99,9 @@ class Transaction extends Model
         $data = [];
 
         $data['accountNumber'] = $accountNumber ?? null;
-        $data['pan'] = $cardId ?? null;
+        $data['pan'] = $pan ?? null;
         $data['name'] = $name ?? null;
-        $data['report_id'] = $name ?? null;
+        $data['reportId'] = $reportId ?? null;
 
         return json_encode($data);
     }

@@ -2,25 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class Contract extends Model
+class RewardContract extends Model
 {
     use HasFactory;
+
+    protected $table = 'reward_contracts';
+    protected $guarded = false;
 
     const LEGAL_ENTITY = 'legal_entity';
     const INDIVIDUAL_ENTREPRENEUR = 'individual_entrepreneur';
     const NATURAL_PERSON = 'natural_person';
-
-    protected $table = 'contracts';
-    protected $guarded = false;
 
     public static function getAllTypes(): array
     {
@@ -34,21 +30,6 @@ class Contract extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function client(): HasOne
-    {
-        return $this->hasOne(Client::class);
-    }
-
-    public function closingActs(): HasMany
-    {
-        return $this->hasMany(ClosingAct::class);
-    }
-
-    public function closingInvoice(): HasMany
-    {
-        return $this->hasMany(ClosingInvoice::class);
     }
 
     public function transactions(): MorphMany

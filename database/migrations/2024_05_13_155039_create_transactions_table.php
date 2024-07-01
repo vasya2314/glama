@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('contract_id')->nullable()->constrained('contracts');
+            $table->nullableMorphs('transactionable');
+//            $table->foreignId('contract_id')->nullable()->constrained('contracts');
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->string('type');
             $table->string('status');

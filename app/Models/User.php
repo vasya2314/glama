@@ -124,6 +124,11 @@ namespace App\Models;
         return $this->hasMany(Contract::class);
     }
 
+     public function rewardContracts(): HasMany
+     {
+         return $this->hasMany(RewardContract::class);
+     }
+
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);

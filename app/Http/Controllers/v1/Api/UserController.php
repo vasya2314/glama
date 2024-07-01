@@ -12,6 +12,7 @@ use App\Mail\AttachToAgency;
 use App\Models\BalanceAccount;
 use App\Models\ClosingAct;
 use App\Models\Contract;
+use App\Models\RewardContract;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Traits\UserTrait;
@@ -94,7 +95,6 @@ class UserController extends Controller
     {
         $user = $request->user();
         $data = $request->validated();
-        $contract = Contract::findOrFail($data['contract_id']);
         $amount = (int)$data['amount'];
 
         if(!BalanceAccount::isEnoughBalance($amount, $user, $data['account_type']))
@@ -105,18 +105,52 @@ class UserController extends Controller
             );
         }
 
-        // Тут нужно подумать над логикой подставления data (имя и accountNumber)
-        // Т.е. нужно понимать куда выводить деньги в зависимости от выбранного типа balance_account_type
+        $jsonData = [];
+        if($data['account_type'] == BalanceAccount::BALANCE_MAIN)
+        {
+            $contractId = $data['contract_id'];
+            $contractType = Contract::class;
+
+            $contract = Contract::findOrFail($data['contract_id']);
+            $contractData = json_decode($contract->data);
+
+            if($contract->contract_type == RewardContract::NATURAL_PERSON)
+            {
+                $jsonData['name'] = $contract->dispay_name;
+            } else {
+                $jsonData['accountNumber'] = $contractData->correspondent_account;
+                $jsonData['name'] = $contract->display_name;
+            }
+        }
+        else if($data['account_type'] == BalanceAccount::BALANCE_REWARD)
+        {
+            $contractId = $data['reward_contract_id'];
+            $contractType = RewardContract::class;
+
+            $rewardContract = RewardContract::findOrFail($data['reward_contract_id']);
+            $rewardContractData = json_decode($rewardContract->data);
+
+            if($rewardContract->contract_type == RewardContract::NATURAL_PERSON)
+            {
+                $jsonData['pan'] = $rewardContractData->card_number;
+                $jsonData['name'] = $rewardContract->display_name;
+            } else {
+                $jsonData['accountNumber'] = $rewardContractData->correspondent_account;
+                $jsonData['name'] = $rewardContract->dispay_name;
+            }
+        }
 
         $user->transactions()->create(
             [
+                'transactionable_type' => $contractType,
+                'transactionable_id' => $contractId,
                 'type' => Transaction::TYPE_REMOVAL,
                 'status' => Transaction::STATUS_NEW,
                 'payment_id' => null,
                 'order_id' => Transaction::generateUUID(),
                 'amount_deposit' => $amount,
                 'amount' => $amount,
-                'data' => null, // !!!!!!
+                'data' => generateTransactionData($jsonData),
                 'method_type' => Transaction::METHOD_TYPE_TRANSFER,
                 'balance_account_type' => $data['account_type'],
             ]

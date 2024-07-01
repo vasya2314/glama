@@ -4,6 +4,7 @@ namespace App\Http\Requests\v1;
 
 use App\Classes\Tinkoff;
 use App\Models\BalanceAccount;
+use App\Models\Contract;
 use App\Models\Operation;
 use App\Models\PaymentInvoice;
 use App\Models\Transaction;
@@ -65,7 +66,8 @@ class DepositRequest extends FormRequest
         $data = json_decode($tinkoff->response);
 
         return [
-            'contract_id' => $request->get('contract_id'),
+            'transactionable_type' => Contract::class,
+            'transactionable_id' => $request->get('contract_id'),
             'type' => $transactionType,
             'status' => $data->Status,
             'payment_id' => $data->PaymentId,
@@ -86,11 +88,12 @@ class DepositRequest extends FormRequest
         ];
 
         return [
+            'transactionable_type' => Contract::class,
+            'transactionable_id' => request()->get('contract_id'),
             'type' => Transaction::TYPE_DEPOSIT,
             'status' => Transaction::STATUS_NEW,
             'payment_id' => null,
             'order_id' => null,
-            'contract_id' => request()->get('contract_id'),
             'amount_deposit' => (int)request()->get('amount'),
             'amount' => (int)request()->get('amount'),
             'method_type' => Transaction::METHOD_TYPE_INVOICE,
