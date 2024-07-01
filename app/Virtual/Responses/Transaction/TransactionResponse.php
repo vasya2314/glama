@@ -24,6 +24,17 @@ class TransactionResponse
 
     /**
      * @OA\Property(
+     *     property="contract_id",
+     *     format="integer",
+     *     title="ID договора",
+     *     description="ID договора",
+     *     example="10",
+     * )
+     */
+    public $contractId;
+
+    /**
+     * @OA\Property(
      *     property="user_id",
      *     format="integer",
      *     title="ID пользователя",
@@ -87,6 +98,17 @@ class TransactionResponse
      * )
      */
     public $methodType;
+
+    /**
+     * @OA\Property(
+     *     property="balance_account_type",
+     *     format="string",
+     *     title="Тип счета",
+     *     description="Тип счета",
+     *     example="main",
+     * )
+     */
+    public $balanceAccountType;
 
     /**
      * @OA\Property(
